@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smAgrePunishComp.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmAgrePunishCompListByParams" resultType="com.hhwy.selling.domain.SmAgrePunishComp">
+		select
+			ID id,
+			agre_id agreId,
+			punish_flag punishFlag,
+			lower_threshold lowerThreshold,
+			lower_type lowerType,
+			lower_prc lowerPrc,
+			lower_prop lowerProp,
+			org_no orgNo
+		from s_m_agre_punish_comp where 1=1
+		<if test="smAgrePunishComp != null and smAgrePunishComp.agreId != null and smAgrePunishComp.agreId != ''">
+			and agre_id = #{smAgrePunishComp.agreId}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.punishFlag != null and smAgrePunishComp.punishFlag != ''">
+			and punish_flag = #{smAgrePunishComp.punishFlag}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.lowerThreshold != null and smAgrePunishComp.lowerThreshold != ''">
+			and lower_threshold = #{smAgrePunishComp.lowerThreshold}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.lowerType != null and smAgrePunishComp.lowerType != ''">
+			and lower_type = #{smAgrePunishComp.lowerType}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.lowerPrc != null and smAgrePunishComp.lowerPrc != ''">
+			and lower_prc = #{smAgrePunishComp.lowerPrc}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.lowerProp != null and smAgrePunishComp.lowerProp != ''">
+			and lower_prop = #{smAgrePunishComp.lowerProp}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmAgrePunishCompCountByParams" resultType="int">
+		select count(1)	from s_m_agre_punish_comp where 1=1
+		<if test="smAgrePunishComp != null and smAgrePunishComp.agreId != null and smAgrePunishComp.agreId != ''">
+			and agre_id = #{smAgrePunishComp.agreId}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.punishFlag != null and smAgrePunishComp.punishFlag != ''">
+			and punish_flag = #{smAgrePunishComp.punishFlag}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.lowerThreshold != null and smAgrePunishComp.lowerThreshold != ''">
+			and lower_threshold = #{smAgrePunishComp.lowerThreshold}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.lowerType != null and smAgrePunishComp.lowerType != ''">
+			and lower_type = #{smAgrePunishComp.lowerType}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.lowerPrc != null and smAgrePunishComp.lowerPrc != ''">
+			and lower_prc = #{smAgrePunishComp.lowerPrc}
+		</if>
+		<if test="smAgrePunishComp != null and smAgrePunishComp.lowerProp != null and smAgrePunishComp.lowerProp != ''">
+			and lower_prop = #{smAgrePunishComp.lowerProp}
+		</if>
+	</select>
+	
+	<!-- 根据合同标识删除用户惩罚信息 -->
+	<delete id="deleteSmAgrePunishCompByAgreId">
+		DELETE
+		FROM
+			s_m_agre_punish_comp
+		WHERE
+			agre_id IN 
+			<foreach item="item" index="index" collection="agreIds" open="(" separator="," close=")">
+            	#{item}
+       </foreach>
+	</delete>
+</mapper>

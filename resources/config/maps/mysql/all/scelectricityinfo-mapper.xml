@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scElectricityInfo.sql">
+	
+	<!-- 查询列表数量 -->
+	<select id="getConsElecTotal" resultType="int">
+		SELECT COUNT(1)
+		FROM (SELECT b.cons_name consName
+		FROM s_c_cons_electricity a
+		LEFT JOIN s_c_consumer_info b on b.id = a.cons_id
+		WHERE 1=1
+		and (a.person_forecast_pq != 'null' or a.data_forecast_pq != 'null')
+			<if test="consName != null and consName != ''">
+				and b.cons_name LIKE CONCAT('%',#{consName},'%')
+			</if>
+			<if test="queryDetail != null and queryDetail.elecTypeCode != null and queryDetail.elecTypeCode != ''">
+				and b.elec_type_code = #{queryDetail.elecTypeCode}
+			</if>
+			<if test="queryDetail != null and queryDetail.industryType != null and queryDetail.industryType != ''">
+				and b.industry_type = #{queryDetail.industryType}
+			</if>
+			<if test="queryDetail != null and queryDetail.year != null and queryDetail.year != ''">
+				and a.ym LIKE CONCAT(#{queryDetail.year},'%')
+			</if>
+		GROUP BY LEFT(a.ym,4),a.cons_id) p
+				
+	</select>
+	
+	<!-- 根据用户id和年份‘删除’用户历史用电信息预测电量字段数据 -->
+	<update id="getSCConsElectricity" parameterType="map">
+		UPDATE s_c_cons_electricity set person_forecast_pq  = NULL, data_forecast_pq = NULL
+		WHERE cons_id = #{consId} AND LEFT(ym,4) = #{year}
+	</update>
+	
+	<!-- 查询列表数据 -->
+	<select id="getConsElecGrid" resultType="com.hhwy.purchaseweb.crm.scelectricityinfo.domain.TreeGridDetail">
+		SELECT 
+		a.id id,
+    	b.cons_name consName,
+			a.cons_id consId,
+			b.elec_type_code elecTypeCode,
+			b.industry_type industryType,
+			SUM(IFNULL(a.peak_pq,0) + IFNULL(a.plain_pq,0) + IFNULL(a.valley_pq,0) + IFNULL(a.over_peak_pq,0) + IFNULL(a.double_pq,0)) totalPq, 
+			LEFT(a.ym,4) year 
+		FROM s_c_cons_electricity a LEFT JOIN s_c_consumer_info b on b.id = a.cons_id
+		WHERE 1=1
+		and (a.person_forecast_pq != 'null' or a.data_forecast_pq != 'null')
+			<if test="consName != null and consName != ''">
+				and b.cons_name LIKE CONCAT('%',#{consName},'%')
+			</if>
+			<if test="queryDetail != null and queryDetail.elecTypeCode != null and queryDetail.elecTypeCode != ''">
+				and b.elec_type_code = #{queryDetail.elecTypeCode}
+			</if>
+			<if test="queryDetail != null and queryDetail.industryType != null and queryDetail.industryType != ''">
+				and b.industry_type = #{queryDetail.industryType}
+			</if>
+			<if test="queryDetail != null and queryDetail.year != null and queryDetail.year != ''">
+				and a.ym LIKE CONCAT(#{queryDetail.year},'%')
+			</if>
+		GROUP BY LEFT(a.ym,4),a.cons_id
+		ORDER BY a.ym DESC,b.cons_name 
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+    <!-- 查询历史年份对比电量数据 -->
+    <select id="getHistoryData" resultType="java.math.BigDecimal">
+    	SELECT
+			(
+				IFNULL(b.peak_pq,0) + IFNULL(b.plain_pq,0) + IFNULL(b.valley_pq,0) + IFNULL(b.over_peak_pq,0) + IFNULL(b.double_pq,0)
+			)
+		FROM
+			s_c_cons_electricity b
+		WHERE
+			b.ym LIKE CONCAT(#{year} - #{num}, '%')
+		AND b.cons_id = #{consId}
+		ORDER BY
+			b.ym ASC
+    </select>
+    
+    <!-- 根据用户id查询用户信息 -->
+    <select id="getConsInfoByConsId" resultType="com.hhwy.purchaseweb.crm.scelectricityinfo.domain.QueryDetail">
+    	SELECT 
+    		a.cons_name consName,
+			a.lode_attr_code lodeAttrCode,
+			a.elec_type_code elecTypeCode,
+			a.industry_type industryType
+		FROM s_c_consumer_info a 
+		WHERE 
+			a.id = #{consId}
+    </select>
+    
+    <!-- 更新预测电量 -->
+    <update id="updateScConsElectricity">
+		UPDATE s_c_cons_electricity 
+		SET 
+			data_forecast_pq = #{dataForecastPq}, 
+			person_forecast_pq = #{personForecastPq}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="calculateForecastPq" resultType="Map">
+		SELECT
+			cast(RIGHT(ym, 2) as SIGNED INTEGER) ym,
+			CAST(
+				avg(IFNULL(peak_pq,0) + IFNULL(plain_pq,0) + IFNULL(over_peak_pq,0) + IFNULL(double_pq,0) + IFNULL(valley_pq,0))* (RAND()*0.1+0.9) AS DECIMAL (18, 2)
+			) dataForecastPq
+		FROM
+			s_c_cons_electricity
+		WHERE cons_id = #{consId}
+		AND LEFT(ym,4) &lt; #{year}
+		GROUP BY
+			RIGHT (ym, 2)
+	</select>
+	
+	  <!-- 查询根节点数量 -->
+<!--     <select id="getTreeCountByParams" resultType="int"> -->
+<!--     	SELECT  -->
+<!-- 			count(distinct a.cons_id) -->
+<!-- 		FROM s_c_cons_electricity a -->
+<!-- 		LEFT JOIN s_c_consumer_info b on b.id = a.cons_id -->
+<!-- 		WHERE (a.person_forecast_pq != 'null' or a.data_forecast_pq != 'null') -->
+<!-- 			<if test="consName != null and consName != ''"> -->
+<!-- 				and b.cons_name LIKE CONCAT('%',#{consName},'%') -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.consId != null and queryDetail.consId != ''"> -->
+<!-- 				and a.cons_id = #{queryDetail.consId} -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.lodeAttrCode != null and queryDetail.lodeAttrCode != ''"> -->
+<!-- 				and b.lode_attr_code = #{queryDetail.lodeAttrCode} -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.elecTypeCode != null and queryDetail.elecTypeCode != ''"> -->
+<!-- 				and b.elec_type_code = #{queryDetail.elecTypeCode} -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.industryType != null and queryDetail.industryType != ''"> -->
+<!-- 				and b.industry_type = #{queryDetail.industryType} -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.year != null and queryDetail.year != ''"> -->
+<!-- 				and a.ym LIKE CONCAT(#{queryDetail.year},'%') -->
+<!-- 			</if> -->
+<!--     </select> -->
+    <!-- 查询根节点列表 -->
+<!--     <select id="getParentListByParams" resultType="com.hhwy.purchaseweb.crm.scelectricityinfo.domain.TreeGridDetail"> -->
+<!--     	SELECT  -->
+<!-- 			'closed' state, -->
+<!-- 			a.cons_id consId, -->
+<!-- 			b.cons_name consName, -->
+<!-- 			b.lode_attr_code lodeAttrCode, -->
+<!-- 			b.elec_type_code elecTypeCode, -->
+<!-- 			b.industry_type industryType -->
+<!-- 		FROM s_c_cons_electricity a -->
+<!-- 		LEFT JOIN s_c_consumer_info b on b.id = a.cons_id -->
+<!-- 		WHERE (a.person_forecast_pq != 'null' or a.data_forecast_pq != 'null') -->
+<!-- 			<if test="consName != null and consName != ''"> -->
+<!-- 				and b.cons_name LIKE CONCAT('%',#{consName},'%') -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.consId != null and queryDetail.consId != ''"> -->
+<!-- 				and a.cons_id = #{queryDetail.consId} -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.lodeAttrCode != null and queryDetail.lodeAttrCode != ''"> -->
+<!-- 				and b.lode_attr_code = #{queryDetail.lodeAttrCode} -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.elecTypeCode != null and queryDetail.elecTypeCode != ''"> -->
+<!-- 				and b.elec_type_code = #{queryDetail.elecTypeCode} -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.industryType != null and queryDetail.industryType != ''"> -->
+<!-- 				and b.industry_type = #{queryDetail.industryType} -->
+<!-- 			</if> -->
+<!-- 			<if test="queryDetail != null and queryDetail.year != null and queryDetail.year != ''"> -->
+<!-- 				and a.ym LIKE CONCAT(#{queryDetail.year},'%') -->
+<!-- 			</if> -->
+<!-- 		GROUP BY cons_id -->
+<!-- 		ORDER BY a.create_time DESC -->
+<!-- 		<if test="pagingFlag==true"> -->
+<!-- 			limit #{startIndex},#{rowCount} -->
+<!-- 		</if> -->
+<!--     </select> -->
+    <!-- 查询子节点列表 -->
+<!--     <select id="getChildrenListByConsId" resultType="com.hhwy.purchaseweb.crm.scelectricityinfo.domain.TreeGridDetail"> -->
+<!--     	SELECT  -->
+<!--     		'' consName, -->
+<!-- 			a.cons_id _parentId, -->
+<!-- 			CONCAT(a.cons_id,LEFT(a.ym,4)) consId, -->
+<!-- 			SUM(IFNULL(a.peak_pq,0) + IFNULL(a.plain_pq,0) + IFNULL(a.valley_pq,0) + IFNULL(a.over_peak_pq,0) + IFNULL(a.double_pq,0)) totalPq,  -->
+<!-- 			LEFT(a.ym,4) year  -->
+<!-- 		FROM s_c_cons_electricity a -->
+<!-- 		LEFT JOIN s_c_consumer_info b on b.id = a.cons_id -->
+<!-- 		WHERE a.cons_id = #{id} -->
+<!-- 		and (a.person_forecast_pq != 'null' or a.data_forecast_pq != 'null') -->
+<!-- 		GROUP BY LEFT(a.ym,4),a.cons_id -->
+<!-- 		ORDER BY a.ym DESC -->
+<!--     </select> -->
+<!--     查询预测年的数据 -->
+    <select id="getForecastPqList" resultType="com.hhwy.purchaseweb.crm.scelectricityinfo.domain.ForecastPqDetail">
+    	SELECT 
+			a.id id,
+			a.ym ym,
+			a.data_forecast_pq dataForecastPq,
+			a.person_forecast_pq personForecastPq
+		FROM s_c_cons_electricity a
+		WHERE 
+			a.cons_id = #{consId}
+			and a.ym LIKE CONCAT(#{year},'%')
+		ORDER BY a.ym ASC
+    </select>
+    <!-- 有无负荷预测权限 -->
+	<select id="getForecastRes" resultType="String">
+		SELECT
+			res.name
+		FROM
+			ac_user_role role
+		LEFT JOIN ac_role_resource r ON r.role_id = role.role_id
+		LEFT JOIN ac_resource res ON res.id = r.resource_id
+		WHERE
+			role.user_id = #{userId}
+		AND res.code = 'cloud_selling_01030101calculate'
+	</select>
+	
+																	<!-- 月度电量预测 -->
+	
+																		
+	<select id="getListData" resultType="com.hhwy.purchaseweb.crm.scelectricityinfo.domain.ForecastPqDetail">
+		SELECT
+			CONCAT(LEFT(s.ym,4),'年',RIGHT(s.ym,2), '月') ymName,
+			s.ym ym,
+			z.upYearPracticalPq,
+			y.upMonPracticalPq,
+			s.personForecastPq,
+			s.practicalPq,
+			s.dataForecastPq
+		FROM
+			(
+			SELECT SUM(s.practical_pq) practicalPq,SUM(s.person_forecast_pq) personForecastPq,SUM(s.data_forecast_pq) dataForecastPq,s.ym,s.cons_id 
+			FROM 
+				s_c_cons_electricity s
+			INNER JOIN s_m_ppa ppa ON s.cons_id = ppa.cons_id 
+				AND ( REPLACE(LEFT(ppa.effective_date,7),'-','') &lt;= s.ym AND s.ym &lt;= REPLACE(LEFT(ppa.expiry_date,7),'-','')) AND ppa.agre_status != '00' 
+			GROUP BY s.ym
+			) s
+		LEFT JOIN 
+		(
+			SELECT SUM(s.practical_pq) upMonPracticalPq,s.ym 
+			FROM 
+				s_c_cons_electricity s
+			INNER JOIN s_m_ppa ppa ON s.cons_id = ppa.cons_id 
+				AND ( REPLACE(LEFT(ppa.effective_date,7),'-','') &lt;= s.ym AND s.ym &lt;= REPLACE(LEFT(ppa.expiry_date,7),'-','')) AND ppa.agre_status != '00' 
+			GROUP BY s.ym
+		) y ON 	s.ym = DATE_FORMAT(DATE_ADD(STR_TO_DATE(concat(y.ym,'01'),'%Y%m%d'),INTERVAL 1 MONTH),'%Y%m')
+		LEFT JOIN 
+		(
+			SELECT 
+				SUM(s.practical_pq) upYearPracticalPq,s.ym 
+			FROM 
+				s_c_cons_electricity s
+			INNER JOIN s_m_ppa ppa ON s.cons_id = ppa.cons_id 
+				AND ( REPLACE(LEFT(ppa.effective_date,7),'-','') &lt;= s.ym AND s.ym &lt;= REPLACE(LEFT(ppa.expiry_date,7),'-','')) AND ppa.agre_status != '00' 
+			GROUP BY ym
+		) z ON s.ym = (CAST(z.ym AS SIGNED)+100)
+		 
+		GROUP BY s.ym
+		HAVING 1=1		
+		AND s.dataForecastPq  is not NULL or s.personForecastPq is not NULL or s.practicalPq is not NULL
+		<if test="startTime != null and startTime !='' ">
+			and s.ym &gt;=  REPLACE(#{startTime},'-','')  
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			 AND s.ym &lt;=  REPLACE(#{endTime},'-','')
+		</if>
+		ORDER BY s.ym DESC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>		
+	<select id="getListDataCount" resultType="int">
+		SELECT COUNT(1)
+		FROM(
+			SELECT
+			CONCAT(LEFT(s.ym,4),'年',RIGHT(s.ym,2), '月') ymName,
+			s.ym ym,
+			z.upYearPracticalPq,
+			y.upMonPracticalPq,
+			s.personForecastPq,
+			s.practicalPq,
+			s.dataForecastPq
+		FROM
+			(
+			SELECT SUM(s.practical_pq) practicalPq,SUM(s.person_forecast_pq) personForecastPq,SUM(s.data_forecast_pq) dataForecastPq,s.ym,s.cons_id 
+			FROM 
+				s_c_cons_electricity s
+			INNER JOIN s_m_ppa ppa ON s.cons_id = ppa.cons_id 
+				AND ( REPLACE(LEFT(ppa.effective_date,7),'-','') &lt;= s.ym AND s.ym &lt;= REPLACE(LEFT(ppa.expiry_date,7),'-','')) AND ppa.agre_status != '00' 
+			GROUP BY s.ym
+			) s
+		LEFT JOIN 
+		(
+			SELECT SUM(s.practical_pq) upMonPracticalPq,s.ym 
+			FROM 
+				s_c_cons_electricity s
+			INNER JOIN s_m_ppa ppa ON s.cons_id = ppa.cons_id 
+				AND ( REPLACE(LEFT(ppa.effective_date,7),'-','') &lt;= s.ym AND s.ym &lt;= REPLACE(LEFT(ppa.expiry_date,7),'-','')) AND ppa.agre_status != '00' 
+			GROUP BY s.ym
+		) y ON 	s.ym = DATE_FORMAT(DATE_ADD(STR_TO_DATE(concat(y.ym,'01'),'%Y%m%d'),INTERVAL 1 MONTH),'%Y%m')
+		LEFT JOIN 
+		(
+			SELECT 
+				SUM(s.practical_pq) upYearPracticalPq,s.ym 
+			FROM 
+				s_c_cons_electricity s
+			INNER JOIN s_m_ppa ppa ON s.cons_id = ppa.cons_id 
+				AND ( REPLACE(LEFT(ppa.effective_date,7),'-','') &lt;= s.ym AND s.ym &lt;= REPLACE(LEFT(ppa.expiry_date,7),'-','')) AND ppa.agre_status != '00' 
+			GROUP BY ym
+		) z ON s.ym = (CAST(z.ym AS SIGNED)+100)
+		 
+		GROUP BY s.ym
+		HAVING 1=1		
+		AND s.dataForecastPq  is not NULL or s.personForecastPq is not NULL or s.practicalPq is not NULL
+		<if test="startTime != null and startTime !='' ">
+			and s.ym &gt;=  REPLACE(#{startTime},'-','')  
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			 AND s.ym &lt;=  REPLACE(#{endTime},'-','')
+		</if>
+		)x
+	</select>	
+			
+	<update id="updateMonthPqFore">
+		UPDATE 
+			s_c_cons_electricity
+		SET person_forecast_pq = NULL, data_forecast_pq = NULL, remark = NULL
+		WHERE
+			ym = #{ym}
+	</update>
+													
+	<!-- 有无下个月预测数据 -->
+	<select id="getDownMonthData" resultType="int">
+		SELECT COUNT(1)
+		FROM(
+		SELECT
+			id
+		FROM
+			s_c_cons_electricity
+		WHERE
+			ym = #{ym}
+		GROUP BY
+			cons_id
+		)x
+	</select>															
+	<select id="getMonthPqForetData" resultType="com.hhwy.purchaseweb.crm.scelectricityinfo.domain.ForecastPqDetail">
+		SELECT
+			z.ym,
+			z.id,
+			b.id consId,
+			b.cons_name consName,
+			b.volt_code voltCode,
+			z.over_peak_pq overPeakPq,
+			z.over_peak_amt overPeakAmt,
+			z.peak_pq peakPq,
+			z.peak_amt peakAmt,
+			z.double_pq doublePq,
+			z.double_amt doubleAmt,
+			z.valley_pq valleyPq,
+			z.valley_amt valleyAmt,
+			z.plain_pq plainPq,
+			z.plain_amt	plainAmt,
+			z.base_amt baseAmt,
+			z.force_amt forceAmt,
+			z.levy_amt levyAmt,
+			z.other_amt otherAmt,
+			z.total_amt totalAmt,
+			z.create_time createTime,
+			z.create_user createUser,
+			z.update_time updateTime,
+			z.update_user updateUser,
+			z.remark,
+			z.org_no orgNo,
+			CONVERT(z.practical_pq, DECIMAL(18,3)) practicalPq,
+			CONVERT(z.person_forecast_pq, DECIMAL(18,3)) personForecastPq,
+			CONVERT(z.data_forecast_pq, DECIMAL(18,3)) dataForecastPq,
+			CONVERT(y.practical_pq, DECIMAL(18,3)) upYearPracticalPq,
+			CONVERT(u.practical_pq, DECIMAL(18,3)) upMonPracticalPq
+		FROM
+			(
+			SELECT id,cons_id,practical_pq,ym,over_peak_pq,over_peak_amt,peak_pq,peak_amt,double_pq,double_amt,
+				valley_pq,valley_amt,plain_pq,plain_amt,base_amt,force_amt,levy_amt,other_amt,total_amt,create_time,create_user,
+				update_time,update_user,remark,org_no,person_forecast_pq,data_forecast_pq 
+			FROM 
+				s_c_cons_electricity
+			WHERE 
+				ym =  REPLACE(#{ym},'-','')
+			)z
+		LEFT JOIN s_c_consumer_info b ON b.id = z.cons_id
+		LEFT JOIN s_m_ppa ppa ON ppa.cons_id = b.id
+		LEFT JOIN s_c_cons_electricity a ON b.id = a.cons_id
+		LEFT JOIN (SELECT cons_id,practical_pq FROM s_c_cons_electricity WHERE ym = #{upYYm})y ON b.id = y.cons_id
+		LEFT JOIN (SELECT cons_id,practical_pq FROM s_c_cons_electricity WHERE ym = #{upMYm})u ON b.id = u.cons_id 
+	    	WHERE ppa.effective_date  &lt;= #{ym} AND #{ym} &lt;= ppa.expiry_date  AND ppa.agre_status != '00'
+		GROUP BY b.id
+		ORDER BY convert(b.cons_name USING gbk) ASC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>		
+	
+	<select id="getMonthPqForetDataCount" resultType="int">
+		SELECT
+			count(1)
+		FROM
+			(SELECT
+				a.id
+				FROM
+				(
+				SELECT id,cons_id,practical_pq,ym,over_peak_pq,over_peak_amt,peak_pq,peak_amt,double_pq,double_amt,
+					valley_pq,valley_amt,plain_pq,plain_amt,base_amt,force_amt,levy_amt,other_amt,total_amt,create_time,create_user,
+					update_time,update_user,remark,org_no,person_forecast_pq,data_forecast_pq 
+				FROM 
+					s_c_cons_electricity
+				WHERE 
+					ym =  REPLACE(#{ym},'-','')
+				)z
+			LEFT JOIN s_c_consumer_info b ON b.id = z.cons_id
+			LEFT JOIN s_m_ppa ppa ON ppa.cons_id = b.id
+			LEFT JOIN s_c_cons_electricity a ON b.id = a.cons_id
+			LEFT JOIN (SELECT cons_id,practical_pq FROM s_c_cons_electricity WHERE ym = #{upYYm})y ON b.id = y.cons_id
+			LEFT JOIN (SELECT cons_id,practical_pq FROM s_c_cons_electricity WHERE ym = #{upMYm})u ON b.id = u.cons_id 
+		    	WHERE ppa.effective_date  &lt;= #{ym} AND #{ym} &lt;= ppa.expiry_date  AND ppa.agre_status != '00'
+			GROUP BY b.id
+		)z
+	</select>														
+</mapper>

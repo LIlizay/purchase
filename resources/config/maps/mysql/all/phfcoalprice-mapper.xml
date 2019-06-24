@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phfCoalPrice.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhfCoalPriceListByParams" resultType="com.hhwy.purchaseweb.forecast.phfcoalprice.domain.PhfCoalPriceDetail">  
+		select
+			ID id,
+			ym ym,
+			coal_type coalType,
+			price price,
+			org_no orgNo		
+		from ph_f_coal_price where 1=1
+		<if test="phfCoalPrice != null and phfCoalPrice.ym != null and phfCoalPrice.ym != ''">
+			and ym = #{phfCoalPrice.ym}
+		</if>
+		<if test="phfCoalPrice != null and phfCoalPrice.coalType != null and phfCoalPrice.coalType != ''">
+			and coal_type = #{phfCoalPrice.coalType}
+		</if>
+		<if test="phfCoalPrice != null and phfCoalPrice.price != null and phfCoalPrice.price != ''">
+			and price = #{phfCoalPrice.price}
+		</if>
+		<if test="phfCoalPrice != null and phfCoalPrice.orgNo != null and phfCoalPrice.orgNo != ''">
+			and org_no = #{phfCoalPrice.orgNo}
+		</if>
+		<if test="startYm != null and startYm != ''">
+			and ym &gt;= #{startYm}
+		</if>
+		<if test="endYm != null and endYm != ''">
+			and ym &lt;= #{endYm}
+		</if>
+		order by ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhfCoalPriceCountByParams" resultType="int">
+		select count(1)	from ph_f_coal_price where 1=1
+		<if test="phfCoalPrice != null and phfCoalPrice.ym != null and phfCoalPrice.ym != ''">
+			and ym = #{phfCoalPrice.ym}
+		</if>
+		<if test="phfCoalPrice != null and phfCoalPrice.coalType != null and phfCoalPrice.coalType != ''">
+			and coal_type = #{phfCoalPrice.coalType}
+		</if>
+		<if test="phfCoalPrice != null and phfCoalPrice.price != null and phfCoalPrice.price != ''">
+			and price = #{phfCoalPrice.price}
+		</if>
+		<if test="phfCoalPrice != null and phfCoalPrice.orgNo != null and phfCoalPrice.orgNo != ''">
+			and org_no = #{phfCoalPrice.orgNo}
+		</if>
+		<if test="startYm != null and startYm != ''">
+			and ym &gt;= #{startYm}
+		</if>
+		<if test="endYm != null and endYm != ''">
+			and ym &lt;= #{endYm}
+		</if>
+	</select>
+</mapper>

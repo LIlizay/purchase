@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+		<style type="text/css">
+			.content-major{line-height: 24px;font-size: 14px;padding-bottom:30px;padding-top: 30px;}
+			.newscontains-info{margin-top:40px;color: #4A4A4A; line-height: 26px;}
+			.textTitle{font-family: microsoft yahei;font-size: 18px;text-align:center}
+			.tipinfo{text-align: center;font-size:12px;border-bottom: 1px solid #BEBEBE;padding-bottom: 20px; margin-bottom: 30px;}
+		</style>
+	</head>
+	<body>
+		<div id="hemlData" style="width:100%;height:100%;">
+			
+			<div class="content-major newscontains-info" style="margin-top:0px">
+				
+			</div>
+		</div>
+		<script src="assets/js/jquery-1.10.2.js"></script>
+ <script src="assets/js/bootstrap.min.js"></script>
+ <script src="assets/js/jquery.metisMenu.js"></script>
+  <script src="assets/js/base.js"></script>
+  <script src="assets/js/jquery.json-2.2.js"></script>
+<!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+ <script src="assets/js/morris/morris.js"></script> -->
+ <script src="assets/js/custom.js"></script>
+ <script src="assets/js/custom-scripts.js"></script>
+		<script type="text/javascript">
+		var type = "";//消息类型
+		var id="";
+			$(function(){
+				var obj = MainFrameUtil.getParams("message_newsdetail");
+				id=obj.id;
+				type=obj.type;
+				if(type == "earnFile"){
+					gethtmlEarnFile();
+				}else if(type == "message"){
+					gethtmlMessage();
+				}
+			});
+			
+			function gethtmlMessage(){
+				var queryParams = {
+						 serviceKey:"c_getMsgInfo",
+						 clientKey:"sellandpurchase",
+						  params:{
+						       "msgId":id,
+						       "org_id":"",
+						  }
+					}
+					$.ajax({
+						url : groovyPath + "c_getMsgInfo.do",
+						type : "post",
+						data:$.toJSON(queryParams),
+				        contentType:'application/json;charset=UTF-8',  
+						success : function(data) {
+							if(!data.message){
+								var cont = data.value.datas;
+								//处理null
+								if(cont){
+									var html ="<h2 class='textTitle'>" + cont.title + "</h2>" + "<div class='tipinfo'>" + cont.userName + "<span style='margin-left: 20px'>"+ cont.releaseDate +"</span></div><p>"
+									+ cont.content + "</p>";
+									$(".content-major").append(html);
+								}
+								//更新状态
+								changeStatus();
+							}else{
+								MainFrameUtil.alert({title: "失败提示",body:"查询失败！"});
+					      		return;
+							}
+						},
+						error : function() {
+							MainFrameUtil.alert({title: "网络失败提示",body:"请刷新页面重试！"});
+				      		return;
+						}
+					})
+			}
+			
+			//获取交易中心文件
+			function gethtmlEarnFile(){
+				var queryParams = {
+					 serviceKey:"w_gethtmlMessage",
+					 clientKey:"sellandpurchase",
+					  params:{
+					       "id":id
+					  }
+				};
+				$.ajax({
+					url : groovyPath + "w_gethtmlMessage.do",
+					type : "post",
+					data:$.toJSON(queryParams),
+				    contentType:'application/json;charset=UTF-8',
+					success : function(data) {
+						if(!data.message){
+							var cont = data.value.datas.content;
+							var html = "";
+							//设置文章内容
+							var title = cont.title;
+							var releaseTime = cont.releaseTime;
+							var releasePerson = cont.releasePersonName;
+							var content = cont.content;
+							var fileId = cont.fileId;
+							if(!title){
+								title = "";
+							}
+							if(!releaseTime){
+								releaseTime = "";
+							}
+							if(!releasePerson){
+								releasePerson = "";
+							}
+							if(!content){
+								content = "";
+							}
+							html +="<h2 class='textTitle'>" + title + "</h2>" + "<div class='tipinfo'>" + releasePerson + "<span style='margin-left: 20px'>"+ releaseTime +"</span></div><p>"
+							+ content + "</p>";
+							if(fileId){
+								var file = eval("("+fileId+")");
+								var id = file.fileId;
+								var fileName = file.fileName;
+								html += "<P style='margin-top:30px'>附件下载：<a href='" + filePath + "/" + id +"' style='color:red;'>" + fileName + "</a>";
+							}
+							$(".content-major").append(html);
+						}else{
+							MainFrameUtil.alert({title: "失败提示",body:"查询失败！"});
+				      		return;
+						}
+					},
+					error : function() {
+						MainFrameUtil.alert({title: "网络失败提示",body:"请刷新页面重试！"});
+			      		return;
+					}
+				})
+			}
+			
+			//更新状态
+			function changeStatus(){
+				var queryParams = {
+						serviceKey:"c_setMsgStatus",
+						clientKey:"sellandpurchase",
+						params:{
+							"msgId":id,
+						}
+					};
+					$.ajax({
+						url : groovyPath + "c_setMsgStatus.do",
+						type : "post",
+						data:$.toJSON(queryParams),
+				        contentType:'application/json;charset=UTF-8', 
+						success : function(data) {}
+					})
+			}
+			
+		</script>
+	</body>
+</html>

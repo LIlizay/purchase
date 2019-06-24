@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="common.sql">
+
+	<!-- 获取人员信息 -->
+	<select id="getAcUser" resultType="map">
+		SELECT
+			user.id id,
+			user.user_name userName,
+			user.mobile phone
+		FROM
+			ac_user user left join ac_user_org rela on rela.org_id = #{orgNo} and user.id = rela.user_id
+		WHERE
+			1=1
+		<if test="userName != null and userName != ''">
+			AND user_name LIKE CONCAT('%',#{userName},'%')
+		</if>
+		 <if test="pagingFlag==true">
+            limit #{startIndex},#{rowCount}
+        </if>
+	</select>
+	
+	<!-- 获取人员的数量 -->
+	<select id="getAcUserTotal" resultType="int">
+		SELECT
+			COUNT(user.id)
+		FROM
+			ac_user user left join ac_user_org rela on rela.org_id = #{orgNo} and user.id = rela.user_id
+		WHERE
+			1=1
+		<if test="userName != null and userName != ''">
+			AND user_name LIKE CONCAT('%',#{userName},'%')
+		</if>
+	</select>
+	
+</mapper>

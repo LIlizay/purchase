@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmPhPlanYearScheme.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmPhPlanYearSchemeListByParams" resultType="com.hhwy.purchase.domain.PhmPhPlanYearScheme">  
+		select
+			ID id,
+			plan_id planId,
+			scheme_name schemeName,
+			agre_pq agrePq,
+			agre_amt agreAmt,
+			avg_prc avgPrc,
+			cost_prc costPrc,
+			lc_pq lcPq,
+			lc_prc lcPrc,
+			lc_prop lcProp,
+			lc_final_prop lcFinalProp,
+			bid_pq bidPq,
+			bid_prc bidPrc,
+			bid_prop bidProp,
+			bid_final_prop bidFinalProp,
+			profit_index profitIndex,
+			lc_experience_prc lcExperiencePrc,
+			bid_experience_prc bidExperiencePrc,
+			dvalue_pq dvaluePq,
+			difference_profit differenceProfit,
+			add_profit addProfit,
+			org_no orgNo		
+		from ph_m_ph_plan_year_scheme where 1=1
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.planId != null and phmPhPlanYearScheme.planId != ''">
+			and plan_id = #{phmPhPlanYearScheme.planId}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.schemeName != null and phmPhPlanYearScheme.schemeName != ''">
+			and scheme_name = #{phmPhPlanYearScheme.schemeName}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.agrePq != null and phmPhPlanYearScheme.agrePq != ''">
+			and agre_pq = #{phmPhPlanYearScheme.agrePq}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.agreAmt != null and phmPhPlanYearScheme.agreAmt != ''">
+			and agre_amt = #{phmPhPlanYearScheme.agreAmt}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.avgPrc != null and phmPhPlanYearScheme.avgPrc != ''">
+			and avg_prc = #{phmPhPlanYearScheme.avgPrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.costPrc != null and phmPhPlanYearScheme.costPrc != ''">
+			and cost_prc = #{phmPhPlanYearScheme.costPrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcPq != null and phmPhPlanYearScheme.lcPq != ''">
+			and lc_pq = #{phmPhPlanYearScheme.lcPq}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcPrc != null and phmPhPlanYearScheme.lcPrc != ''">
+			and lc_prc = #{phmPhPlanYearScheme.lcPrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcProp != null and phmPhPlanYearScheme.lcProp != ''">
+			and lc_prop = #{phmPhPlanYearScheme.lcProp}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcFinalProp != null and phmPhPlanYearScheme.lcFinalProp != ''">
+			and lc_final_prop = #{phmPhPlanYearScheme.lcFinalProp}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidPq != null and phmPhPlanYearScheme.bidPq != ''">
+			and bid_pq = #{phmPhPlanYearScheme.bidPq}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidPrc != null and phmPhPlanYearScheme.bidPrc != ''">
+			and bid_prc = #{phmPhPlanYearScheme.bidPrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidProp != null and phmPhPlanYearScheme.bidProp != ''">
+			and bid_prop = #{phmPhPlanYearScheme.bidProp}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidFinalProp != null and phmPhPlanYearScheme.bidFinalProp != ''">
+			and bid_final_prop = #{phmPhPlanYearScheme.bidFinalProp}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.profitIndex != null and phmPhPlanYearScheme.profitIndex != ''">
+			and profit_index = #{phmPhPlanYearScheme.profitIndex}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcExperiencePrc != null and phmPhPlanYearScheme.lcExperiencePrc != ''">
+			and lc_experience_prc = #{phmPhPlanYearScheme.lcExperiencePrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidExperiencePrc != null and phmPhPlanYearScheme.bidExperiencePrc != ''">
+			and bid_experience_prc = #{phmPhPlanYearScheme.bidExperiencePrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.dvaluePq != null and phmPhPlanYearScheme.dvaluePq != ''">
+			and dvalue_pq = #{phmPhPlanYearScheme.dvaluePq}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.orgNo != null and phmPhPlanYearScheme.orgNo != ''">
+			and org_no = #{phmPhPlanYearScheme.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmPhPlanYearSchemeCountByParams" resultType="int">
+		select count(1)	from ph_m_ph_plan_year_scheme where 1=1
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.planId != null and phmPhPlanYearScheme.planId != ''">
+			and plan_id = #{phmPhPlanYearScheme.planId}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.schemeName != null and phmPhPlanYearScheme.schemeName != ''">
+			and scheme_name = #{phmPhPlanYearScheme.schemeName}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.agrePq != null and phmPhPlanYearScheme.agrePq != ''">
+			and agre_pq = #{phmPhPlanYearScheme.agrePq}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.agreAmt != null and phmPhPlanYearScheme.agreAmt != ''">
+			and agre_amt = #{phmPhPlanYearScheme.agreAmt}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.avgPrc != null and phmPhPlanYearScheme.avgPrc != ''">
+			and avg_prc = #{phmPhPlanYearScheme.avgPrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.costPrc != null and phmPhPlanYearScheme.costPrc != ''">
+			and cost_prc = #{phmPhPlanYearScheme.costPrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcPq != null and phmPhPlanYearScheme.lcPq != ''">
+			and lc_pq = #{phmPhPlanYearScheme.lcPq}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcPrc != null and phmPhPlanYearScheme.lcPrc != ''">
+			and lc_prc = #{phmPhPlanYearScheme.lcPrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcProp != null and phmPhPlanYearScheme.lcProp != ''">
+			and lc_prop = #{phmPhPlanYearScheme.lcProp}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcFinalProp != null and phmPhPlanYearScheme.lcFinalProp != ''">
+			and lc_final_prop = #{phmPhPlanYearScheme.lcFinalProp}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidPq != null and phmPhPlanYearScheme.bidPq != ''">
+			and bid_pq = #{phmPhPlanYearScheme.bidPq}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidPrc != null and phmPhPlanYearScheme.bidPrc != ''">
+			and bid_prc = #{phmPhPlanYearScheme.bidPrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidProp != null and phmPhPlanYearScheme.bidProp != ''">
+			and bid_prop = #{phmPhPlanYearScheme.bidProp}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidFinalProp != null and phmPhPlanYearScheme.bidFinalProp != ''">
+			and bid_final_prop = #{phmPhPlanYearScheme.bidFinalProp}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.profitIndex != null and phmPhPlanYearScheme.profitIndex != ''">
+			and profit_index = #{phmPhPlanYearScheme.profitIndex}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.lcExperiencePrc != null and phmPhPlanYearScheme.lcExperiencePrc != ''">
+			and lc_experience_prc = #{phmPhPlanYearScheme.lcExperiencePrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.bidExperiencePrc != null and phmPhPlanYearScheme.bidExperiencePrc != ''">
+			and bid_experience_prc = #{phmPhPlanYearScheme.bidExperiencePrc}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.dvaluePq != null and phmPhPlanYearScheme.dvaluePq != ''">
+			and dvalue_pq = #{phmPhPlanYearScheme.dvaluePq}
+		</if>
+		<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.orgNo != null and phmPhPlanYearScheme.orgNo != ''">
+			and org_no = #{phmPhPlanYearScheme.orgNo}
+		</if>
+		<if test="startYear != null and startYear != ''">
+				and year &gt;= #{startYear}
+		</if>
+		<if test="endYear != null and endYear != ''">
+				and year &lt;= #{endYear}
+		</if>
+	</select>
+	<select id="getTreeList" resultType="com.hhwy.purchaseweb.plan.phmphplanyearscheme.domain.PhmPhPlanYearSchemeDetail">
+		SELECT
+			b.year year,
+			b.plan_name planName,
+			b.setters setters,
+			(SELECT count(1) FROM ph_m_plan_year_cons_rela where plan_id = a.plan_id) consSum,
+			a.ID id,
+			a.id schemeId,
+			a.plan_id planId,
+			a.scheme_name schemeName,
+			a.scheme_name name,
+			a.agre_pq agrePq,
+			a.agre_amt agreAmt,
+			a.avg_prc avgPrc,
+			a.cost_prc costPrc,
+			a.lc_pq lcPq,
+			a.lc_prc lcPrc,
+			a.lc_prop lcProp,
+			a.lc_final_prop lcFinalProp,
+			a.bid_pq bidPq,
+			a.bid_prc bidPrc,
+			a.bid_prop bidProp,
+			a.bid_final_prop bidFinalProp,
+			a.profit_index profitIndex,
+			a.lc_experience_prc lcExperiencePrc,
+			a.bid_experience_prc bidExperiencePrc,
+			a.dvalue_pq dvaluePq,
+			a.difference_profit differenceProfit,
+			a.add_profit addProfit,
+			a.org_no orgNo		
+		FROM ph_m_ph_plan_year_scheme a
+		LEFT JOIN ph_m_purchase_plan_year b ON b.id = a.plan_id
+		<where>
+			<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.planId != null and phmPhPlanYearScheme.planId != ''">
+				and a.plan_id = #{phmPhPlanYearScheme.planId}
+			</if>
+			<if test="startYear != null and startYear != ''">
+				and b.year &gt;= #{startYear}
+			</if>
+			<if test="endYear != null and endYear != ''">
+				and b.year &lt;= #{endYear}
+			</if>
+		</where>
+		<choose>
+			<when test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.planId != null and phmPhPlanYearScheme.planId != ''">
+				order by a.create_time desc
+			</when>
+			<otherwise>
+				order by b.year desc
+			</otherwise>
+		</choose>
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<select id="getTreeCount" resultType="int">
+		SELECT
+			COUNT(1)
+		FROM ph_m_purchase_plan_year a
+		LEFT JOIN ph_m_ph_plan_year_scheme b ON b.plan_id = a.id
+		<where>
+			<if test="phmPhPlanYearScheme != null and phmPhPlanYearScheme.planId != null and phmPhPlanYearScheme.planId != ''">
+				and a.id = #{phmPhPlanYearScheme.planId}
+			</if>
+			<if test="startYear != null and startYear != ''">
+				and a.year &gt;= #{startYear}
+			</if>
+			<if test="endYear != null and endYear != ''">
+				and a.year &lt;= #{endYear}
+			</if>
+		</where>
+	</select>
+</mapper>

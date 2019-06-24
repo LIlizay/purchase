@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title></title>
+<link href="assets/css/login.css" rel="stylesheet" />
+<script src="assets/js/jquery-1.10.2.js"></script>
+<script src="assets/js/base.js"></script>
+</head>
+
+<body >
+	<div class="signinpanel" style="height:210px;width:350px">                          
+			<h3 class="nomargin"><span class="text-f"></span><a onClick="closeDialog()" href="javascript:void(0)" class="closebox"></a></h3>
+			<div style="height:105px">
+				<p style="height:80px;text-align:center;padding:30px"></p>
+			</div>
+			<button type="button" class="btn" onClick="closeDialog()" style="cursor:pointer;width:80px;margin:auto;font-size:14px;">确定</button>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			var option = window.parent.parent.MainFrameUtil.commonAlertOption["dialogPrompt"];
+			if(option.title) $(".signinpanel h3 span").html(option.title);
+			if(option.body) $(".signinpanel div p").html(option.body);
+		});
+		//关闭弹框
+		function closeDialog(){
+			window.parent.parent.MainFrameUtil.closeAlertDialog();
+		}
+		
+	</script>
+</body>
+</html>

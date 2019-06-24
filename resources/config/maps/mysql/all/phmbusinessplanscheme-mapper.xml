@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmBusinessPlanScheme.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmBusinessPlanSchemeListByParams" resultType="com.hhwy.purchase.domain.PhmBusinessPlanScheme">  
+		select
+			ID id,
+			plan_id planId,
+			scheme_name schemeName,
+			agre_pq agrePq,
+			agre_amt agreAmt,
+			avg_prc avgPrc,
+			lc_pq lcPq,
+			lc_prc lcPrc,
+			lc_prop lcProp,
+			bid_pq bidPq,
+			bid_prc bidPrc,
+			bid_prop bidProp,
+			profit profit,
+			lc_experience_prc lcExperiencePrc,
+			bid_experience_prc bidExperiencePrc,
+			profit_norm profitNorm,
+			dvalue_profit dvalueProfit,
+			org_no orgNo		
+		from ph_m_business_plan_scheme where 1=1
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.planId != null and phmBusinessPlanScheme.planId != ''">
+			and plan_id = #{phmBusinessPlanScheme.planId}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.schemeName != null and phmBusinessPlanScheme.schemeName != ''">
+			and scheme_name = #{phmBusinessPlanScheme.schemeName}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.agrePq != null and phmBusinessPlanScheme.agrePq != ''">
+			and agre_pq = #{phmBusinessPlanScheme.agrePq}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.agreAmt != null and phmBusinessPlanScheme.agreAmt != ''">
+			and agre_amt = #{phmBusinessPlanScheme.agreAmt}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.avgPrc != null and phmBusinessPlanScheme.avgPrc != ''">
+			and avg_prc = #{phmBusinessPlanScheme.avgPrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.lcPq != null and phmBusinessPlanScheme.lcPq != ''">
+			and lc_pq = #{phmBusinessPlanScheme.lcPq}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.lcPrc != null and phmBusinessPlanScheme.lcPrc != ''">
+			and lc_prc = #{phmBusinessPlanScheme.lcPrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.lcProp != null and phmBusinessPlanScheme.lcProp != ''">
+			and lc_prop = #{phmBusinessPlanScheme.lcProp}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.bidPq != null and phmBusinessPlanScheme.bidPq != ''">
+			and bid_pq = #{phmBusinessPlanScheme.bidPq}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.bidPrc != null and phmBusinessPlanScheme.bidPrc != ''">
+			and bid_prc = #{phmBusinessPlanScheme.bidPrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.bidProp != null and phmBusinessPlanScheme.bidProp != ''">
+			and bid_prop = #{phmBusinessPlanScheme.bidProp}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.profit != null and phmBusinessPlanScheme.profit != ''">
+			and profit = #{phmBusinessPlanScheme.profit}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.lcExperiencePrc != null and phmBusinessPlanScheme.lcExperiencePrc != ''">
+			and lc_experience_prc = #{phmBusinessPlanScheme.lcExperiencePrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.bidExperiencePrc != null and phmBusinessPlanScheme.bidExperiencePrc != ''">
+			and bid_experience_prc = #{phmBusinessPlanScheme.bidExperiencePrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.orgNo != null and phmBusinessPlanScheme.orgNo != ''">
+			and org_no = #{phmBusinessPlanScheme.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmBusinessPlanSchemeCountByParams" resultType="int">
+		select count(1)	from ph_m_business_plan_scheme where 1=1
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.planId != null and phmBusinessPlanScheme.planId != ''">
+			and plan_id = #{phmBusinessPlanScheme.planId}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.schemeName != null and phmBusinessPlanScheme.schemeName != ''">
+			and scheme_name = #{phmBusinessPlanScheme.schemeName}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.agrePq != null and phmBusinessPlanScheme.agrePq != ''">
+			and agre_pq = #{phmBusinessPlanScheme.agrePq}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.agreAmt != null and phmBusinessPlanScheme.agreAmt != ''">
+			and agre_amt = #{phmBusinessPlanScheme.agreAmt}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.avgPrc != null and phmBusinessPlanScheme.avgPrc != ''">
+			and avg_prc = #{phmBusinessPlanScheme.avgPrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.lcPq != null and phmBusinessPlanScheme.lcPq != ''">
+			and lc_pq = #{phmBusinessPlanScheme.lcPq}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.lcPrc != null and phmBusinessPlanScheme.lcPrc != ''">
+			and lc_prc = #{phmBusinessPlanScheme.lcPrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.lcProp != null and phmBusinessPlanScheme.lcProp != ''">
+			and lc_prop = #{phmBusinessPlanScheme.lcProp}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.bidPq != null and phmBusinessPlanScheme.bidPq != ''">
+			and bid_pq = #{phmBusinessPlanScheme.bidPq}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.bidPrc != null and phmBusinessPlanScheme.bidPrc != ''">
+			and bid_prc = #{phmBusinessPlanScheme.bidPrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.bidProp != null and phmBusinessPlanScheme.bidProp != ''">
+			and bid_prop = #{phmBusinessPlanScheme.bidProp}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.profit != null and phmBusinessPlanScheme.profit != ''">
+			and profit = #{phmBusinessPlanScheme.profit}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.lcExperiencePrc != null and phmBusinessPlanScheme.lcExperiencePrc != ''">
+			and lc_experience_prc = #{phmBusinessPlanScheme.lcExperiencePrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.bidExperiencePrc != null and phmBusinessPlanScheme.bidExperiencePrc != ''">
+			and bid_experience_prc = #{phmBusinessPlanScheme.bidExperiencePrc}
+		</if>
+		<if test="phmBusinessPlanScheme != null and phmBusinessPlanScheme.orgNo != null and phmBusinessPlanScheme.orgNo != ''">
+			and org_no = #{phmBusinessPlanScheme.orgNo}
+		</if>
+	</select>
+	
+	<select id="getInitScheme" resultType="com.hhwy.purchase.domain.PhmBusinessPlanScheme">
+		SELECT 
+			SUM(forecast_agre_pq) agrePq,
+			SUM(forecast_agre_prc*forecast_agre_pq) agreAmt,
+			FORMAT(SUM(forecast_agre_prc*forecast_agre_pq)/SUM(forecast_agre_pq),4) avgPrc
+		FROM ph_m_business_cons_rela a
+		WHERE plan_id = #{planId}
+	</select>
+	
+	<select id="getTreeList" resultType="com.hhwy.purchaseweb.plan.phmbusinessplanscheme.domain.PhmBusinessPlanSchemeDetail">
+		SELECT 
+			b.id id,
+			a.id planId,
+			a.year year,
+			b.scheme_name name,
+			a.plan_name planName,
+			a.setters setters,
+			a.plan_status planStatus,
+			(SELECT count(1) FROM ph_m_business_cons_rela where plan_id = a.id) consSum,
+			b.lc_pq lcPq,
+			b.bid_pq bidPq
+		FROM ph_m_business_plan a
+		LEFT JOIN ph_m_business_plan_scheme b on b.plan_id = a.id
+		WHERE a.id = #{planId}
+		order by b.create_time
+	</select>
+	
+	<select id="getPhfTradingCenterDetail" resultType="com.hhwy.purchaseweb.plan.phmbusinessplanscheme.domain.PhfTradingCenterDetail">
+		SELECT 
+			ym ym,
+			avg_deal_prc avgDealPrc,
+			comp_deal_avg_prc compDealAvgPrc,
+			cons_deal_avg_prc consDealAvgPrc
+		FROM ph_f_trading_center
+		WHERE
+			ym LIKE concat(#{year},"%") 
+		ORDER BY ym 
+	</select>
+</mapper>

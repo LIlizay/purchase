@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smSettlementMonth.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmSettlementMonthListByParams" resultType="com.hhwy.purchaseweb.settlement.base.smsettlementmonth.domain.SmSettlementMonthDetail">
+		select
+			sett.id id,
+			sett.ym ym,
+			scheme.scheme_status schemeStatus,
+			scheme.delivery_pq deliveryPq,
+			scheme.cons_num consNum,
+			scheme.total_proxy_pq totalProxyPq,
+			scheme.total_purchase_pq totalPurchasePq,
+			<!-- scheme.total_lc_pq totalLcPq,
+			scheme.total_bid_pq totalBidPq,
+			scheme.total_listed_pq totalListedPq	 -->
+			scheme.comp_profit companyPro
+		from s_m_settlement_month sett
+			inner join s_m_purchase_scheme scheme on sett.id = scheme.settle_id
+		where scheme.id=(select id from s_m_purchase_scheme s 
+					where s.settle_id=sett.id order by s.scheme_status desc, create_time desc LIMIT 0,1)
+		<if test="startYm != null and startYm != ''">
+			and sett.ym &gt;= replace(#{startYm},'-','')
+		</if>
+		<if test="endYm != null and endYm != ''">
+			and sett.ym &lt;= replace(#{endYm},'-','')
+		</if>
+		order by sett.ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmSettlementMonthCountByParams" resultType="int">
+		select count(distinct sett.id)	from s_m_settlement_month sett 
+		inner join s_m_purchase_scheme scheme on sett.id = scheme.settle_id
+		where 1=1
+		<if test="startYm != null and startYm != ''">
+			and sett.ym &gt;= replace(#{startYm},'-','')
+		</if>
+		<if test="endYm != null and endYm != ''">
+			and sett.ym &lt;= replace(#{endYm},'-','')
+		</if>
+	</select>
+	
+	<!-- 根据购电交易年月获取结算数据，为购电交易删除服务 ————by LiXinze -->
+	<select id="getSmSettlementMonthByYm" resultType="com.hhwy.purchase.domain.SmSettlementMonth">
+		select * from s_m_settlement_month where ym LIKE CONCAT(#{ym},'%')
+	</select>
+	
+	<!-- 通过结算年月获取结算综合数据（包括用户数、委托电量、实际用电量、总购电量等） -->
+	<select id="getSmSettlementMonthInfoByIdOrYm" parameterType="string" resultType="com.hhwy.purchaseweb.settlement.base.smsettlementmonth.domain.SmSettlementMonthDetail">
+		select 
+			COUNT(proxyInfo.cons_id) consNum,
+			sum(proxyInfo.proxyPq) totalProxyPq,
+			IFNULL(sum(proxyInfo.actualPq),0) actualTotalPq,
+	
+			IFNULL(max(dealInfo.bidPq),0) totalBidPq,
+			IFNULL(max(dealInfo.lcPq),0) totalLcPq,
+			max(dealInfo.listedPq) totalListedPq,
+			IFNULL(max(dealInfo.bidPq)+max(dealInfo.lcPq)+max(dealInfo.listedPq),0) totalPurchasePq
+		from (select  
+				ppa.cons_id cons_id,
+				IFNULL(sum(exam.agre_pq),CASE RIGHT(#{string},2)
+								WHEN '01' THEN ppa.jan
+								WHEN '02' THEN ppa.feb
+								WHEN '03' THEN ppa.mar
+								WHEN '04' THEN ppa.apr
+								WHEN '05' THEN ppa.may
+								WHEN '06' THEN ppa.jun
+								WHEN '07' THEN ppa.jul
+								WHEN '08' THEN ppa.aug
+								WHEN '09' THEN ppa.sept
+								WHEN '10' THEN ppa.oct
+								WHEN '11' THEN ppa.nov
+								ELSE ppa.dece
+							END)  proxyPq,
+				
+				max(elec.practical_pq) actualPq
+			from (
+							select * 
+							from s_m_ppa 
+							where agre_status !='00' and left(REPLACE(effective_date,'-',''),6) &lt;= #{string}
+									and left(REPLACE(expiry_date,'-',''),6) &gt;=#{string}
+						) ppa
+			LEFT JOIN ph_m_agre_pq_examine exam on exam.ym=#{string} and exam.cons_id=ppa.cons_id
+			
+			LEFT JOIN s_c_cons_electricity elec on elec.cons_id=ppa.cons_id and elec.ym=#{string}
+			GROUP BY ppa.cons_id) proxyInfo
+		,
+		(SELECT 
+				SUM(if(plan.trade_mode='01' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))	bidPq,
+				SUM(if(plan.trade_mode='02' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))	lcPq,
+				SUM(if(plan.trade_mode='03' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))	listedPq
+		from ph_m_deal_info dealInfo
+		inner JOIN ph_m_purchase_plan_month plan on plan.id=dealInfo.plan_id  and dealInfo.ym = #{string} and plan.plan_status='04') dealInfo
+	</select>
+	
+	<!-- 根据ym获取结算id -->
+	<select id="getSettleByYm" resultType="com.hhwy.purchase.domain.SmSettlementMonth"  parameterType="string">
+		select
+			id id,
+			ym ,
+			industry_pq industryPq,
+	     	business_pq businessPq
+		from s_m_settlement_month
+		where ym = #{string}
+		order by create_time desc
+		limit 0,1
+	</select>
+	
+	<!-- 根据结算id删除其下所有方案的所有用户收益信息 -->
+	<delete id="deleteSettlementInfoBySettleId" parameterType="string">
+		delete from s_m_consumer_profit where scheme_id in 
+			( select distinct scheme.id from s_m_purchase_scheme scheme where scheme.settle_id=#{string});
+		delete from s_m_company_cost_detail where scheme_id in 
+			( select distinct id from s_m_purchase_scheme where settle_id=#{string});
+		delete from s_m_company_profit where scheme_id in 
+			( select distinct id from s_m_purchase_scheme where settle_id=#{string});
+		delete from s_m_cons_deviation_amt where scheme_id in 
+			( select distinct id from s_m_purchase_scheme where settle_id=#{string});
+		delete from s_m_purchase_scheme_detail where scheme_id in 
+			( select distinct id from s_m_purchase_scheme where settle_id=#{string});
+		delete from ph_m_invoice_info where settle_id = #{string};
+		delete from s_m_purchase_scheme where settle_id = #{string};
+	</delete>
+	
+</mapper>

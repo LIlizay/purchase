@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="entersettle.sql">
+	<!-- 售电结算 3M28号加了phPlanAddConsFlag = '1'  因为购电计划制定业务修改 ‘1’为购电计划制定选择的用户 -->
+	<select id="getEnterSettleList" resultType="com.hhwy.purchaseweb.delivery.entersettle.domain.EnterSettleDetail" >
+		select	settle.id id,
+				settle.ym ym,
+				settle.com_profit compProfit,
+				settle.com_check compCheck,
+				rela.consCheck consCheck,
+				rela.consProfit consProfit,
+				rela.consNum consNum,
+				report.reportPq reportPq,
+			 	(SELECT IFNULL(SUM(deal_pq),0) FROM ph_m_deal_info d left join ph_m_purchase_plan_month month on month.id = d.plan_id WHERE d.ym = settle.ym and month.plan_status>'03') purchasePq
+			from ph_m_enter_settle settle
+				left join (
+					select distinct settle_id id,
+						   SUM(cons_check) consCheck,
+						   COUNT(cons_id) consNum,
+						   SUM(profit) consProfit
+					from ph_m_cons_settle_rela
+						   group by settle_id
+					)rela on rela.id = settle.id
+				left join(
+					select	distinct r.settle_id id,
+							SUM(
+								ifnull(
+									(SELECT sum(agre_pq) FROM ph_m_agre_pq_examine examin WHERE examin.ym = s.ym and examin.cons_id = r.cons_id),
+									(CASE RIGHT(s.ym,2)  WHEN '01' THEN jan
+					 					 WHEN '02' THEN feb
+					 					 WHEN '03' then mar
+					 					 when '04' then apr
+					 					 when '05' then may
+					 					 when '06' then jun
+					 					 when '07' then jul
+					 					 when '08' then aug
+					 					 when '09' then sept
+					 					 when '10' then oct
+					 					 when '11' then nov
+					 					 when '12' then dece ELSE 0 END)
+				 				)
+				 			) reportPq
+					from ph_m_cons_settle_rela r 
+					inner JOIN ph_m_enter_settle s on r.settle_id = s.id	
+						<choose>
+					        <when test="startYm !=null and startYm != ''">
+					            and s.ym  &gt;= replace(#{startYm},'-','')
+					        </when>
+					        <when test="endYm !=null and endYm != ''">
+					            and s.ym  &lt;=  replace(#{endYm},'-','')
+					        </when>
+				    	</choose>
+					inner join s_m_ppa ppa on ppa.cons_id = r.cons_id 
+						and replace(LEFT(ppa.effective_date,7),'-','') &lt;= s.ym and replace(LEFT(ppa.expiry_date,7),'-','') &gt;= s.ym and ppa.agre_status!='00'
+					group by settle_id
+				)report on report.id = settle.id
+		where 1=1
+		<choose>
+	        <when test="startYm !=null and startYm != ''">
+	            and settle.ym  &gt;= replace(#{startYm},'-','')
+	        </when>
+	        <when test="endYm !=null and endYm != ''">
+	            and settle.ym  &lt;=  replace(#{endYm},'-','')
+	        </when>
+    	</choose>
+		order by settle.ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 查询录入结算列表数量 -->
+	<select id="getEnterSettleCount" resultType="int" >
+		SELECT 
+			COUNT(1)
+		FROM ph_m_enter_settle
+		where 1=1
+		<choose>
+	        <when test="startYm !=null and startYm != '' and endYm !=null and endYm != ''">
+	            and ym between replace(#{startYm},'-','') and replace(#{endYm},'-','')
+	        </when>
+	        <when test="startYm !=null and startYm != ''">
+	            and ym  &gt; replace(#{startYm},'-','')
+	        </when>
+	        <when test="endYm !=null and endYm != ''">
+	            and ym  &lt;  replace(#{endYm},'-','')
+	        </when>
+    	</choose>
+	</select>
+	
+	<!-- 根据结算id获取用户结算详情 -->
+	<select id="getEnterSettleDetailList" resultType="com.hhwy.purchaseweb.delivery.entersettle.domain.SettleDetailDetail" >
+		select	rela.id id,
+				rela.cons_id consId,
+				cons.cons_name consName,
+				(select sum(elec.practical_pq) from s_c_cons_electricity elec where elec.cons_id = rela.cons_id and elec.ym = replace(#{phmEnterSettle.ym},'-','')) actPq,
+				rela.settle_prc settlePrc,
+				rela.cons_check consCheck,
+				rela.profit profit,
+				rela.prc prc,
+				rela.agent agent,
+				rela.agent_prc agentPrc,
+				ifnull(
+					(SELECT sum(agre_pq) FROM ph_m_agre_pq_examine examin WHERE examin.ym = replace(#{phmEnterSettle.ym},'-','') and examin.cons_id = rela.cons_id),
+					(CASE RIGHT(#{phmEnterSettle.ym},2) WHEN '01' THEN jan
+					 					 WHEN '02' THEN feb
+					 					 WHEN '03' then mar
+					 					 when '04' then apr
+					 					 when '05' then may
+					 					 when '06' then jun
+					 					 when '07' then jul
+					 					 when '08' then aug
+					 					 when '09' then sept
+					 					 when '10' then oct
+					 					 when '11' then nov
+					 					 when '12' then dece ELSE 0 END)) reportPq
+		from ph_m_cons_settle_rela rela
+		left join s_c_consumer_info cons on cons.id = rela.cons_id
+		left join s_m_ppa ppa on ppa.cons_id = rela.cons_id and ppa.agre_status!='00'
+		where rela.settle_id = #{phmEnterSettle.id}
+		order by cons.cons_name asc
+	</select>
+	
+	<!-- 根据yyyyMM获取结算信息，判重用 -->
+	<select id="getPhmEnterSettleByYm" resultType="com.hhwy.purchase.domain.PhmEnterSettle">
+		select	id id,
+				ym ym
+		from ph_m_enter_settle
+		where ym = replace(#{ym},'-','')
+	</select>
+	
+	<!-- 根据yyyyMM获取该月合同用户信息 -->
+	<select id="getSettleDetailByYm" resultType="com.hhwy.purchaseweb.delivery.entersettle.domain.SettleDetailDetail">
+		select	cons.id consId,
+				cons.cons_name consName,
+				ifnull(
+					(SELECT sum(agre_pq) FROM ph_m_agre_pq_examine examin WHERE examin.ym = replace(#{ym},'-','') and examin.cons_id = ppa.cons_id),
+					(CASE RIGHT(#{ym},2) WHEN '01' THEN jan
+					 					 WHEN '02' THEN feb
+					 					 WHEN '03' then mar
+					 					 when '04' then apr
+					 					 when '05' then may
+					 					 when '06' then jun
+					 					 when '07' then jul
+					 					 when '08' then aug
+					 					 when '09' then sept
+					 					 when '10' then oct
+					 					 when '11' then nov
+					 					 when '12' then dece ELSE 0 END)) reportPq,
+			 	(select sum(elec.practical_pq) from s_c_cons_electricity elec where elec.cons_id = cons.id and elec.ym = replace(#{ym},'-','')) actPq
+		from s_m_ppa ppa
+		left join s_c_consumer_info cons on cons.id = ppa.cons_id
+		where LEFT(ppa.effective_date,7) &lt;= #{ym} and LEFT(ppa.expiry_date,7) &gt;= #{ym}  and ppa.agre_status!='00'
+		order by cons.cons_name asc
+	</select>
+	
+	<!-- 根据年月获取该月总购电量（当月购电合同和竞价电量之和） -->
+	<select id="getPurchasePqByYm" resultType="java.util.Map">
+		SELECT 
+			IFNULL(SUM(deal_pq),0) purchasePq
+		FROM 
+			ph_m_deal_info d left join ph_m_purchase_plan_month month on month.id = d.plan_id 
+		WHERE 
+			d.ym = replace(#{ym},'-','') and month.plan_status>'03'
+	</select>
+	
+	<!-- 根据结算ids获取用户结算详情 -->
+	<select id="getConsSettleRelaListByIds" resultType="com.hhwy.purchase.domain.PhmConsSettleRela">
+		<foreach item="item" index="index" collection="array" open="" separator=";" close="">
+			SELECT * from ph_m_cons_settle_rela where settle_id = #{item}
+       </foreach>
+	</select>
+</mapper>

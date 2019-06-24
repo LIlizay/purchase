@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmHistoryReportPrc.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmHistoryReportPrcListByParams" resultType="com.hhwy.purchase.domain.PhmHistoryReportPrc">  
+		select 
+			id,
+			ym,
+			elec_lower_prc prodMinPrc,
+			elec_upper_prc prodMaxPrc,
+			elec_max_prc prodMaxBidPrc,
+			purc_upper_prc useMaxPrc,
+			purc_lower_prc useMinPrc,
+			purc_min_prc useMinBidPrc
+		FROM ph_f_trading_center 
+		where 1=1
+		<if test="year != null and year != ''">
+			and ym LIKE concat(#{year},"%")
+		</if>
+		order by ym
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmHistoryReportPrcCountByParams" resultType="int">
+		select count(1)	from ph_f_trading_center where 1=1
+		<if test="year != null and year != ''">
+			and ym LIKE concat(#{year},"%")
+		</if>
+	</select>
+	
+	<select id="getPriceHistory" resultType="com.hhwy.purchaseweb.statistical.phmhistoryreportprc.domain.PhmHistoryReportPrcDetail">
+    	SELECT
+    		<if test="consId != null and consId != ''">
+	    		c.report_prc reportPrc,
+				SUM(b.deal_prc) dealPrc,
+			</if>
+			substring(a.ym,5) month,
+			a.elec_upper_prc prodMaxPrc,
+			a.elec_lower_prc prodMinPrc,
+			a.elec_max_prc prodMaxBidPrc,
+			a.purc_upper_prc useMaxPrc,
+			a.purc_lower_prc useMinPrc,
+			a.purc_min_prc useMinBidPrc
+		FROM ph_f_trading_center a 
+		<if test="consId != null and consId != ''">
+			LEFT JOIN ph_m_deal_info b ON b.ym = a.ym AND b.cons_id = #{consId}
+			LEFT JOIN ph_m_transactionl_report c ON c.cons_id = b.cons_id AND c.plan_id = b.plan_id
+		</if>
+		WHERE a.ym LIKE concat(#{year},"%")
+		GROUP BY a.ym
+    </select>
+</mapper>

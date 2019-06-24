@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="arithmetic.sql">
+	<!-- 获取用户电价段数据 -->
+	<select id="getConsSectionData" resultType="java.util.Map">
+	    SELECT
+            declare_prc consDeclarePrc,
+            SUM(declare_pq) consDeclarePq
+        FROM
+            s_s_purchase_ente
+        WHERE 1 = 1
+            <if test="ym != null and ym != ''">
+                and ym = #{ym}
+            </if>
+	        <if test="provinceCode != null and provinceCode != ''">
+	            and province_code = #{provinceCode}
+	        </if>
+	        <if test="schemeId != null and schemeId != ''">
+                and scheme_id = #{schemeId}
+            </if>
+        GROUP BY
+            declare_prc
+        ORDER BY
+            declare_prc DESC
+	</select>    
+	
+	<!-- 获取发电企业电价段数据 -->
+    <select id="getEnteSectionData" resultType="java.util.Map">
+        SELECT
+            declare_prc enteDeclarePrc,
+            SUM(declare_pq) enteDeclarePq
+        FROM
+            s_s_electric_ente
+        WHERE 1 = 1
+            <if test="ym != null and ym != ''">
+                and ym = #{ym}
+            </if>
+            <if test="provinceCode != null and provinceCode != ''">
+                and province_code = #{provinceCode}
+            </if>
+            <if test="schemeId != null and schemeId != ''">
+                and scheme_id = #{schemeId}
+            </if>
+        GROUP BY
+            declare_prc
+        ORDER BY
+            declare_prc ASC
+    </select>   
+	
+	<!-- 获取用户申报数据 -->
+    <select id="getConsSectionDetailData" resultType="com.hhwy.purchaseweb.arithmetic.bidarithmetic.domain.Section">
+        select ente_name enteName,section_name sectionName,declare_prc declarePrc,declare_pq declarePq from s_s_purchase_ente where 1=1
+            <if test="ym != null and ym != ''">
+                and ym = #{ym}
+            </if>
+            <if test="provinceCode != null and provinceCode != ''">
+                and province_code = #{provinceCode}
+            </if>
+            <if test="schemeId != null and schemeId != ''">
+                and scheme_id = #{schemeId}
+            </if>
+        ORDER BY
+            declare_prc DESC
+    </select>
+	
+	<!-- 获取发电企业申报数据 -->
+    <select id="getEnteSectionDetailData" resultType="com.hhwy.purchaseweb.arithmetic.bidarithmetic.domain.Section">
+        select ente_name enteName,section_name sectionName,declare_prc declarePrc,declare_pq declarePq from s_s_electric_ente where 1=1
+            <if test="ym != null and ym != ''">
+                and ym = #{ym}
+            </if>
+            <if test="provinceCode != null and provinceCode != ''">
+                and province_code = #{provinceCode}
+            </if>
+            <if test="schemeId != null and schemeId != ''">
+                and scheme_id = #{schemeId}
+            </if>
+        ORDER BY
+            declare_prc ASC
+    </select>
+    <!-- 获取当前年份内长协合同电量，长协合同金额 -->
+	<select id="getLcAgrePqAndPrc" resultType="java.util.Map">
+		SELECT
+			sum(t.generator_pq) lcAgrePq,
+			sum(t.generator_prc*t.generator_pq) lcAgreAmt
+		FROM
+			ph_m_generator_month_pq t
+		WHERE
+			t.ym like concat(#{year},"%") 
+	</select>
+	
+	<select id="getAgreData" parameterType="String" resultType="map">
+	SELECT SUM(bid.bidPq+lc.lcAgrePq) agrePq, SUM(bid.bidAmt+lc.lcAgreAmt) agreAmt,
+	SUM(bid.bidAmt+lc.lcAgreAmt)/SUM(bid.bidPq+lc.lcAgrePq) agrePrc FROM 
+	(SELECT p.ym ym, SUM(d.deal_pq) bidPq, SUM(d.deal_pq*d.deal_prc) bidAmt FROM ph_m_purchase_plan_month p
+	 LEFT JOIN ph_m_deal_info d ON d.plan_id = p.id GROUP BY p.ym) bid
+	LEFT JOIN (
+	SELECT p.ym ym,SUM(p.generator_pq) lcAgrePq,sum(p.generator_prc*p.generator_pq) lcAgreAmt FROM ph_m_generator_month_pq p GROUP BY p.ym) lc
+	ON lc.ym = bid.ym
+	WHERE bid.ym = #{ym}
+	GROUP BY bid.ym
+	</select>
+</mapper>

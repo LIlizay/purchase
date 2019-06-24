@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="swConsRegister.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSwConsRegisterListByParams" resultType="com.hhwy.purchaseweb.login.swconsregister.domain.SwConsRegisterDetail">  
+		select
+			ID id,
+			cons_name consName,
+			volt_code voltCode,
+			elec_type_code elecTypeCode,
+			cons_type consType,
+			register_no registerNo,
+			addr addr,
+			cont_name contName,
+			phone phone,
+			register_date registerDate,
+			examine_status examineStatus,
+			file_id fileId,
+			company_id companyId,
+			org_no orgNo		
+		from s_w_cons_register where 1=1
+		<if test="swConsRegister != null and swConsRegister.consName != null and swConsRegister.consName != ''">
+			and cons_name LIKE concat("%",#{swConsRegister.consName},"%")
+		</if>
+		<if test="swConsRegister != null and swConsRegister.voltCode != null and swConsRegister.voltCode != ''">
+			and volt_code = #{swConsRegister.voltCode}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.elecTypeCode != null and swConsRegister.elecTypeCode != ''">
+			and elec_type_code = #{swConsRegister.elecTypeCode}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.consType != null and swConsRegister.consType != ''">
+			and cons_type = #{swConsRegister.consType}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.registerNo != null and swConsRegister.registerNo != ''">
+			and register_no = #{swConsRegister.registerNo}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.addr != null and swConsRegister.addr != ''">
+			and addr = #{swConsRegister.addr}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.contName != null and swConsRegister.contName != ''">
+			and cont_name = #{swConsRegister.contName}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.phone != null and swConsRegister.phone != ''">
+			and phone = #{swConsRegister.phone}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.registerDate != null and swConsRegister.registerDate != ''">
+			and register_date = #{swConsRegister.registerDate}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.examineStatus != null and swConsRegister.examineStatus != ''">
+			and examine_status = #{swConsRegister.examineStatus}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.fileId != null and swConsRegister.fileId != ''">
+			and file_id = #{swConsRegister.fileId}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.companyId != null and swConsRegister.companyId != ''">
+			and company_id = #{swConsRegister.companyId}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.orgNo != null and swConsRegister.orgNo != ''">
+			and org_no = #{swConsRegister.orgNo}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and register_date &gt;= #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and register_date &lt;= #{endDate}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSwConsRegisterCountByParams" resultType="int">
+		select count(1)	from s_w_cons_register where 1=1
+		<if test="swConsRegister != null and swConsRegister.consName != null and swConsRegister.consName != ''">
+			and cons_name LIKE concat("%",#{swConsRegister.consName},"%")
+		</if>
+		<if test="swConsRegister != null and swConsRegister.voltCode != null and swConsRegister.voltCode != ''">
+			and volt_code = #{swConsRegister.voltCode}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.elecTypeCode != null and swConsRegister.elecTypeCode != ''">
+			and elec_type_code = #{swConsRegister.elecTypeCode}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.consType != null and swConsRegister.consType != ''">
+			and cons_type = #{swConsRegister.consType}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.registerNo != null and swConsRegister.registerNo != ''">
+			and register_no = #{swConsRegister.registerNo}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.addr != null and swConsRegister.addr != ''">
+			and addr = #{swConsRegister.addr}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.contName != null and swConsRegister.contName != ''">
+			and cont_name = #{swConsRegister.contName}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.phone != null and swConsRegister.phone != ''">
+			and phone = #{swConsRegister.phone}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.registerDate != null and swConsRegister.registerDate != ''">
+			and register_date = #{swConsRegister.registerDate}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.examineStatus != null and swConsRegister.examineStatus != ''">
+			and examine_status = #{swConsRegister.examineStatus}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.fileId != null and swConsRegister.fileId != ''">
+			and file_id = #{swConsRegister.fileId}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.companyId != null and swConsRegister.companyId != ''">
+			and company_id = #{swConsRegister.companyId}
+		</if>
+		<if test="swConsRegister != null and swConsRegister.orgNo != null and swConsRegister.orgNo != ''">
+			and org_no = #{swConsRegister.orgNo}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and register_date &gt;= #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and register_date &lt;= #{endDate}
+		</if>
+	</select>
+	
+	<select id="checkCons" resultType="int">
+		SELECT 
+		COUNT(1)
+	FROM s_c_consumer_info a
+	WHERE a.cons_name = #{consName} AND a.elec_type_code =#{elecTypeCode}
+	AND a.volt_code = #{voltCode}
+	</select>
+</mapper>

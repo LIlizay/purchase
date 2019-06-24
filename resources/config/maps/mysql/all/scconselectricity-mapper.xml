@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scConsElectricity.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getScConsElectricityListByParams" resultType="com.hhwy.selling.domain.ScConsElectricity">
+		select
+			ID id,
+			cons_id consId,
+			ym ym,
+			over_peak_pq overPeakPq,
+			over_peak_amt overPeakAmt,
+			peak_pq peakPq,
+			peak_amt peakAmt,
+			double_pq doublePq,
+			double_amt doubleAmt,
+			valley_pq valleyPq,
+			valley_amt valleyAmt,
+			plain_pq plainPq,
+			plain_amt plainAmt,
+			base_amt baseAmt,
+			force_amt forceAmt,
+			levy_amt levyAmt,
+			other_amt otherAmt,
+			practical_pq practicalPq,
+			total_amt totalAmt,
+			data_forecast_pq dataForecastPq,
+			person_forecast_pq personForecastPq,
+			org_no orgNo		
+		from s_c_cons_electricity where 1=1
+		<if test="scConsElectricity != null and scConsElectricity.consId != null and scConsElectricity.consId != ''">
+			and cons_id = #{scConsElectricity.consId}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.ym != null and scConsElectricity.ym != ''">
+			and ym = #{scConsElectricity.ym}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.overPeakPq != null and scConsElectricity.overPeakPq != ''">
+			and over_peak_pq = #{scConsElectricity.overPeakPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.overPeakAmt != null and scConsElectricity.overPeakAmt != ''">
+			and over_peak_amt = #{scConsElectricity.overPeakAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.peakPq != null and scConsElectricity.peakPq != ''">
+			and peak_pq = #{scConsElectricity.peakPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.peakAmt != null and scConsElectricity.peakAmt != ''">
+			and peak_amt = #{scConsElectricity.peakAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.doublePq != null and scConsElectricity.doublePq != ''">
+			and double_pq = #{scConsElectricity.doublePq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.doubleAmt != null and scConsElectricity.doubleAmt != ''">
+			and double_amt = #{scConsElectricity.doubleAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.valleyPq != null and scConsElectricity.valleyPq != ''">
+			and valley_pq = #{scConsElectricity.valleyPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.valleyAmt != null and scConsElectricity.valleyAmt != ''">
+			and valley_amt = #{scConsElectricity.valleyAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.plainPq != null and scConsElectricity.plainPq != ''">
+			and plain_pq = #{scConsElectricity.plainPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.plainAmt != null and scConsElectricity.plainAmt != ''">
+			and plain_amt = #{scConsElectricity.plainAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.baseAmt != null and scConsElectricity.baseAmt != ''">
+			and base_amt = #{scConsElectricity.baseAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.forceAmt != null and scConsElectricity.forceAmt != ''">
+			and force_amt = #{scConsElectricity.forceAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.levyAmt != null and scConsElectricity.levyAmt != ''">
+			and levy_amt = #{scConsElectricity.levyAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.otherAmt != null and scConsElectricity.otherAmt != ''">
+			and other_amt = #{scConsElectricity.otherAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.practicalPq != null and scConsElectricity.practicalPq != ''">
+			and practical_pq = #{scConsElectricity.practicalPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.totalAmt != null and scConsElectricity.totalAmt != ''">
+			and total_amt = #{scConsElectricity.totalAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.dataForecastPq != null and scConsElectricity.dataForecastPq != ''">
+			and data_forecast_pq = #{scConsElectricity.dataForecastPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.personForecastPq != null and scConsElectricity.personForecastPq != ''">
+			and person_forecast_pq = #{scConsElectricity.personForecastPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.orgNo != null and scConsElectricity.orgNo != ''">
+			and org_no = #{scConsElectricity.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getScConsElectricityCountByParams" resultType="int">
+		select count(1)	from s_c_cons_electricity where 1=1
+		<if test="scConsElectricity != null and scConsElectricity.consId != null and scConsElectricity.consId != ''">
+			and cons_id = #{scConsElectricity.consId}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.ym != null and scConsElectricity.ym != ''">
+			and ym = #{scConsElectricity.ym}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.overPeakPq != null and scConsElectricity.overPeakPq != ''">
+			and over_peak_pq = #{scConsElectricity.overPeakPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.overPeakAmt != null and scConsElectricity.overPeakAmt != ''">
+			and over_peak_amt = #{scConsElectricity.overPeakAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.peakPq != null and scConsElectricity.peakPq != ''">
+			and peak_pq = #{scConsElectricity.peakPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.peakAmt != null and scConsElectricity.peakAmt != ''">
+			and peak_amt = #{scConsElectricity.peakAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.doublePq != null and scConsElectricity.doublePq != ''">
+			and double_pq = #{scConsElectricity.doublePq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.doubleAmt != null and scConsElectricity.doubleAmt != ''">
+			and double_amt = #{scConsElectricity.doubleAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.valleyPq != null and scConsElectricity.valleyPq != ''">
+			and valley_pq = #{scConsElectricity.valleyPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.valleyAmt != null and scConsElectricity.valleyAmt != ''">
+			and valley_amt = #{scConsElectricity.valleyAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.plainPq != null and scConsElectricity.plainPq != ''">
+			and plain_pq = #{scConsElectricity.plainPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.plainAmt != null and scConsElectricity.plainAmt != ''">
+			and plain_amt = #{scConsElectricity.plainAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.baseAmt != null and scConsElectricity.baseAmt != ''">
+			and base_amt = #{scConsElectricity.baseAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.forceAmt != null and scConsElectricity.forceAmt != ''">
+			and force_amt = #{scConsElectricity.forceAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.levyAmt != null and scConsElectricity.levyAmt != ''">
+			and levy_amt = #{scConsElectricity.levyAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.otherAmt != null and scConsElectricity.otherAmt != ''">
+			and other_amt = #{scConsElectricity.otherAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.practicalPq != null and scConsElectricity.practicalPq != ''">
+			and practical_pq = #{scConsElectricity.practicalPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.totalAmt != null and scConsElectricity.totalAmt != ''">
+			and total_amt = #{scConsElectricity.totalAmt}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.dataForecastPq != null and scConsElectricity.dataForecastPq != ''">
+			and data_forecast_pq = #{scConsElectricity.dataForecastPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.personForecastPq != null and scConsElectricity.personForecastPq != ''">
+			and person_forecast_pq = #{scConsElectricity.personForecastPq}
+		</if>
+		<if test="scConsElectricity != null and scConsElectricity.orgNo != null and scConsElectricity.orgNo != ''">
+			and org_no = #{scConsElectricity.orgNo}
+		</if>
+	</select>
+	
+	<select id="getYearElecList" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.YearElecDetail">
+		SELECT
+			a.ym year,
+			SUM(a.peak_pq) yearPeakPq,
+			SUM(a.plain_pq) yearPlainPq,
+			SUM(a.valley_pq) yearValleyPq,
+			SUM(a.over_peak_pq) yearOverPeakPq,
+			SUM(a.double_pq) yearDoublePq,
+			SUM(a.peak_pq+a.plain_pq+a.valley_pq+a.over_peak_pq+a.double_pq) yearPq,
+			SUM(a.peak_amt+a.plain_amt+a.valley_amt+a.other_amt+a.over_peak_amt+a.double_amt+a.base_amt+a.force_amt+a.levy_amt) yearAmt
+		FROM (SELECT 
+					LEFT(b.ym, 4) ym, 
+					ifnull(b.peak_pq,0) peak_pq, 
+					ifnull(b.plain_pq,0) plain_pq, 
+					ifnull(b.valley_pq,0) valley_pq, 
+					ifnull(b.over_peak_pq,0) over_peak_pq,
+					ifnull(b.double_pq,0) double_pq,
+					ifnull(b.peak_amt,0) peak_amt,
+					ifnull(b.plain_amt,0) plain_amt,
+					ifnull(b.valley_amt,0) valley_amt,
+					ifnull(b.other_amt,0) other_amt,
+					ifnull(b.over_peak_amt,0) over_peak_amt,
+					ifnull(b.double_amt,0) double_amt,
+					ifnull(b.base_amt,0) base_amt,
+					ifnull(b.force_amt,0) force_amt,
+					ifnull(b.levy_amt,0) levy_amt,
+					b.cons_id cons_id
+				FROM s_c_cons_electricity b 
+				WHERE b.cons_id = #{consId}
+					<if test="year != null and year != ''">
+						AND b.ym LIKE CONCAT(#{year},'%')
+					</if>
+				) a 
+		GROUP BY a.cons_id, a.ym
+		ORDER BY a.ym DESC
+	</select>
+	
+	<select id="getMonthElecList" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.MonthElecDetail">
+		SELECT 
+			b.ID id,
+			b.cons_id consId,
+			b.ym ym,
+			b.over_peak_pq overPeakPq,
+			b.over_peak_amt overPeakAmt,
+			b.peak_pq peakPq,
+			b.peak_amt peakAmt,
+			b.double_pq doublePq,
+			b.double_amt doubleAmt,
+			b.valley_pq valleyPq,
+			b.valley_amt valleyAmt,
+			b.plain_pq plainPq,
+			b.plain_amt plainAmt,
+			b.base_amt baseAmt,
+			b.force_amt forceAmt,
+			b.levy_amt levyAmt,
+			b.other_amt otherAmt,
+			b.practical_pq practicalPq,
+			b.total_amt totalAmt,
+			b.data_forecast_pq dataForecastPq,
+			b.person_forecast_pq personForecastPq,
+			b.org_no orgNo,
+			if(
+				(b.practical_pq is not null and b.practical_pq != 0) AND (b.total_amt is not null and b.total_amt != 0),
+				ROUND((
+					(b.total_amt) / (b.practical_pq)
+				),2)
+			,NULL) monthAvgPrc
+		FROM s_c_cons_electricity b
+		WHERE 
+			b.cons_id = #{consId}
+			AND b.ym LIKE CONCAT(#{year},'%')
+		ORDER BY b.ym ASC
+	</select>
+	
+	<!-- 导入-根据用户名称 获取 电压等级、用户ID (excel存的用户名，放在了实体类的consId字段) -->
+	<select id="getImportConsId" resultType="map">
+		SELECT id consId,cons_name consName, volt_code voltCode, elec_type_code elecTypeCode
+		FROM s_c_consumer_info
+		WHERE cons_name in
+		<foreach collection="list" index="index" item="item" open="(" separator=" , " close=")">
+			#{item.consId}
+		</foreach>
+	</select>
+	
+	<!-- 导入-查询所有数据用于导出 匹配是新增还是更新 -->
+	<select id="getAllData" resultType="com.hhwy.selling.domain.ScConsElectricity">
+		SELECT
+			b.id id,
+			b.cons_id consId,
+			b.ym ym, 
+			b.peak_pq peakPq, 
+			b.plain_pq plainPq, 
+			b.valley_pq valleyPq, 
+			b.over_peak_pq overPeakPq,
+			b.double_pq doublePq,
+			b.peak_amt peakAmt,
+			b.plain_amt plainAmt,
+			b.valley_amt valleyAmt,
+			b.other_amt otherAmt,
+			b.over_peak_amt overPeakAmt,
+			b.double_amt doubleAmt,
+			b.base_amt baseAmt,
+			b.force_amt forceAmt,
+			b.levy_amt levyAmt
+		FROM s_c_cons_electricity b
+	</select>
+	
+	<!-- 导入-更新数据  (修改 by LiXinze)-->
+	<update id="updataScConsElec" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=";" >
+			UPDATE s_c_cons_electricity
+			SET peak_pq = #{item.peakPq},
+				plain_pq = #{item.plainPq}, 
+				valley_pq = #{item.valleyPq}, 
+				over_peak_pq = #{item.overPeakPq},
+				double_pq = #{item.doublePq} ,
+				peak_amt = #{item.peakAmt} ,
+				plain_amt = #{item.plainAmt} ,
+				valley_amt = #{item.valleyAmt} ,
+				other_amt = #{item.otherAmt} ,
+				over_peak_amt = #{item.overPeakAmt},
+				double_amt = #{item.doubleAmt},
+				base_amt = #{item.baseAmt} ,
+				force_amt = #{item.forceAmt} ,
+				levy_amt = #{item.levyAmt},
+				practical_pq = #{item.practicalPq},
+				total_amt = #{item.totalAmt}
+			WHERE 
+				cons_id = #{item.consId} 
+			AND 
+				ym = #{item.ym}
+		</foreach>
+	</update>
+	
+	<select id="getMonthElecCount" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.MonthElecDetail">
+		SELECT 
+			SUM(b.peak_pq) peakPq,
+			SUM(b.plain_pq) plainPq,
+			SUM(b.valley_pq) valleyPq,
+			SUM(b.over_peak_pq) overPeakPq,
+			SUM(b.double_pq) doublePq,
+			SUM(b.peak_amt) peakAmt,
+			SUM(b.plain_amt) plainAmt,
+			SUM(b.valley_amt) valleyAmt,
+			SUM(b.over_peak_amt) overPeakAmt,
+			SUM(b.double_amt) doubleAmt,
+			SUM(b.base_amt) baseAmt,
+			SUM(b.force_amt) forceAmt,
+			SUM(b.levy_amt) levyAmt,
+			SUM(b.other_amt) otherAmt
+			FROM s_c_cons_electricity b
+		WHERE 
+			b.cons_id = #{consId}
+			AND b.ym LIKE CONCAT(#{year},'%')
+		ORDER BY b.ym ASC
+	</select>
+	
+	<!-- 根据cons_id数组获取该用户历史用电量信息 -->
+	<select id="getElecDetailByConsId" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.ImportVo">
+		SELECT 
+			c.cons_name name, 
+			c.elec_type_code elecTypeCode,
+			c.volt_code voltCode,
+			b.ym ym, 
+			b.peak_pq peakPq, 
+			b.plain_pq plainPq, 
+			b.valley_pq valleyPq, 
+			b.over_peak_pq overPeakPq,
+			b.double_pq doublePq,
+			b.peak_amt peakAmt,
+			b.plain_amt plainAmt,
+			b.valley_amt valleyAmt,
+			b.other_amt otherAmt,
+			b.cons_id consId,
+			b.over_peak_amt overPeakAmt,
+			b.double_amt doubleAmt,
+			b.base_amt baseAmt,
+			b.force_amt forceAmt,
+			b.levy_amt levyAmt,
+			(ifnull(b.peak_pq,0)+ifnull(b.plain_pq,0)+ifnull(b.valley_pq,0)+ifnull(b.over_peak_pq,0)+ifnull(b.double_pq,0)) monthPq,
+			(ifnull(b.peak_amt,0)+ifnull(b.plain_amt,0)+ifnull(b.valley_amt,0)+ifnull(b.other_amt,0)+ifnull(b.over_peak_amt,0)+ifnull(b.double_amt,0)+ifnull(b.base_amt,0)+ifnull(b.force_amt,0)+ifnull(b.levy_amt,0)) monthAmt,
+			if((ifnull(b.peak_pq,0)+ifnull(b.plain_pq,0)+ifnull(b.valley_pq,0)+ifnull(b.over_peak_pq,0)+ifnull(b.double_pq,0)) AND (ifnull(b.peak_amt,0)+ifnull(b.plain_amt,0)+ifnull(b.valley_amt,0)+ifnull(b.other_amt,0)+ifnull(b.over_peak_amt,0)+ifnull(b.double_amt,0)+ifnull(b.base_amt,0)+ifnull(b.force_amt,0)+ifnull(b.levy_amt,0)),
+			ROUND(((ifnull(b.peak_amt,0)+ifnull(b.plain_amt,0)+ifnull(b.valley_amt,0)+ifnull(b.other_amt,0)+ifnull(b.over_peak_amt,0)+ifnull(b.double_amt,0)+ifnull(b.base_amt,0)+ifnull(b.force_amt,0)+ifnull(b.levy_amt,0))
+			/(ifnull(b.peak_pq,0)+ifnull(b.plain_pq,0)+ifnull(b.valley_pq,0)+ifnull(b.over_peak_pq,0)+ifnull(b.double_pq,0))),2),NULL) monthAvgPrc
+			FROM s_c_cons_electricity b
+			left join s_c_consumer_info c on b.cons_id = c.id
+		WHERE 
+			b.cons_id in
+			 <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+	 			#{item}  
+	 		 </foreach>
+		ORDER BY c.cons_name desc, b.ym ASC
+	</select>
+	
+	<!-- 根据数组截取cons_id及ym获取用户历史用电信息  用户档案、参数维护 公用  -->
+	<select id="getElecDetailByYears" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.ImportVo">
+		SELECT 
+			c.cons_name name,
+			c.elec_type_code elecTypeCode,
+			c.volt_code voltCode,
+			b.ym ym,
+			b.peak_pq peakPq, 
+			b.plain_pq plainPq, 
+			b.valley_pq valleyPq, 
+			b.over_peak_pq overPeakPq,
+			b.double_pq doublePq,
+			b.peak_amt peakAmt,
+			b.plain_amt plainAmt,
+			b.valley_amt valleyAmt,
+			b.other_amt otherAmt,
+			b.cons_id consId,
+			b.over_peak_amt overPeakAmt,
+			b.double_amt doubleAmt,
+			b.base_amt baseAmt,
+			b.force_amt forceAmt,
+			b.levy_amt levyAmt,
+			(ifnull(b.peak_pq,0)+ifnull(b.plain_pq,0)+ifnull(b.valley_pq,0)+ifnull(b.over_peak_pq,0)+ifnull(b.double_pq,0)) monthPq,
+			(ifnull(b.peak_amt,0)+ifnull(b.plain_amt,0)+ifnull(b.valley_amt,0)+ifnull(b.other_amt,0)+ifnull(b.over_peak_amt,0)+ifnull(b.double_amt,0)+ifnull(b.base_amt,0)+ifnull(b.force_amt,0)+ifnull(b.levy_amt,0)) monthAmt,
+			if((ifnull(b.peak_pq,0)+ifnull(b.plain_pq,0)+ifnull(b.valley_pq,0)+ifnull(b.over_peak_pq,0)+ifnull(b.double_pq,0)) AND (ifnull(b.peak_amt,0)+ifnull(b.plain_amt,0)+ifnull(b.valley_amt,0)+ifnull(b.other_amt,0)+ifnull(b.over_peak_amt,0)+ifnull(b.double_amt,0)+ifnull(b.base_amt,0)+ifnull(b.force_amt,0)+ifnull(b.levy_amt,0)),
+			ROUND(((ifnull(b.peak_amt,0)+ifnull(b.plain_amt,0)+ifnull(b.valley_amt,0)+ifnull(b.other_amt,0)+ifnull(b.over_peak_amt,0)+ifnull(b.double_amt,0)+ifnull(b.base_amt,0)+ifnull(b.force_amt,0)+ifnull(b.levy_amt,0))
+			/(ifnull(b.peak_pq,0)+ifnull(b.plain_pq,0)+ifnull(b.valley_pq,0)+ifnull(b.over_peak_pq,0)+ifnull(b.double_pq,0))),2),NULL) monthAvgPrc
+			FROM s_c_cons_electricity b
+			left join s_c_consumer_info c on b.cons_id = c.id
+			<if test="childIds != null and childIds != ''">
+				WHERE 
+				 <foreach item="item" index="index" collection="childIds" open="" separator="or" close="">  
+		 			(cons_id = SUBSTR(#{item},1,LENGTH(#{item})-4)
+					and ym like CONCAT(SUBSTR(#{item},LENGTH(#{item})-3,4),'%'))
+		 		</foreach>
+			</if>
+			<if test="childIds == null or childIds == ''">
+				where 1=1
+				<if test="consName != null and consName != ''">
+					 and c.cons_name LIKE CONCAT ('%',#{consName},'%')
+				</if>
+				<if test="elecTypeCode != null and elecTypeCode !=''">
+					and c.elec_type_code = #{elecTypeCode}
+				</if>
+				<if test="voltCode != null and voltCode !=''">
+					and c.volt_code = #{voltCode}
+				</if>
+				<if test="year != null and year != ''">
+					and ym like CONCAT(#{year},'%')			
+				</if>
+				<if test="consId != nul and consId != ''">
+					and cons_id = #{consId}
+				</if>
+			</if>
+		ORDER BY c.cons_name desc, b.ym ASC
+	</select>
+	<delete id="deleteScConsElectricityByConsIdAndYear">
+		DELETE FROM s_c_cons_electricity 
+		WHERE 
+			LEFT(ym,4) IN 
+			<foreach item="item" index="index" collection="years" open="(" separator="," close=")">  
+	 			#{item}  
+	 		</foreach> 
+			and cons_id = #{consId}
+	</delete>
+	
+	<delete id="deleteScConsElectricityByConsId">
+		DELETE FROM s_c_cons_electricity 
+		WHERE cons_id in
+		 <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+	 			#{item}  
+	 	</foreach>
+	</delete>
+	
+	<delete id="deleteScConsElectricityByChildConsId">
+		DELETE FROM s_c_cons_electricity 
+		WHERE 
+		 <foreach item="item" index="index" collection="array" open="" separator="or" close="">  
+	 			(cons_id = SUBSTR(#{item},1,LENGTH(#{item})-4)
+				and ym like CONCAT(SUBSTR(#{item},LENGTH(#{item})-3,4),'%'))
+	 	</foreach>
+	</delete>
+	
+	<!-- 根据用户ids获取指定年份记录 -->
+    <select id="getScConsElectricityByConsIds" resultType="com.hhwy.selling.domain.ScConsElectricity">
+    	SELECT cons_id consId , ym ym FROM s_c_cons_electricity
+		WHERE ym LIKE CONCAT(#{year},'%') and cons_id in
+		 <foreach item="item" index="index" collection="consIds" open="(" separator="," close=")">  
+	 			#{item}  
+	 	 </foreach>
+    </select>
+    
+    <!-- 根据用户id获取指定年份记录,负荷预测用 -->
+    <select id="getScConsElectricityByConsIdAndYm" resultType="com.hhwy.selling.domain.ScConsElectricity">
+    	SELECT cons_id consId , ym ym FROM s_c_cons_electricity
+		WHERE ym LIKE CONCAT(#{year},'%') and cons_id = #{consId}
+    </select>
+	
+	<update id="updateScConsElectricity">
+		UPDATE s_c_cons_electricity 
+		SET 
+			peak_pq = #{peakPq}, 
+			plain_pq = #{plainPq}, 
+			valley_pq = #{valleyPq}, 
+			over_peak_pq = #{overPeakPq},
+			double_pq = #{doublePq},
+			peak_amt = #{peakAmt}, 
+			plain_amt = #{plainAmt}, 
+			valley_amt = #{valleyAmt}, 
+			over_peak_amt = #{overPeakAmt},
+			double_amt = #{doubleAmt},
+			base_amt = #{baseAmt},
+			force_amt = #{forceAmt},
+			levy_amt = #{levyAmt},
+			other_amt = #{otherAmt},
+			practical_pq = #{practicalPq},
+			total_amt = #{totalAmt}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 查询根节点数量 -->
+    <select id="getTreeCountByParams" resultType="int">
+    	SELECT 
+			count(distinct a.cons_id)
+		FROM s_c_cons_electricity a
+		LEFT JOIN s_c_consumer_info b on b.id = a.cons_id
+		WHERE 1 = 1
+			<if test="consName != null and consName != ''">
+				and b.cons_name LIKE CONCAT('%',#{consName},'%')
+			</if>
+			<if test="consId != null and consId != ''">
+				and a.cons_id = #{consId}
+			</if>
+			<if test="elecTypeCode != null and elecTypeCode != ''">
+				and b.elec_type_code = #{elecTypeCode}
+			</if>
+			<if test="voltCode != null and voltCode != ''">
+				and b.volt_code = #{voltCode}
+			</if>
+    </select>
+	
+	<!-- 查询根节点列表 -->
+    <select id="getParentListByParams" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.ScConsElecTreeDetail">
+    	SELECT 
+			'closed' state,
+			a.cons_id consId,
+			b.cons_name consName,
+			b.volt_code voltCode,
+			b.elec_type_code elecTypeCode
+		FROM s_c_cons_electricity a
+		LEFT JOIN s_c_consumer_info b on b.id = a.cons_id
+		WHERE 1=1
+			<if test="consName != null and consName != ''">
+				and b.cons_name LIKE CONCAT('%',#{consName},'%')
+			</if>
+			<if test="consId != null and consId != ''">
+				and a.cons_id = #{consId}
+			</if>
+			<if test="elecTypeCode != null and elecTypeCode != ''">
+				and b.elec_type_code = #{elecTypeCode}
+			</if>
+			<if test="voltCode != null and voltCode != ''">
+				and b.volt_code = #{voltCode}
+			</if>
+		GROUP BY cons_id
+		ORDER BY a.create_time DESC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+    </select>
+    
+    <!-- 查询子节点列表 -->
+    <select id="getChildrenListByConsId" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.ScConsElecTreeDetail">
+    	SELECT 
+    		'' consName,
+			a.cons_id _parentId,
+			CONCAT(a.cons_id,LEFT(a.ym,4)) consId,
+			SUM(IFNULL(a.peak_pq,0) + IFNULL(a.plain_pq,0) + IFNULL(a.valley_pq,0) + IFNULL(a.over_peak_pq,0) + IFNULL(a.double_pq,0)) totalPq, 
+			SUM(IFNULL(a.peak_amt,0)+IFNULL(a.plain_amt,0)+IFNULL(a.valley_amt,0)+IFNULL(a.over_peak_amt,0)+IFNULL(a.double_amt,0)+IFNULL(a.other_amt,0)+IFNULL(a.base_amt,0)+IFNULL(a.force_amt,0)+IFNULL(a.levy_amt,0)) totalAmt,
+			LEFT(a.ym,4) year 
+		FROM s_c_cons_electricity a
+		LEFT JOIN s_c_consumer_info b on b.id = a.cons_id
+		WHERE a.cons_id = #{consId}
+		GROUP BY LEFT(a.ym,4),a.cons_id
+		ORDER BY a.ym DESC
+    </select>
+											    <!-- by-zhangzhao 5/21 -->
+    <!-- 实际用电量 practical_pq over_peak_pq ym: yyyy-mm -->
+    <select id="practicalPowerPageData" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.ScConsElecTreeDetail">
+		  select 
+				 (SELECT count(ppa.cons_id) 
+				 	FROM s_m_ppa ppa 
+				 	inner join s_c_consumer_info cons on ppa.cons_id = cons.id 
+				 	where ppa.agre_status !='00' 
+						and left(REPLACE(ppa.effective_date,'-',''),6)  &lt;= view1.ym and left(REPLACE(ppa.expiry_date,'-',''),6) &gt;= view1.ym) consNum,
+				 practicalPq ,
+				 dealPqView.totalTranPq totalTranPq,
+				 concat(left(view1.ym,4),'-',right(view1.ym,2)) ym
+		  from(
+					SELECT 
+						sum(elec.practical_pq) practicalPq, 
+						elec.ym ym
+					FROM s_m_ppa  ppa
+					INNER JOIN s_c_consumer_info cons ON ppa.cons_id = cons.id AND ppa.agre_status != '00'
+					left JOIN s_c_cons_electricity elec on ppa.cons_id=elec.cons_id and 
+						left(REPLACE(ppa.effective_date,'-',''),6) &lt;= elec.ym and left(REPLACE(ppa.expiry_date,'-',''),6) &gt;= elec.ym
+					GROUP BY elec.ym) view1
+				left join (select SUM(deal_pq) totalTranPq, 
+							deal.ym ym
+						from ph_m_deal_info deal 
+						left join ph_m_purchase_plan_month plan on plan.id = deal.plan_id
+					 where plan.plan_status > '03' 
+					 group by deal.ym ) dealPqView	on view1.ym = dealPqView.ym
+			WHERE practicalPq is not null
+		<if test="startYm != null and startYm !='' ">
+			AND view1.ym &gt;= REPLACE (#{startYm},'-','')
+		</if>
+		<if test="endYm != null and endYm !='' ">
+			AND view1.ym &lt;= REPLACE (#{endYm},'-','')
+		</if>
+		ORDER BY view1.ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+    </select>
+    
+     <select id="getReporotPqByYmList" resultType="map">
+     	<foreach collection="list" index="index" item="item" open="" separator="UNION" close="">
+			 SELECT #{item.ym} ym,
+			 		SUM(pq) reportPq
+			 from (
+			 	SELECT ppa.cons_id,
+	  	  		 IFNULL(SUM(examine.agre_pq),(CASE RIGHT(#{item.ym},2) WHEN '01' THEN ppa.jan WHEN '02' THEN ppa.feb WHEN '03' THEN ppa.mar WHEN '04' THEN ppa.apr
+						WHEN '05' THEN ppa.may WHEN '06' THEN ppa.jun WHEN '07' THEN jul WHEN '08' THEN aug WHEN '09' THEN ppa.sept WHEN '10' 
+						THEN ppa.oct WHEN '11' THEN ppa.oct when '12' THEN dece END)) pq
+				FROM
+					s_m_ppa ppa
+					LEFT JOIN ph_m_agre_pq_examine examine ON examine.cons_id = ppa.cons_id and examine.ym = replace(#{item.ym},'-','')
+				WHERE
+					ppa.agre_status != '00' AND LEFT (REPLACE (ppa.effective_date, '-', ''),6) &lt;= replace(#{item.ym},'-','') AND LEFT (REPLACE (ppa.expiry_date, '-', ''),6) &gt;= replace(#{item.ym},'-','')
+				GROUP BY ppa.cons_id
+			 ) view1
+		</foreach>
+     </select>
+    
+    <select id="practicalPowerPageCount" resultType="int">
+    	select COUNT(1)  
+    	  from(
+			SELECT 
+				sum(elec.practical_pq) practicalPq, 
+				elec.ym ym
+			FROM s_m_ppa  ppa
+			left JOIN s_c_cons_electricity elec on ppa.cons_id=elec.cons_id and ppa.agre_status !='00'
+					and left(REPLACE(ppa.effective_date,'-',''),6)  &lt;= elec.ym and left(REPLACE(ppa.expiry_date,'-',''),6) &gt;= elec.ym
+			inner join s_c_consumer_info cons on ppa.cons_id = cons.id
+			GROUP BY elec.ym) view1
+			WHERE practicalPq is not null
+		<if test="startYm != null and startYm !='' ">
+			AND ym &gt;= #{startYm}
+		</if>
+		<if test="endYm != null and endYm !='' ">
+			AND ym &lt;= #{endYm}
+		</if>
+    </select>
+    
+    <!-- 根据交易年月查询实际用电量录入信息 缺：委托电量、总交易电量  -->
+    <select id="getPraPqTranYm" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.ScConsElecTreeDetail">
+	    SELECT
+			COUNT(consId) consNum,
+			SUM(practicalPq) practicalPq,
+			SUM(reportPq) reportPq,
+			dealPqView.totalTranPq
+		FROM (
+			SELECT cons.id consId,
+				   elec.practical_pq practicalPq,
+				   IFNULL((SELECT SUM(agre_pq) FROM ph_m_agre_pq_examine where cons_id = cons.id and ym = REPLACE (#{ym},'-','')),
+					(CASE RIGHT(#{ym},2) WHEN '01' THEN ppa.jan WHEN '02' THEN ppa.feb WHEN '03' THEN ppa.mar
+					 WHEN '04' THEN ppa.apr WHEN '05' THEN ppa.may WHEN '06' THEN ppa.jun WHEN '07' THEN ppa.jul
+					 WHEN '08' THEN ppa.aug WHEN '09' THEN ppa.sept WHEN '10' THEN ppa.oct WHEN '11' THEN ppa.nov
+					 WHEN '12' THEN ppa.dece END)) reportPq
+			FROM s_m_ppa ppa
+			INNER JOIN s_c_consumer_info cons on ppa.cons_id = cons.id
+				AND ppa.agre_status != '00' AND LEFT(REPLACE (ppa.effective_date, '-', ''),6) &lt;= REPLACE (#{ym},'-','') 
+				AND LEFT (REPLACE (ppa.expiry_date, '-', ''),6) &gt;= REPLACE (#{ym},'-','') 
+			LEFT JOIN s_c_cons_electricity elec ON elec.cons_id = cons.id AND elec.ym = REPLACE (#{ym},'-','') 
+		) view1
+		,(select SUM(deal_pq)  totalTranPq
+				from  ph_m_deal_info deal 
+				left join ph_m_purchase_plan_month plan on plan.id = deal.plan_id
+			 where plan.plan_status > '03' and deal.ym = REPLACE (#{ym},'-','') ) dealPqView
+    </select>
+    
+    <!-- 用户月度实际用电量列表 -->
+    <select id="getPqDataGrid" resultType="com.hhwy.purchaseweb.archives.scconselectricity.domain.ScConsElecTreeDetail">
+    	SELECT
+			sc.cons_name consName,
+			sc.elec_type_code elecTypeCode,
+			sc.volt_code voltCode,
+			round(elec.practical_pq,3) practicalPq,
+			round(elec.peak_pq,3) peakPq,
+			round(elec.plain_pq,3) plainPq,
+			round(elec.valley_pq,3) valleyPq,
+			round(elec.over_peak_pq,3) overPeakPq,
+			round(elec.double_pq,3) doublePq,
+			ifnull((select sum(examine.agre_pq) from ph_m_agre_pq_examine examine where examine.ym = REPLACE (#{startYm},'-','') and examine.cons_id = ppa.cons_id),
+			(case right(#{startYm},2) when '01' then ppa.jan when '02' then ppa.feb when '03' then ppa.mar when '04' then ppa.apr when '05' then ppa.may when '06' then ppa.jun 
+			when '07' then ppa.jul when '08' then ppa.aug when '09' then ppa.sept when '10' then ppa.oct when '11' then ppa.nov when '12' then ppa.dece end)) reportPq,
+			elec.id id,
+			sc.id consId,
+			REPLACE (#{startYm},'-','') ym,
+			round(elec.plain_amt,2) plainAmt,
+			round(elec.valley_amt,2) valleyAmt,
+			round(elec.other_amt,2) otherAmt,
+			round(elec.over_peak_amt,2) overPeakAmt,
+			round(elec.double_amt,2) doubleAmt,
+			round(elec.base_amt,2) baseAmt,
+			round(elec.force_amt,2) forceAmt,
+			round(elec.levy_amt,2) levyAmt,
+			round(elec.total_amt,2) totalAmt,
+			round(elec.data_forecast_pq,3) dataForecastPq,
+			round(elec.person_forecast_pq,3) personForecastPq,
+			elec.data_forecast_pq dataForecastPq,
+			elec.person_forecast_pq personForecastPq,
+			elec.org_no orgNo	
+			
+		FROM
+			 s_m_ppa ppa
+		INNER JOIN s_c_consumer_info sc  ON ppa.cons_id = sc.id and ppa.agre_status !='00'
+		AND left(REPLACE(ppa.effective_date,'-',''),6) &lt;= REPLACE (#{startYm},'-','')  and left(REPLACE(ppa.expiry_date,'-',''),6) &gt;= REPLACE (#{startYm},'-','') 
+		LEFT JOIN	s_c_cons_electricity elec ON elec.cons_id = sc.id and elec.ym = REPLACE (#{startYm},'-','') 
+		ORDER BY consName
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+    </select>
+    
+        <!-- 用户月度实际用电量列表数量 -->
+    <select id="getPqDataGridCount" resultType="int">
+    	SELECT
+			COUNT(1)
+		FROM s_m_ppa ppa 
+		INNER JOIN s_c_consumer_info sc ON ppa.cons_id = sc.id and ppa.agre_status !='00'
+		AND left(REPLACE(ppa.effective_date,'-',''),6) &lt;= REPLACE (#{startYm},'-','') and left(REPLACE(ppa.expiry_date,'-',''),6) &gt;= REPLACE (#{startYm},'-','') 
+		LEFT JOIN	s_c_cons_electricity elec ON elec.cons_id = sc.id and elec.ym = REPLACE (#{startYm},'-','') 
+    </select>
+    
+    <!-- 删除合同用户实际用电量信息 参数ym：yyyy-mm 数据库字段是不带-的 -->
+    <update id="deleteElectricity">
+   		UPDATE s_c_cons_electricity elec
+		SET elec.peak_pq = null, elec.plain_pq = null, elec.valley_pq = null, elec.over_peak_pq = null,elec.double_pq = null ,elec.peak_amt = null ,
+			elec.plain_amt = null ,elec.valley_amt = null ,elec.other_amt = null,elec.over_peak_amt = null,elec.double_amt = null,
+			elec.base_amt = null ,elec.force_amt = null ,elec.levy_amt = null,practical_pq = null
+		WHERE 
+			elec.ym in
+				<foreach collection="ymList" index="index" item="item" open="(" separator="," close=")">
+				 	REPLACE(#{item},'-','')
+				</foreach>
+		AND elec.cons_id in (
+			select cons.id 
+			from s_m_ppa  ppa
+			inner join s_c_consumer_info cons on ppa.cons_id = cons.id 
+			where ppa.agre_status !='00' and left(REPLACE(ppa.effective_date,'-',''),6) &lt;= elec.ym 
+					and left(REPLACE(ppa.expiry_date,'-',''),6) &gt;=elec.ym
+		)
+    </update>
+    
+    <update id="updateScConsElectricityByConsIdAndYm">
+    	<foreach collection="list" index="index" item="item" open="" separator=";" close="">
+	    	UPDATE 
+	    		s_c_cons_electricity
+	    	SET
+	    		data_forecast_pq = #{item.dataForecastPq},
+	    		person_forecast_pq = #{item.personForecastPq}
+	    	WHERE
+	    		ym = #{item.ym} and cons_id = #{item.consId}
+    	</foreach>
+    </update>
+</mapper>

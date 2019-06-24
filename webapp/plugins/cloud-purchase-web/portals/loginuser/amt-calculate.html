@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+		<div class="col-md-12">
+		    <div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>电费试算</div>
+				<div class="panel-body">
+                       		<div class="table-responsive">
+                       			<table class="table table-bordered">
+                                     <tbody>
+                                        <thead>
+                                           <tr>
+                                             <th colspan="4" class="bg-info">用户基本信息</th>
+                                           </tr>
+                                        </thead>
+                                         <tr>
+                                             <td class="text-right w-4th">电压等级</td>
+                                             <td id="voltCodeName" class="w-10th"></td>
+                                             <td class="text-right w-4th">用电类别</td>
+                                             <td id="elecTypeCodeName" class="w-10th"></td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">峰时电度电价</td>
+                                            <td id="kwhPeakPrc">元/兆瓦时</td>
+                                             <td class="text-right">平时电度电价</td>
+                                           	<td id="kwhPlainPrc">元/兆瓦时</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">谷时电度电价</td>
+                                             <td id="kwhValleyPrc">元/兆瓦时</td>
+                                             <td class="text-right">输配电价</td>
+                                             <td id="transPrc">元/兆瓦时</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">政府性基金及附加</td>
+                                            <td id="plPrc">元/兆瓦时</td>
+                                             <td class="text-right">峰时目录电价</td>
+                                             <td id="cataPeakPrc">元/兆瓦时</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">平时目录电价</td>
+                                             <td id="cataPlainPrc">元/兆瓦时</td>
+                                             <td class="text-right">谷时目录电价</td>
+                                             <td id="cataValleyPrc">元/兆瓦时</td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+                                 <table class="table table-bordered">
+                                     <tbody>
+                                         <thead>
+                                            <tr>
+                                              <th colspan="4" class="bg-info">电费试算</th>
+                                            </tr>
+                                         </thead>
+                                         <tr>
+                                             <td class="text-right w-4th"><span class="f-red">* </span>是否分时</td>
+                                             <td id="timeFlag" class="w-10th">
+                                             	<div class="form-group">
+                                         			<select class="form-control" onChange="selectTimeFlag(value)">
+                                         				<option value="01">不分时</option>
+														<option value="02">分时</option>
+                                         			</select>
+                                     			</div>
+                                             </td>
+                                             <td class="text-right w-4th"><span class="f-red">* </span>代理电价</td>
+                                             <td id="proxyPrc" class="w-10th">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">元/兆瓦时</span>
+                                     			</div>
+                                             </td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right"><span class="f-red">* </span>代理电量</td>
+                                             <td id="agrePq">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">兆瓦时</span>
+                                     			</div>
+									</td>
+                                             <td class="text-right"><span class="f-red">* </span>偏差率</td>
+                                             <td id="deviationProp">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">%</span>
+                                     			</div>
+									</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right"><span class="f-red">* </span>正偏差考核电价</td>
+                                             <td id="upperCheckPrc">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">元/兆瓦时</span>
+                                     			</div>
+									</td>
+                                             <td class="text-right"><span class="f-red">* </span>负偏差考核电价</td>
+                                             <td id="lowerCheckPrc">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">元/兆瓦时</span>
+                                     			</div>
+									</td>
+                                         </tr>
+                                          <tr class="timeFlag">
+                                             <td class="text-right"><span class="f-red">* </span>峰时电量比例</td>
+                                             <td id="peakRate">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">元/兆瓦时</span>
+                                     			</div>
+									</td>
+                                             <td class="text-right"><span class="f-red">* </span>平时电量比例</td>
+                                             <td id="plainRate">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">%</span>
+                                     			</div>
+									</td>
+                                         </tr>
+                                         <tr class="timeFlag">
+                                             <td class="text-right"><span class="f-red">* </span>谷时电量比例</td>
+                                             <td id="valleyRate">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">元/兆瓦时</span>
+                                     			</div>
+									</td>
+                                             <td class="text-right"></td>
+                                             <td></td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+                                 <div class="text-right">
+                                 	<a href="javascript:void(0)" onclick="calculate()" class="btn btn-info" data-toggle="modal" data-target="#myModal">电费试算</a>
+                                 </div>
+                                 <table class="table table-bordered" style="margin-top: 15px;">
+                                     <tbody>
+                                        <thead>
+                                           <tr>
+                                             <th colspan="4" class="bg-info">试算结果</th>
+                                           </tr>
+                                        </thead>
+                                         <tr>
+                                             <td class="text-right w-4th">代理到户电价</td>
+                                             <td id="proxyConsPrc" class="w-10th'">元/兆瓦时</td>
+                                             <td class="text-right w-4th">偏差考核电费</td>
+                                             <td id="deviationCheckAmt" class="w-10th">元</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">参与市场交易前电费</td>
+                                             <td id="earnBeforAmt">元</td>
+                                             <td class="text-right">参与市场交易后电费</td>
+                                             <td id="earnLastAmt">元</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">入市后节省电费</td>
+                                             <td id="earnAmt">元</td>
+                                             <td class="text-right"></td>
+                                             <td></td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+					</div>
+				</div>
+			</div>
+		</div>						
+	</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script type="text/javascript">
+    var org_id = $.getLoginUser().org_id;
+    var params = {
+    	proxyPrc:"",
+    	agrePq:"",
+    	deviationProp:"",
+    	upperCheckPrc:"",
+    	lowerCheckPrc:"",
+    	proxyConsPrc:"",
+    	deviationCheckAmt:"",
+    	earnBeforAmt:"",
+    	earnLastAmt:"",
+    	earnAmt:"",
+    	timeFlag:"",
+    	peakRate:"",
+    	plainRate:"",
+    	valleyRate:"",
+    };
+    var devData = {
+    	consId:$.getLoginUser().consId,
+    	voltCode:"",
+    	voltCodeName:"",
+    	elecTypeCode:"",
+    	elecTypeCodeName:"",
+    	kwhPeakPrc:"",
+    	kwhPlainPrc:"",
+    	kwhValleyPrc:"",
+    	transPrc:"",
+    	plPrc:"",
+    	cataPeakPrc:"",
+    	cataPlainPrc:"",
+    	cataValleyPrc:"",
+    };
+    var dataOption={//非空验证
+    }
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	//初始化数据
+    	initData();
+    	//隐藏分时内容
+    	$(".timeFlag").hide();
+    });
+
+    //设置分时
+    function selectTimeFlag(value){
+    	if(value == "02"){//分时
+    		$(".timeFlag").show();
+    	}else{//不分时
+    		$(".timeFlag").hide();
+    		$("#peakRate input").val("");
+    		$("#plainRate input").val("");
+    		$("#valleyRate input").val("");
+    		$("#peakPrc input").val("");
+    		$("#valleyPrc input").val("");
+    	}
+    	params.timeFlag = value;
+    }
+
+    //初始化数据
+    function initData(){
+    	var queryParams = {
+    	 serviceKey:"s_getConsAmtInit",
+    	 clientKey:"sellandpurchase",
+    	  params:{
+    	       "consId":devData.consId,
+    	       "org_id":org_id,
+    	  }
+    	}
+    	$.ajax({
+    		url: groovyPath + "s_getConsAmtInit.do",
+    		type:"post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+    		success:function(data){
+    			if(!data.message){
+    				devData = data.value.datas;
+    				if(devData){
+    					for(var j in devData){
+    						if( $("#"+j) != null && $("#"+j).length > 0 ){
+    							$("#"+j).text(devData[j] + $("#"+j).text());
+    						}
+    					}
+    				}
+    			}else{
+    				MainFrameUtil.alert({title:"失败提示",body:"查询失败！"});
+    	      		return;
+    			}
+    		}
+    		
+    	})
+    }
+
+    //计算
+    function calculate(){
+    	if(!devData){
+    		MainFrameUtil.alert({title:"提示",body:"该用户无档案信息！"});
+      		return;
+    	}
+    	//验证并获取数据
+    	$.extend(true,dataOption,params);
+    	var message = $.validateRequired(dataOption);
+    	var amtParams={};
+    	if(typeof message == "string"){
+    		MainFrameUtil.alert({title:"提示",body:"请填写"+message+"信息！"});
+      		return;
+    	}else{
+    		amtParams = $.extend(false,amtParams,message);
+    	}
+    	amtParams=$.extend(false,amtParams,devData);
+    	//判断电量比例是否为100%
+    	if(amtParams.timeFlag == "02"){//分时
+    		if((Number(amtParams.peakRate) + Number(amtParams.plainRate) + Number(amtParams.valleyRate)).toFixed(0) != 100){
+    			MainFrameUtil.alert({title:"提示",body:"电量比例分配不合理！"});
+          		return;
+    		}
+    		//调用接口计算电价
+        	var queryParams = {
+        	 serviceKey:"s_getTimePrc",
+        	 clientKey:"sellandpurchase",
+        	  params:amtParams,
+        	}
+        	$.ajax({
+        		url: groovyPath + "s_getTimePrc.do",
+        		type:"post",
+        		data:$.toJSON(queryParams),
+                contentType:'application/json;charset=UTF-8',  
+        		success:function(data){
+        			if(!data.message){
+        				var result = data.value.datas;
+        				if(result){
+        					amtParams=$.extend(false,amtParams,result);
+        					calculateAmt(amtParams);
+        				}else{
+        					MainFrameUtil.alert({title:"失败提示",body:"获取分时电价失败！"});
+            	      		return;
+        				}
+        			}else{
+        				MainFrameUtil.alert({title:"失败提示",body:"获取分时电价失败！"});
+        	      		return;
+        			}
+        		}
+        	})
+    	}else{
+    		calculateAmt(amtParams);
+    	}
+    }
+    
+    function calculateAmt(amtParams){
+    	//调用接口试算
+    	var queryParams = {
+    	 serviceKey:"s_getConsAmtCalc",
+    	 clientKey:"sellandpurchase",
+    	  params:amtParams,
+    	}
+    	$.ajax({
+    		url: groovyPath + "s_getConsAmtCalc.do",
+    		type:"post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+    		success:function(data){
+    			if(!data.message){
+    				var result = data.value.datas;
+    				if(result){
+    					//设置计算结果
+        		    	$("#proxyConsPrc").text(result.balancePrc + "元/兆瓦时");
+        		    	$("#deviationCheckAmt").text(result.checkAmt + "元");
+        		    	$("#earnBeforAmt").text(result.partakeBeforeAmt + "元");
+        		    	$("#earnLastAmt").text(result.partakeAfterAmt + "元");
+        		    	$("#earnAmt").text(result.saveAmt + "元");
+    				}
+    			}else{
+    				MainFrameUtil.alert({title:"失败提示",body:"试算失败！"});
+    	      		return;
+    			}
+    		}
+    	})	
+    }
+    </script>
+	</body>
+</html>

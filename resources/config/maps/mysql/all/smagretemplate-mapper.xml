@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smAgreTemplate.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmAgreTemplateListByParams" resultType="com.hhwy.purchaseweb.contract.smagretemplate.domain.SmAgreTemplateDetail">  
+		select
+			ID id,
+			template_ver templateVer,
+			template_name templateName,
+			template_type templateType,
+			remarks remarks,
+			agre_status agreStatus,
+			file_id fileId,
+			<!--by wangzelu create_date createDate, -->
+			org_no orgNo		
+		from s_m_agre_template where 1=1
+		<if test="smAgreTemplate != null and smAgreTemplate.templateVer != null and smAgreTemplate.templateVer != ''">
+			and template_ver LIKE concat("%",#{smAgreTemplate.templateVer},"%")
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.templateName != null and smAgreTemplate.templateName != ''">
+			and template_name LIKE concat("%",#{smAgreTemplate.templateName},"%")
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.templateType != null and smAgreTemplate.templateType != ''">
+			and template_type = #{smAgreTemplate.templateType}
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.remarks != null and smAgreTemplate.remarks != ''">
+			and remarks = #{smAgreTemplate.remarks}
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.agreStatus != null and smAgreTemplate.agreStatus != ''">
+			and agre_status = #{smAgreTemplate.agreStatus}
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.fileId != null and smAgreTemplate.fileId != ''">
+			and file_id = #{smAgreTemplate.fileId}
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.orgNo != null and smAgreTemplate.orgNo != ''">
+			and org_no = #{smAgreTemplate.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmAgreTemplateCountByParams" resultType="int">
+		select count(1)	from s_m_agre_template where 1=1
+		<if test="smAgreTemplate != null and smAgreTemplate.templateVer != null and smAgreTemplate.templateVer != ''">
+			and template_ver LIKE concat("%",#{smAgreTemplate.templateVer},"%")
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.templateName != null and smAgreTemplate.templateName != ''">
+			and template_name LIKE concat("%",#{smAgreTemplate.templateName},"%")
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.templateType != null and smAgreTemplate.templateType != ''">
+			and template_type = #{smAgreTemplate.templateType}
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.remarks != null and smAgreTemplate.remarks != ''">
+			and remarks = #{smAgreTemplate.remarks}
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.agreStatus != null and smAgreTemplate.agreStatus != ''">
+			and agre_status = #{smAgreTemplate.agreStatus}
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.fileId != null and smAgreTemplate.fileId != ''">
+			and file_id = #{smAgreTemplate.fileId}
+		</if>
+		<if test="smAgreTemplate != null and smAgreTemplate.orgNo != null and smAgreTemplate.orgNo != ''">
+			and org_no = #{smAgreTemplate.orgNo}
+		</if>
+	</select>
+	<select id="getSequence" resultType="string">
+		SELECT max(SUBSTR(template_ver,7,2))+1 FROM s_m_agre_template
+		WHERE template_ver LIKE concat(#{ym},"%")
+	</select>
+	<select id="getSelect" resultType="map">
+		SELECT 
+			template_name name,
+			id value
+		FROM s_m_agre_template
+		WHERE agre_status = "02"
+		<if test="templateType != null and templateType != '' ">
+			and template_type = #{templateType}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span><span>用电情况上报</span></div>        
+				<div class="panel-body">
+					<div class="col-md-a"><span class="text-2">日期</span></div>
+					<div class="col-md-2">
+						<div class="from-group">
+      						<input type="text" class="form-control selectDate" placeholder="yyyy/mm/dd" id="selectYm">
+      						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:86%;"><i class="fa icon-rili"></i></span> -->
+  						</div>
+					</div>
+					<div class="col-md-1">
+						<a href="javascript:void(0)" onClick="initData()" class="btn btn-info btn-sm mt10">查询</a>
+					</div>
+				</div>
+				<div class="bg-info grid-title">
+					用电上报情况列表
+					<span class="pull-right text-muted small" id="agrePqFlag" style="margin-right: 20px;">月度合同电量：兆瓦时</span>
+				</div>
+				<div class="panel-body">
+					<div class="col-lg-12 text-center"><h5 id="title"></h5></div>
+					<div class="col-lg-12 text-right pull-right pc-p text-muted">
+						<span style="margin-right: 5px;"><i class="fa icon-leijidianliang text-primary"></i>计划日用电量</span>
+						<span><i class="fa icon-shijidl"></i> 计划累计用电量 </span>
+						<span><i class="fa icon-ri text-primary"></i> 日用电量</span>
+						<span><i class="fa icon-pianchalv"></i>累计用电量</span>
+					</div>
+					<div class="calendar">
+						<table width="100%" border="0" cellpadding="0" cellspacing="0">
+							<tbody id="conspower">
+								<tr>
+									<td><span class="weekbox week-gray">星期日</span></td>
+									<td><span class="weekbox week-blue">星期一</span></td>
+									<td><span class="weekbox week-blue">星期二</span></td>
+									<td><span class="weekbox week-blue">星期三</span></td>
+									<td><span class="weekbox week-blue">星期四</span></td>
+									<td><span class="weekbox week-blue">星期五</span></td>
+									<td><span class="weekbox week-gray">星期六</span></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>				
+	</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    var org_id = $.getLoginUser().org_id;
+    var params = {
+    		ym:'',
+    		consId:$.getLoginUser().consId,
+    }
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	var ym = $.initDate({index:"current",type:"ym"});
+    	laydate.render({
+    		  elem: '#selectYm', //指定元素
+    		  type:"month",
+    		  value:ym,
+    		  done:function(value, date, endDate){setYear(value)}
+    	});
+    	params.ym = ym.replace("-","");
+    	//初始化列表数据
+    	initData();
+    })
+
+    //初始化数据
+    function initData(){
+    	//设置表格年月
+    	var title = "";
+    	if(params.ym){
+    		title = params.ym.substr(0,4) + "年" + parseInt(params.ym.substr(4,6)) + "月";
+    	}else{
+    		MainFrameUtil.alert({title:"提示",body:"请选择查询年月！"});
+    		return;
+    	}
+    	$("#title").html(title);
+    	var queryParams = {
+    		serviceKey:"s_getSmConsPowerView",
+    		clientKey:"sellandpurchase",
+    		params:params
+    	}
+    	$.ajax({
+    		url : groovyPath + "s_getSmConsPowerView.do",
+    		type : "post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+            success : function(data) {
+    			if(!data.message){
+    				if(data.value && data.value.datas){
+    					setContent(data.value.datas);
+    				}
+    			}else{
+    				MainFrameUtil.alert({title:"失败提示",body:"查询失败！"});
+    				return;
+    			}
+    		},
+    		error : function() {
+    			MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+    			return;
+    		}
+    	})
+    }
+
+  //没有用电信息时设置默认列表
+	function initCommon(date,lastDate,currentTime){//date:当前月的天数;lastDate:上一个月的天数;currentTime:当天
+		var tr = $("#conspower tr").first();
+		$("#conspower").empty().append(tr);
+		var day = new Date(currentTime.substring(0,4)+"-"+currentTime.substring(4,6)+"-01");
+		var week = day.getDay();
+		var currentYm = currentTime.substring(0,6);//当前月
+		var maxIndex = 42;//最大位置
+		//生成第一周的行
+		var rowIndex = 1;//行位置
+		var html = "<tr style='vertical-align:top;'>";
+		if(week !== 0){
+			for(var i=0; i<week; i++){
+				html += "<td><div class='date-box'><div class='col-sm-2'><span class='date-text text-muted b-white'>"+(lastDate-week+1+i)+"</span></div>"+
+				 "<div class='col-sm-10'></div></div></td>";
+			}
+		}else{
+			//判断上月最后一天是否为日历的最后一个位置
+			//获取上个月的第一天的星期
+			var flag = false;
+			var lastIndex = 0;
+			var last = params.ym.substr(0,4) + "-" + (parseInt(params.ym.substr(4,6))-1) + "-01";
+			var lastDay = new Date(last);
+			var lastWeek = lastDay.getDay();
+			lastIndex = lastWeek + lastDate;
+			if(lastIndex == 41){//最后一天
+				flag = true
+			}
+			if(flag){
+				html = "";
+			}else{
+				for(var i=0; i<7; i++){
+					html += "<td><div class='date-box'><div class='col-sm-2'><span class='date-text text-muted b-white'>"+(lastDate-6+i)+"</span></div>"+
+					 "<div class='col-sm-10'></div></div></td>";
+				}
+				html += "</tr>";
+				maxIndex = 35;
+				//插入列表
+				$("#conspower").append(html);
+				html = "<tr style='vertical-align:top;'>";
+			}
+		}
+		var currentIndex = 1;//当前月的第几天
+		var nextIndex = 1;//下月的第几天
+		var nowDay = new Date().getDate();
+		for(var i=week; i<maxIndex; i++){
+			//处理后面空格
+			if(i >= (date + week)){
+				html += "<td><div class='date-box'><div class='col-sm-2'><span class='date-text text-muted b-white'>"+nextIndex+"</span></div>"+
+				 "<div class='col-sm-10'></div></div></td>";
+				nextIndex ++;
+			}else{//当前月
+				var ymd=params.ym;
+				if(currentIndex < 10){
+					ymd += "0"+currentIndex;
+				}else{
+					ymd += ""+currentIndex;
+				}
+				//判断是否为当前年月
+				var  currentClass = "";
+				if(ymd == currentTime){
+					currentClass += "b-white";
+				} 
+				html += "<td><div class='date-box'><div class='col-sm-2'><span class='date-text orange-f b-white'>"+currentIndex+"</span>"
+				+ "</div><div class='col-sm-10 text-muted text-right'>"
+				+"<div class='white-inputbox b-gray "+currentClass+"' contenteditable='false'><i class='fa icon-leijidianliang text-primary'></i></div>"
+				+"<div class='white-inputbox b-gray "+currentClass+"' contenteditable='false'><i class='fa icon-shijidl'></i></div>"
+				+"<div class='white-inputbox b-gray "+currentClass+"' contenteditable='false'><i class='fa icon-ri text-primary'></i></div>"
+				+"<div class='white-inputbox b-gray "+currentClass+"' contenteditable='false'><i class='fa icon-pianchalv'></i></div></div></div></td>";
+			}
+			currentIndex ++;
+			if(rowIndex == 1){//第一行插入
+				if(i == 6){
+					html += "</tr>";
+					//插入列表
+					$("#conspower").append(html);
+					html = "<tr style='vertical-align:top;'>";
+					rowIndex ++;
+				}
+			}else{
+				if(i == (6+(rowIndex-1)*7)){//后行插入
+					html += "</tr>";
+					//插入列表
+					$("#conspower").append(html);
+					html = "<tr style='vertical-align:top;'>";
+					rowIndex ++;
+				}
+			}
+		}
+	}
+    
+  //生成表格数据
+    function setContent(data){
+	  //设置月度合同电量
+	  var agrePq = data.agrePq === null ? "" : data.agrePq;
+	  $("#agrePqFlag").text("月度合同电量："+agrePq+"兆瓦时");
+		//当前月的天数
+		var date = parseInt(data.date);
+		//上一个月的天数
+		var lastDate =parseInt(data.lastDate);
+		var list = data.list;
+		//获取当前日期
+		var currentTime = data.nowDate.replace("-","").replace("-","");
+		if(!list || list.length == 0){
+			initCommon(date,lastDate,currentTime);//没有用电信息时设置默认列表
+			return;
+		}
+		var tr = $("#conspower tr").first();
+		$("#conspower").empty().append(tr);
+		//处理偏差提醒
+		var deviationList = data.deviationList;
+		var deviationMap = {};
+		for(var i in deviationList){
+			deviationMap[deviationList[i].warningDate.substring(0,10).replace("-","").replace("-","")] = deviationList[i];
+		}
+		//获取当前月的第一天的星期
+		var currentDate = list[0].ymd.substr(0,4) + "-" + list[0].ymd.substr(4,2) + "-" + list[0].ymd.substr(6);
+		var day = new Date(currentDate);
+		var week = day.getDay();
+		var html = "<tr style='vertical-align:top;'>";
+		var len = 0;
+		//前面填空
+		for(var i=0; i<week; i++){//
+			var day2 = new Date(currentDate);
+			day2.setDate(day.getDate() - week + i);
+			html += "<td><div class='date-box'><div class='col-sm-2'><span class='date-text text-muted b-white'>"+(day2.getDate())+"</span></div>"+
+				 "<div class='col-sm-10'></div></div></td>";
+			len++;
+		}
+		var ids = 0;
+		//中间数据
+		for(var i in list){
+			ids++;
+			var row = list[i];
+			var planPq = row.planPq == null ? "" : row.planPq;
+			var actualPq = row.actualPq == null ? "" : row.actualPq;
+			var dayPlanPq = row.dayPlanPq == null ? "" : row.dayPlanPq;
+			var dayActualPq = row.dayActualPq == null ? "" : row.dayActualPq;
+			var ymd = row.ymd;
+			//设置样式
+			var  currentClass = "";
+			if(ymd == currentTime){//当前时间
+				currentClass += "b-white";
+			}
+			//偏差预警信息
+			var deviationClass = "";
+			if(deviationMap[ymd]){
+				var obj = deviationMap[ymd];
+				var color = "";
+				if(obj.warningGrade == "01"){
+					color = "f-yellow";
+				}else if(obj.warningGrade == "02"){
+					color = "f-orange";
+				}else{
+					color = "f-red";
+				}
+				deviationClass = "<div class='col-sm-2 alarmbox'>"+
+				"<div style='cursor: pointer;' onClick=\"detail(\'"+ obj.id +"\')\" class='fa icon-left-bottom-trangle tranglebox fa-2x "+color+"'></div><i class='fa icon-fengxianyujing f-white'></i></div>";
+			}
+			if(len % 7 == 0 && len != 0){
+				html += "</tr>"+"<tr style='vertical-align:top;'>";
+			}
+			
+			html += "<td><div class='date-box'><div class='col-sm-2'><span class='date-text orange-f b-white'>"+parseInt(ymd.substr(6))+"</span>"
+			+ "</div><div class='col-sm-10 text-muted text-right'>"
+			+"<div class='white-inputbox b-gray "+currentClass+"' contenteditable='false'><i class='fa icon-leijidianliang text-primary'></i>"+dayPlanPq+"</div>"
+			+"<div class='white-inputbox b-gray "+currentClass+"' contenteditable='false'><i class='fa icon-shijidl'></i> "+planPq+"</div>"
+			+"<div class='white-inputbox b-gray "+currentClass+"' contenteditable='false'><i class='fa icon-ri text-primary'></i>"+dayActualPq+"</div>"
+			+"<div class='white-inputbox b-gray "+currentClass+"' contenteditable='false'><i class='fa icon-pianchalv'></i>"+actualPq+"</div></div></div>"+deviationClass+"</td>";
+			len++;
+		}
+		//后面填空
+		if(len % 7 != 0){
+			var len1 = 7 - (len % 7);
+			var lastDate = list[list.length - 1].ymd.substr(0,4) + "-" + list[list.length - 1].ymd.substr(4,2) + "-" + list[list.length - 1].ymd.substr(6);
+			var lastDay = new Date(lastDate);
+			for(var i = 0; i < len1; i++){
+				var day2 = new Date(lastDate);
+				day2.setDate(lastDay.getDate() + i + 1);
+				html += "<td><div class='date-box'><div class='col-sm-2'><span class='date-text text-muted b-white'>"+(day2.getDate())+"</span></div>"+
+				 "<div class='col-sm-10'></div></div></td>";
+			}
+		}
+		html += "</tr>";
+		$("#conspower").append(html);
+    }
+  
+  	//详情
+    function detail(id){
+    	 MainFrameUtil.openDialog({
+	 		id:"devwarn_detail",
+			params:{id:id},
+			herf:"devwarn-detail.html",
+			maximizable:false,
+			width:"90%",
+			height:430,
+			onClose:function(){
+				//查询主页信息
+				window.parent.parent.initdevData(); 
+			}
+	  	  });
+    }
+    
+    //查询
+    function searchData(){
+    	if(!params.ym){
+    		var title = "提示";
+    		var msg = "请选择查询年月！";
+    		dialogPrompt.openDialog("message-prompt.html?title=" + title + "&content=" + msg);
+    		return;
+    	}
+    	var queryParams = {
+    		serviceKey:"c_getConsWaringList",
+    		clientKey:"sellandpurchase",
+    		params:{
+    		    consId:params.consId,
+    		    consName:"",
+    			ym:params.ym,
+    			status:"",
+    			compStatus:"",
+    			org_id:params.org_id,
+    			index:null,
+    			pageSize:null,
+    		 }
+    	}
+    	$("table").createtable("load",queryParams);
+    }
+    //赋值查询参数
+    function setYear(value){
+    	if(value){
+    		value = value.split("-")[0] + value.split("-")[1];
+    		params.ym = value;
+    	}else{
+    		params.ym = "";
+    	}
+    	
+    }
+    </script>
+	</body>
+</html>

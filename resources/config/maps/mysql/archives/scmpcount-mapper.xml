@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scMpCount.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getScMpCountListByParams" resultType="com.hhwy.purchaseweb.deviationcheck.scmpcount.domain.ScMpCountDetail">
+		select
+			mp.id id,
+			mp.cons_id consId,
+			mp.mp_no mpNo,
+			mp.mp_name mpName,
+			mp.meter_rate meterRate,
+			ifnull(mp.meter_no,'') meterNo,
+			mp.meter_digits meterDigits,
+			(SELECT MAX(a.meter_read_pq) FROM s_c_mp_count a WHERE a.meter_read_date = max(count.meter_read_date) AND a.mp_id = mp.id) lastReadPq,
+			max(count.meter_read_date) lastReadDate,
+			mp.org_no orgNo,
+			cons.cons_name consName,
+			cons.volt_code voltCode,
+			cons.elec_type_code elecTypeCode
+			
+		FROM s_c_consumer_info cons
+		LEFT JOIN s_c_mp_info mp ON mp.cons_id = cons.id
+		LEFT JOIN s_m_ppa ppa ON cons.id = ppa.cons_id
+		LEFT JOIN s_c_mp_count count ON count.mp_id = mp.id
+
+		where left(CURDATE(),7) &lt;= ppa.expiry_date
+		
+		<if test="consName != null and consName != ''">
+			and cons.cons_name LIKE CONCAT('%',#{consName},'%')
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			and cons.volt_code = #{voltCode}
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			and cons.elec_type_code = #{elecTypeCode}
+		</if>
+		GROUP BY cons.id , mp.meter_no
+		ORDER BY cons.cons_name, mp.meter_no ASC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<!-- 根据条件查询数量 -->
+	<select id="getScMpCountCountByParams" resultType="int">
+		select  COUNT(*)
+		FROM (select
+			mp.id id,
+			mp.cons_id consId
+		FROM s_c_consumer_info cons
+		LEFT JOIN s_c_mp_info mp ON mp.cons_id = cons.id
+		LEFT JOIN s_m_ppa ppa ON cons.id = ppa.cons_id
+		where left(CURDATE(),7) &lt;= ppa.expiry_date
+		<if test="consName != null and consName != ''">
+			and cons.cons_name LIKE CONCAT('%',#{consName},'%')
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			and cons.volt_code = #{voltCode}
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			and cons.elec_type_code = #{elecTypeCode}
+		</if>
+		GROUP BY cons.id , mp.meter_no) aa
+	</select>
+	
+	<!-- 根据电表id获取表计示数 -->
+	<select id="getScMpCountListByMpId" resultType="com.hhwy.purchaseweb.deviationcheck.scmpcount.domain.ScMpCountDetail">
+		select
+			id id,
+			mp_id mpId,
+			meter_read_pq meterReadPq,
+			meter_read_date meterReadDate
+		from s_c_mp_count 
+		where mp_id = #{id}
+		order by meter_read_date desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<!-- 根据id获取表计示数条目数量 -->
+	<select id="getScMpCountListCountByMpId" resultType="int">
+		select count(1)	from s_c_mp_count
+		where mp_id = #{id}
+	</select>
+	
+	<!-- 根据mp_id获取电表重复的日期记录 -->
+	<select id="checkDateRepeat" resultType="String">
+		select DATE_FORMAT(meter_read_date,'%Y-%m-%d')  date
+		from s_c_mp_count 
+		WHERE mp_id = #{id}
+		group by DATE_FORMAT(meter_read_date,'%Y-%m-%d') 
+		having count(DATE_FORMAT(meter_read_date,'%Y-%m-%d'))>1
+	</select>
+	
+	<!-- 根据用户ID及开始结束时间获取抄表数据 -->
+	<select id="getMpCountByParams" resultType="com.hhwy.purchaseweb.deviationcheck.scmpcount.domain.ScMpCountDetail">
+		select count.id id,
+			   count.mp_id mpId,
+			   meter_read_date meterReadDate,
+			   DATE_FORMAT(count.meter_read_date,'%Y%m%d') readDateStr,
+			   count.meter_read_pq meterReadPq,
+			   
+			   info.meter_rate meterRate,
+			   info.meter_digits meterDigits
+		from s_c_mp_info info 
+			INNER join s_c_mp_count count on info.cons_id = #{consId} and info.id = count.mp_id
+		where
+			DATE_FORMAT(meter_read_date,'%Y%m%d') between #{startDate} and #{endDate}
+		order by info.id, count.meter_read_date desc
+	</select>
+	<!-- 查询用户的营销户号和设备code ,表中conId不唯一、营销户号不唯一、同意营销户号下的设备唯一-->
+	<select id="getDeviceIdByConsId" resultType="String">
+		SELECT
+			device_id
+		FROM
+			s_c_device_relation
+		WHERE cons_id = #{consId}
+	</select>
+	<!-- 根据用户ID及时间列表获取抄表数据 -->
+	<!-- <select id="getMpCountByYmds" resultType="com.hhwy.purchaseweb.deviationcheck.scmpcount.domain.ScMpCountDetail">
+		select count.id id,
+			   count.mp_id mpId,
+			   meter_read_date meterReadDate,
+			   DATE_FORMAT(count.meter_read_date,'%Y%m%d') readDateStr,
+			   count.meter_read_pq meterReadPq,
+			   
+			   info.meter_rate meterRate,
+			   info.meter_digits meterDigits
+		from s_c_mp_info info 
+			INNER join s_c_mp_count count on info.cons_id = #{consId} and info.id = count.mp_id
+		where
+			DATE_FORMAT(meter_read_date,'%Y%m%d') in 
+			<foreach collection="ymdList" open="(" close=")" separator="," item="ymd">
+				#{ymd}
+			</foreach>
+		order by info.id, count.meter_read_date desc
+	</select> -->
+	<!-- 根据consId和ym获取用户此月的委托电量 -->
+	<select id="getProxyPqByYm" resultType="java.math.BigDecimal">
+		SELECT 
+			IFNULL(sum(c.agre_pq), 
+				(CASE RIGHT(#{ym},2) WHEN '01' THEN ppa.jan  WHEN '02' THEN ppa.feb WHEN '03' then ppa.mar when '04' then ppa.apr
+			 					 when '05' then ppa.may when '06' then ppa.jun when '07' then ppa.jul when '08' then ppa.aug
+			 					 when '09' then ppa.sept when '10' then ppa.oct when '11' then ppa.nov when '12' then ppa.dece ELSE 0 END)
+			) agrePq
+		FROM s_m_ppa ppa 
+		LEFT JOIN ph_m_agre_pq_examine c ON c.cons_id = ppa.cons_id AND c.ym = #{ym}
+		where ppa.cons_id = #{consId} and left(REPLACE(ppa.expiry_date, '-' ,''),6) &gt;= #{ym}
+			and left(REPLACE(ppa.effective_date, '-' ,''),6) &lt;= #{ym}
+			and ppa.agre_status != '00'
+	</select>
+	
+	<!-- 根据用户id数组删除表计示数 -->
+	<delete id="deleteScMpCountByConsId">
+		DELETE
+		FROM
+			s_c_mp_count
+		where mp_id in (
+			select id from s_c_mp_info WHERE
+				cons_id IN 
+			<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+	 			#{item}  
+	 		</foreach>
+		)
+	</delete>
+	
+	<!-- 根据计量点id获取其下的抄表示数数据行数 -->
+	<select id="getScMpCountCountByMpInfoId" resultType="int">
+		select count(*) from s_c_mp_count where mp_id = #{mpInfoId}
+	</select>
+</mapper>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scDeviceRelation.sql">
+	<!-- 根据条件查询根节点列表 -->
+	<select id="getScDeviceRelationListByParams" resultType="com.hhwy.purchaseweb.archives.scdevicerelation.domain.ScDeviceRelationDetail">
+		SELECT *
+		FROM (
+			SELECT s.id AS consId, CONCAT(s.id, '-', IFNULL(if(COUNT(d.id) = 0, s.market_cons_no, d.market_cons_no), '')) AS treeId, s.cons_name AS consName, 
+				s.elec_type_code AS elecTypeCode, s.volt_code AS voltCode , 
+				if(COUNT(d.id) = 0 AND d.market_cons_no IS NULL, s.market_cons_no, d.market_cons_no) AS marketConsNo, 
+				if(COUNT(d.id) = 1, d.device_id, NULL) AS deviceId, 
+				COUNT(d.id) AS deviceCount
+			FROM (SELECT DISTINCT cons.id, cons.cons_name, cons.elec_type_code, cons.volt_code, mp.market_cons_no
+						FROM s_c_consumer_info cons
+						INNER JOIN s_c_mp_info mp ON mp.cons_id = cons.id
+					<if test="consType != null and consType != ''">
+						and cons.cons_type = #{consType}
+					</if>
+			) s
+			LEFT JOIN s_c_device_relation d ON s.id = d.cons_id
+					AND s.market_cons_no = d.market_cons_no
+			GROUP BY s.id, s.market_cons_no
+			UNION
+			SELECT cons.id AS consId, CONCAT(cons.id, '-') AS treeId, cons.cons_name AS consName, cons.elec_type_code AS elecTypeCode, cons.volt_code AS voltCode
+				, d.market_cons_no AS marketConsNo, 
+				if(COUNT(d.id) = 1, d.device_id, NULL) AS deviceId, 
+				COUNT(d.id) AS deviceCount
+			FROM  s_c_consumer_info cons
+			LEFT JOIN s_c_device_relation d ON cons.id = d.cons_id
+					AND (d.market_cons_no IS NULL	OR d.market_cons_no = '')	
+			LEFT JOIN s_c_mp_info mp ON mp.cons_id = cons.id 
+				
+			where 
+				(mp.id is null or (d.id is not null and d.market_cons_no is null ))
+				<if test="consType != null and consType != ''">
+					and cons.cons_type = #{consType}
+				</if>
+			GROUP BY cons.id 
+		) a
+		WHERE 1 = 1
+		<if test="consName != null and consName != ''">
+			and a.consName LIKE CONCAT('%',#{consName},'%')
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			and a.elecTypeCode = #{elecTypeCode}
+		</if>
+		<if test="voltCodeList != null and voltCodeList != ''">
+			and a.voltCode in
+			<foreach collection="voltCodeList" item="item" index="index" open="(" separator="," close=")">
+				 #{item}
+			</foreach>
+		</if>
+		<if test="marketConsNo != null and marketConsNo != ''">
+			and a.marketConsNo LIKE CONCAT('%',#{marketConsNo},'%') 
+		</if>
+		ORDER BY a.consName DESC, a.elecTypeCode DESC, a.voltCode DESC, a.marketConsNo DESC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 查子节点数据 -->
+	<select id="getChildrenListByConsId" resultType="com.hhwy.purchaseweb.archives.scdevicerelation.domain.ScDeviceRelationDetail">
+		SELECT
+			id,
+			'' consName,
+			device_id deviceId,
+			CONCAT(cons_id, '-' , IFNULL(market_cons_no,'')) _parentId
+		FROM
+			s_c_device_relation
+		WHERE  1=1
+		<if test="marketConsNo != null and marketConsNo !=''">
+			AND market_cons_no LIKE CONCAT('%',#{marketConsNo},'%') 
+		</if>
+		<if test="marketConsNo == null or marketConsNo ==''">
+			AND market_cons_no is null OR market_cons_no = ''
+		</if>
+			and cons_id = #{consId}
+		ORDER BY device_id
+	</select>
+	<!-- 根据条件查询数量 -->
+	<select id="getScDeviceRelationCountByParams" resultType="int">
+		select count(1)	
+		FROM(
+					SELECT *
+		FROM (
+			SELECT s.id AS consId, CONCAT(s.id, '-', IFNULL(if(COUNT(d.id) = 0, s.market_cons_no, d.market_cons_no), '')) AS treeId, s.cons_name AS consName, 
+				s.elec_type_code AS elecTypeCode, s.volt_code AS voltCode , 
+				if(COUNT(d.id) = 0 AND d.market_cons_no IS NULL, s.market_cons_no, d.market_cons_no) AS marketConsNo, 
+				if(COUNT(d.id) = 1, d.device_id, NULL) AS deviceId, 
+				COUNT(d.id) AS deviceCount
+			FROM (SELECT DISTINCT cons.id, cons.cons_name, cons.elec_type_code, cons.volt_code, mp.market_cons_no
+						FROM s_c_consumer_info cons
+						INNER JOIN s_c_mp_info mp ON mp.cons_id = cons.id
+					<if test="consType != null and consType != ''">
+						and cons.cons_type = #{consType}
+					</if>
+			) s
+			LEFT JOIN s_c_device_relation d ON s.id = d.cons_id
+					AND s.market_cons_no = d.market_cons_no
+			GROUP BY s.id, s.market_cons_no
+			UNION
+			SELECT cons.id AS consId, CONCAT(cons.id, '-') AS treeId, cons.cons_name AS consName, cons.elec_type_code AS elecTypeCode, cons.volt_code AS voltCode
+				, d.market_cons_no AS marketConsNo, 
+				if(COUNT(d.id) = 1, d.device_id, NULL) AS deviceId, 
+				COUNT(d.id) AS deviceCount
+			FROM  s_c_consumer_info cons
+			LEFT JOIN s_c_device_relation d ON cons.id = d.cons_id
+					AND (d.market_cons_no IS NULL	OR d.market_cons_no = '')	
+			LEFT JOIN s_c_mp_info mp ON mp.cons_id = cons.id 
+				
+			where 
+				(mp.id is null or (d.id is not null and d.market_cons_no is null ))
+				<if test="consType != null and consType != ''">
+					and cons.cons_type = #{consType}
+				</if>
+			GROUP BY cons.id 
+		) a
+		WHERE 1 = 1
+		<if test="consName != null and consName != ''">
+			and a.consName LIKE CONCAT('%',#{consName},'%')
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			and a.elecTypeCode = #{elecTypeCode}
+		</if>
+		<if test="voltCodeList != null and voltCodeList != ''">
+			and a.voltCode in
+			<foreach collection="voltCodeList" item="item" index="index" open="(" separator="," close=")">
+				 #{item}
+			</foreach>
+		</if>
+		<if test="marketConsNo != null and marketConsNo != ''">
+			and a.marketConsNo LIKE CONCAT('%',#{marketConsNo},'%') 
+		</if>
+		)a
+		
+	</select>
+	
+	<!-- 查询根节点的子节点数量 -->
+	<select id="getChildrenCount" resultType="int">
+		SELECT
+			COUNT(s.id) consId
+		FROM
+			s_c_device_relation d
+		LEFT JOIN s_c_consumer_info s ON s.id = d.cons_id
+		WHERE
+			d.cons_id = #{consId}
+						
+	</select>
+	
+	<!-- 删除节点数据 -->
+	<delete id="deleteTree">
+		DELETE
+			FROM
+		s_c_device_relation
+		where
+		<foreach collection="">
+								
+		</foreach>	
+	</delete>
+	
+	<!-- 删除根节点数据 -->
+	<delete id="deleteTreeParentList">
+		DELETE
+			FROM
+		s_c_device_relation
+		where 1=1 AND
+		<foreach collection="parentList" item="item" index="index" open="(" separator="OR" close=")">
+			(
+				cons_id=#{item.consId} 
+				<if test="item.marketConsNo != null and item.marketConsNo != ''">
+				AND market_cons_no=#{item.marketConsNo}
+				</if>
+			)
+			
+		</foreach>	
+	</delete>
+	
+		<!-- 删除子节点数据 -->
+	<delete id="deleteTreeChildrenList">
+		DELETE
+			FROM
+		s_c_device_relation
+		where
+			id in
+		<foreach collection="list" item="ids" index="index" open="(" separator="," close=")">
+			#{ids.id}				
+		</foreach>	
+	</delete>
+	
+	<!-- 根据营销户号删除数据， 用户档案那里需要  修改 by LiXinze -->
+	<delete id="deleteByMarketConsNo">
+		DELETE FROM
+			s_c_device_relation
+		WHERE
+			market_cons_no = (select market_cons_no from s_c_mp_info where id = #{string})
+	</delete>
+	
+	<!-- 根据用户id,删除设备关系数据 -->
+	<delete id="deleteByConsId">
+		DELETE
+		FROM
+			s_c_device_relation
+		WHERE
+			cons_id IN
+		<foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<!-- 查询所有设备id -->
+	<select id="getTotalDeviceId" resultType="string">
+		SELECT
+			device_id deviceId
+		FROM
+			s_c_device_relation
+	</select>
+	
+	<!-- 报表选择用户树 -->
+	<select id="getConsTree" resultType="com.hhwy.purchaseweb.archives.scdevicerelation.domain.ScDeviceRelationDetail">
+		SELECT
+			DISTINCT s.cons_id consId,
+			c.cons_name consName
+		FROM
+			s_c_device_relation s
+		LEFT JOIN s_c_consumer_info c ON s.cons_id = c.id
+		ORDER BY c.cons_name DESC
+	</select>
+	
+	<!-- 查询用户的营销户号和设备code ,表中conId不唯一、营销户号不唯一、同意营销户号下的设备唯一-->
+	<select id="getConsDeviceInfo" resultType="com.hhwy.purchaseweb.archives.scdevicerelation.domain.ScDeviceRelationDetail">
+		SELECT
+			cons_id consId,
+			market_cons_no marketConsNo,
+			device_id deviceId
+		FROM
+			s_c_device_relation
+		WHERE 1=1
+		<if test="consId != null and consId !=''">
+			and cons_id = #{consId}
+		</if>
+		Order BY market_cons_no desc, id desc
+	</select>
+	
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

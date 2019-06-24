@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmElecList.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmElecListListByParams" resultType="com.hhwy.purchaseweb.bid.phmeleclist.domain.PhmElecListDetail">  
+		select
+			ID id,
+			cons_id consId,
+			ym ym,
+			metering_type meteringType,
+			read_type readType,
+			meter_no meterNo,
+			start_number startNumber,
+			end_number endNumber,
+			meter_rate meterRate,
+			copy_pq copyPq,
+			subtract_form subtractForm,
+			trans_loss transLoss,
+			line_loss lineLoss,
+			CONVERT(total_pq*1000,DECIMAL(18,2)) totalPq,
+			kwh_prc kwhPrc,
+			kwh_amt kwhAmt,
+			cap_demand capDemand,
+			base_amt baseAmt,
+			adjust_amt adjustAmt,
+			repay_amt repayAmt,
+			replace_amt replaceAmt,
+			additional_amt additionalAmt,
+			rural_amt ruralAmt,
+			regenerate_amt regenerateAmt,
+			agriculture_amt agricultureAmt,
+			elec_source_amt elecSourceAmt,
+			small_reservoir_amt smallReservoirAmt,
+			large_reservoir_amt largeReservoirAmt,
+			difference_amt differenceAmt,
+			special_amt specialAmt,
+			three_gorges_amt threeGorgesAmt,
+			loss_amt lossAmt,
+			trans_prc transPrc,
+			total_amt totalAmt,
+			org_no orgNo		
+		from ph_m_elec_list where 1=1
+		<if test="phmElecList != null and phmElecList.consId != null and phmElecList.consId != ''">
+			and cons_id = #{phmElecList.consId}
+		</if>
+		<if test="phmElecList != null and phmElecList.ym != null and phmElecList.ym != ''">
+			and ym = #{phmElecList.ym}
+		</if>
+		<if test="phmElecList != null and phmElecList.meteringType != null and phmElecList.meteringType != ''">
+			and metering_type = #{phmElecList.meteringType}
+		</if>
+		<if test="phmElecList != null and phmElecList.readType != null and phmElecList.readType != ''">
+			and read_type = #{phmElecList.readType}
+		</if>
+		<if test="phmElecList != null and phmElecList.meterNo != null and phmElecList.meterNo != ''">
+			and meter_no = #{phmElecList.meterNo}
+		</if>
+		<if test="phmElecList != null and phmElecList.startNumber != null and phmElecList.startNumber != ''">
+			and start_number = #{phmElecList.startNumber}
+		</if>
+		<if test="phmElecList != null and phmElecList.endNumber != null and phmElecList.endNumber != ''">
+			and end_number = #{phmElecList.endNumber}
+		</if>
+		<if test="phmElecList != null and phmElecList.meterRate != null and phmElecList.meterRate != ''">
+			and meter_rate = #{phmElecList.meterRate}
+		</if>
+		<if test="phmElecList != null and phmElecList.copyPq != null and phmElecList.copyPq != ''">
+			and copy_pq = #{phmElecList.copyPq}
+		</if>
+		<if test="phmElecList != null and phmElecList.subtractForm != null and phmElecList.subtractForm != ''">
+			and subtract_form = #{phmElecList.subtractForm}
+		</if>
+		<if test="phmElecList != null and phmElecList.transLoss != null and phmElecList.transLoss != ''">
+			and trans_loss = #{phmElecList.transLoss}
+		</if>
+		<if test="phmElecList != null and phmElecList.lineLoss != null and phmElecList.lineLoss != ''">
+			and line_loss = #{phmElecList.lineLoss}
+		</if>
+		<if test="phmElecList != null and phmElecList.totalPq != null and phmElecList.totalPq != ''">
+			and total_pq = #{phmElecList.totalPq}
+		</if>
+		<if test="phmElecList != null and phmElecList.kwhPrc != null and phmElecList.kwhPrc != ''">
+			and kwh_prc = #{phmElecList.kwhPrc}
+		</if>
+		<if test="phmElecList != null and phmElecList.kwhAmt != null and phmElecList.kwhAmt != ''">
+			and kwh_amt = #{phmElecList.kwhAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.capDemand != null and phmElecList.capDemand != ''">
+			and cap_demand = #{phmElecList.capDemand}
+		</if>
+		<if test="phmElecList != null and phmElecList.baseAmt != null and phmElecList.baseAmt != ''">
+			and base_amt = #{phmElecList.baseAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.adjustAmt != null and phmElecList.adjustAmt != ''">
+			and adjust_amt = #{phmElecList.adjustAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.repayAmt != null and phmElecList.repayAmt != ''">
+			and repay_amt = #{phmElecList.repayAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.replaceAmt != null and phmElecList.replaceAmt != ''">
+			and replace_amt = #{phmElecList.replaceAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.additionalAmt != null and phmElecList.additionalAmt != ''">
+			and additional_amt = #{phmElecList.additionalAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.ruralAmt != null and phmElecList.ruralAmt != ''">
+			and rural_amt = #{phmElecList.ruralAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.regenerateAmt != null and phmElecList.regenerateAmt != ''">
+			and regenerate_amt = #{phmElecList.regenerateAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.agricultureAmt != null and phmElecList.agricultureAmt != ''">
+			and agriculture_amt = #{phmElecList.agricultureAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.elecSourceAmt != null and phmElecList.elecSourceAmt != ''">
+			and elec_source_amt = #{phmElecList.elecSourceAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.smallReservoirAmt != null and phmElecList.smallReservoirAmt != ''">
+			and small_reservoir_amt = #{phmElecList.smallReservoirAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.largeReservoirAmt != null and phmElecList.largeReservoirAmt != ''">
+			and large_reservoir_amt = #{phmElecList.largeReservoirAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.differenceAmt != null and phmElecList.differenceAmt != ''">
+			and difference_amt = #{phmElecList.differenceAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.specialAmt != null and phmElecList.specialAmt != ''">
+			and special_amt = #{phmElecList.specialAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.threeGorgesAmt != null and phmElecList.threeGorgesAmt != ''">
+			and three_gorges_amt = #{phmElecList.threeGorgesAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.lossAmt != null and phmElecList.lossAmt != ''">
+			and loss_amt = #{phmElecList.lossAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.transPrc != null and phmElecList.transPrc != ''">
+			and trans_prc = #{phmElecList.transPrc}
+		</if>
+		<if test="phmElecList != null and phmElecList.totalAmt != null and phmElecList.totalAmt != ''">
+			and total_amt = #{phmElecList.totalAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.orgNo != null and phmElecList.orgNo != ''">
+			and org_no = #{phmElecList.orgNo}
+		</if>
+		order by metering_type,read_type
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmElecListCountByParams" resultType="int">
+		select count(1)	from ph_m_elec_list where 1=1
+		<if test="phmElecList != null and phmElecList.consId != null and phmElecList.consId != ''">
+			and cons_id = #{phmElecList.consId}
+		</if>
+		<if test="phmElecList != null and phmElecList.ym != null and phmElecList.ym != ''">
+			and ym = #{phmElecList.ym}
+		</if>
+		<if test="phmElecList != null and phmElecList.meteringType != null and phmElecList.meteringType != ''">
+			and metering_type = #{phmElecList.meteringType}
+		</if>
+		<if test="phmElecList != null and phmElecList.readType != null and phmElecList.readType != ''">
+			and read_type = #{phmElecList.readType}
+		</if>
+		<if test="phmElecList != null and phmElecList.meterNo != null and phmElecList.meterNo != ''">
+			and meter_no = #{phmElecList.meterNo}
+		</if>
+		<if test="phmElecList != null and phmElecList.startNumber != null and phmElecList.startNumber != ''">
+			and start_number = #{phmElecList.startNumber}
+		</if>
+		<if test="phmElecList != null and phmElecList.endNumber != null and phmElecList.endNumber != ''">
+			and end_number = #{phmElecList.endNumber}
+		</if>
+		<if test="phmElecList != null and phmElecList.meterRate != null and phmElecList.meterRate != ''">
+			and meter_rate = #{phmElecList.meterRate}
+		</if>
+		<if test="phmElecList != null and phmElecList.copyPq != null and phmElecList.copyPq != ''">
+			and copy_pq = #{phmElecList.copyPq}
+		</if>
+		<if test="phmElecList != null and phmElecList.subtractForm != null and phmElecList.subtractForm != ''">
+			and subtract_form = #{phmElecList.subtractForm}
+		</if>
+		<if test="phmElecList != null and phmElecList.transLoss != null and phmElecList.transLoss != ''">
+			and trans_loss = #{phmElecList.transLoss}
+		</if>
+		<if test="phmElecList != null and phmElecList.lineLoss != null and phmElecList.lineLoss != ''">
+			and line_loss = #{phmElecList.lineLoss}
+		</if>
+		<if test="phmElecList != null and phmElecList.totalPq != null and phmElecList.totalPq != ''">
+			and total_pq = #{phmElecList.totalPq}
+		</if>
+		<if test="phmElecList != null and phmElecList.kwhPrc != null and phmElecList.kwhPrc != ''">
+			and kwh_prc = #{phmElecList.kwhPrc}
+		</if>
+		<if test="phmElecList != null and phmElecList.kwhAmt != null and phmElecList.kwhAmt != ''">
+			and kwh_amt = #{phmElecList.kwhAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.capDemand != null and phmElecList.capDemand != ''">
+			and cap_demand = #{phmElecList.capDemand}
+		</if>
+		<if test="phmElecList != null and phmElecList.baseAmt != null and phmElecList.baseAmt != ''">
+			and base_amt = #{phmElecList.baseAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.adjustAmt != null and phmElecList.adjustAmt != ''">
+			and adjust_amt = #{phmElecList.adjustAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.repayAmt != null and phmElecList.repayAmt != ''">
+			and repay_amt = #{phmElecList.repayAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.replaceAmt != null and phmElecList.replaceAmt != ''">
+			and replace_amt = #{phmElecList.replaceAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.additionalAmt != null and phmElecList.additionalAmt != ''">
+			and additional_amt = #{phmElecList.additionalAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.ruralAmt != null and phmElecList.ruralAmt != ''">
+			and rural_amt = #{phmElecList.ruralAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.regenerateAmt != null and phmElecList.regenerateAmt != ''">
+			and regenerate_amt = #{phmElecList.regenerateAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.agricultureAmt != null and phmElecList.agricultureAmt != ''">
+			and agriculture_amt = #{phmElecList.agricultureAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.elecSourceAmt != null and phmElecList.elecSourceAmt != ''">
+			and elec_source_amt = #{phmElecList.elecSourceAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.smallReservoirAmt != null and phmElecList.smallReservoirAmt != ''">
+			and small_reservoir_amt = #{phmElecList.smallReservoirAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.largeReservoirAmt != null and phmElecList.largeReservoirAmt != ''">
+			and large_reservoir_amt = #{phmElecList.largeReservoirAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.differenceAmt != null and phmElecList.differenceAmt != ''">
+			and difference_amt = #{phmElecList.differenceAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.specialAmt != null and phmElecList.specialAmt != ''">
+			and special_amt = #{phmElecList.specialAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.threeGorgesAmt != null and phmElecList.threeGorgesAmt != ''">
+			and three_gorges_amt = #{phmElecList.threeGorgesAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.lossAmt != null and phmElecList.lossAmt != ''">
+			and loss_amt = #{phmElecList.lossAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.transPrc != null and phmElecList.transPrc != ''">
+			and trans_prc = #{phmElecList.transPrc}
+		</if>
+		<if test="phmElecList != null and phmElecList.totalAmt != null and phmElecList.totalAmt != ''">
+			and total_amt = #{phmElecList.totalAmt}
+		</if>
+		<if test="phmElecList != null and phmElecList.orgNo != null and phmElecList.orgNo != ''">
+			and org_no = #{phmElecList.orgNo}
+		</if>
+	</select>
+	
+	<select id="getPhmElecListDetailListByParams" resultType="com.hhwy.purchaseweb.bid.phmeleclist.domain.ElecListDetail">
+		SELECT 
+			a.id,
+			a.cons_id consId,
+			b.cons_name consName,
+			b.volt_code voltCode,
+			b.org_id orgId,
+			a.ym ym,
+			a.total_pq totalPq,
+			c.proxy_pq balancePq,
+			a.total_amt totalAmt
+		FROM (SELECT * FROM ph_m_elec_list WHERE metering_type = "05") a
+		LEFT JOIN s_c_consumer_info b ON b.id = a.cons_id
+		LEFT JOIN (SELECT cons_id,ym,SUM(proxy_pq) proxy_pq FROM ph_m_balance_info GROUP BY cons_id,ym) c ON c.cons_id = a.cons_id AND c.ym = a.ym
+		WHERE 1=1
+		<if test="consName != null and consName != ''">
+			and b.cons_name LIKE concat("%",#{consName},"%")
+		</if>
+		<if test="ym != null and ym != ''">
+			and a.ym = #{ym}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			and b.volt_code = #{voltCode}
+		</if>
+		order by a.ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<select id="getPhmElecListDetailCountByParams" resultType="int">
+		SELECT 
+			COUNT(1)
+		FROM (SELECT * FROM ph_m_elec_list WHERE metering_type = "05") a
+		LEFT JOIN s_c_consumer_info b ON b.id = a.cons_id
+		WHERE 1=1
+		<if test="consName != null and consName != ''">
+			and b.cons_name LIKE concat("%",#{consName},"%")
+		</if>
+		<if test="ym != null and ym != ''">
+			and a.ym = #{ym}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			and b.volt_code = #{voltCode}
+		</if>
+	</select>
+	<!-- ************** 因云售电没有电费清单，所以先注释掉这个sql。 - by 王泽鲁 -2017-12-02    -->
+	<!-- <update id="updataCons">
+		UPDATE s_c_mp_info SET meter_read_pq = #{endNumber} ,meter_read_date = str_to_date(CONCAT(#{ym},"01"), '%Y%m%d') WHERE cons_id = #{consId}
+	</update> -->
+	
+	<!-- 删除 -->
+	<delete id="deletePhmElecList">
+		DELETE FROM ph_m_elec_list WHERE cons_id = #{consId} AND ym = #{ym}
+	</delete>
+	
+	<!-- 查询当月 -->
+	<select id="getConsElecId" resultType="string">
+	 	SELECT id FROM s_c_cons_electricity WHERE cons_id = #{consId} AND ym = #{ym}
+	</select>
+	
+	<insert id="insertConsElec">
+		INSERT INTO s_c_cons_electricity (id,cons_id,ym,create_time,create_user,update_time,update_user,org_no)
+		VALUE(#{id},#{consId},#{ym},#{createTime},#{createUser},#{updateTime},#{updateUser},#{orgNo}) 
+	</insert>
+	
+	<update id="updateConsElec">
+		UPDATE s_c_cons_electricity SET  ${pqName} = #{pqValue} ,${amtName} = #{amtValue}  WHERE id = #{id}
+	</update>
+	
+	<select id="getMeterNo" resultType="string">
+		SELECT meter_no FROM s_c_mp_info WHERE cons_id = #{consId}
+	</select>
+</mapper>

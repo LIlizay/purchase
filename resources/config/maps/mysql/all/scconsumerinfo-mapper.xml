@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scConsumerInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<!-- <select id="getScConsumerInfoListByParams" resultType="com.hhwy.selling.domain.ScConsumerInfo">
+		select
+			ID id,
+			cons_no consNo,
+			cons_name consName,
+			market_cons_no marketConsNo,
+			industry_type industryType,
+			org_id orgId,
+			province_code provinceCode,
+			city_code cityCode,
+			county_code countyCode,
+			elec_addr elecAddr,
+			electric_capacity electricCapacity,
+			elec_type_code elecTypeCode,
+			lode_attr_code lodeAttrCode,
+			volt_code voltCode,
+			registration_no registrationNo,
+			vat_no vatNo,
+			org_code orgCode,
+			legal_agent legalAgent,
+			auth_agent authAgent,
+			registered_address registeredAddress,
+			bank_name bankName,
+			count_name countName,
+			count_no countNo,
+			upper_pq upperPq,
+			sell_person sellPerson,
+			sell_phone sellPhone,
+			sell_post sellPost,
+			sell_e_mail sellEMail,
+			office_phone officePhone,
+			fax_no faxNo,
+			org_no orgNo,
+			cons_type consType,
+		    parent_id parentId,
+		    cons_path consPath
+    	
+		from s_c_consumer_info where 1=1
+		<if test="scConsumerInfo != null and scConsumerInfo.consNo != null and scConsumerInfo.consNo != ''">
+			and cons_no = #{scConsumerInfo.consNo}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.consName != null and scConsumerInfo.consName != ''">
+			and cons_name = #{scConsumerInfo.consName}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.marketConsNo != null and scConsumerInfo.marketConsNo != ''">
+			and market_cons_no = #{scConsumerInfo.marketConsNo}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.industryType != null and scConsumerInfo.industryType != ''">
+			and industry_type = #{scConsumerInfo.industryType}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.orgId != null and scConsumerInfo.orgId != ''">
+			and org_id = #{scConsumerInfo.orgId}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.provinceCode != null and scConsumerInfo.provinceCode != ''">
+			and province_code = #{scConsumerInfo.provinceCode}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.cityCode != null and scConsumerInfo.cityCode != ''">
+			and city_code = #{scConsumerInfo.cityCode}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.countyCode != null and scConsumerInfo.countyCode != ''">
+			and county_code = #{scConsumerInfo.countyCode}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.elecAddr != null and scConsumerInfo.elecAddr != ''">
+			and elec_addr = #{scConsumerInfo.elecAddr}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.electricCapacity != null and scConsumerInfo.electricCapacity != ''">
+			and electric_capacity = #{scConsumerInfo.electricCapacity}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.elecTypeCode != null and scConsumerInfo.elecTypeCode != ''">
+			and elec_type_code = #{scConsumerInfo.elecTypeCode}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.lodeAttrCode != null and scConsumerInfo.lodeAttrCode != ''">
+			and lode_attr_code = #{scConsumerInfo.lodeAttrCode}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.voltCode != null and scConsumerInfo.voltCode != ''">
+			and volt_code = #{scConsumerInfo.voltCode}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.registrationNo != null and scConsumerInfo.registrationNo != ''">
+			and registration_no = #{scConsumerInfo.registrationNo}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.vatNo != null and scConsumerInfo.vatNo != ''">
+			and vat_no = #{scConsumerInfo.vatNo}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.orgCode != null and scConsumerInfo.orgCode != ''">
+			and org_code = #{scConsumerInfo.orgCode}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.legalAgent != null and scConsumerInfo.legalAgent != ''">
+			and legal_agent = #{scConsumerInfo.legalAgent}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.authAgent != null and scConsumerInfo.authAgent != ''">
+			and auth_agent = #{scConsumerInfo.authAgent}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.registeredAddress != null and scConsumerInfo.registeredAddress != ''">
+			and registered_address = #{scConsumerInfo.registeredAddress}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.bankName != null and scConsumerInfo.bankName != ''">
+			and bank_name = #{scConsumerInfo.bankName}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.countName != null and scConsumerInfo.countName != ''">
+			and count_name = #{scConsumerInfo.countName}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.countNo != null and scConsumerInfo.countNo != ''">
+			and count_no = #{scConsumerInfo.countNo}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.upperPq != null and scConsumerInfo.upperPq != ''">
+			and upper_pq = #{scConsumerInfo.upperPq}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.sellPerson != null and scConsumerInfo.sellPerson != ''">
+			and sell_person = #{scConsumerInfo.sellPerson}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.sellPhone != null and scConsumerInfo.sellPhone != ''">
+			and sell_phone = #{scConsumerInfo.sellPhone}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.sellPost != null and scConsumerInfo.sellPost != ''">
+			and sell_post = #{scConsumerInfo.sellPost}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.sellEMail != null and scConsumerInfo.sellEMail != ''">
+			and sell_e_mail = #{scConsumerInfo.sellEMail}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.officePhone != null and scConsumerInfo.officePhone != ''">
+			and office_phone = #{scConsumerInfo.officePhone}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.faxNo != null and scConsumerInfo.faxNo != ''">
+			and fax_no = #{scConsumerInfo.faxNo}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.orgNo != null and scConsumerInfo.orgNo != ''">
+			and org_no = #{scConsumerInfo.orgNo}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.consType != null and scConsumerInfo.consType != ''">
+			and cons_type = #{scConsumerInfo.consType}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select> -->
+	
+	<!-- 用户列表根节点 -->
+	<select id="getScConsumerInfoDetailListByParams" resultType="com.hhwy.purchaseweb.archives.scconsumerinfo.domain.ScConsumerInfoDetail">
+		SELECT 
+			a.id id,
+			a.cons_name consName,
+			a.sell_person sellPerson,
+			a.electric_capacity electricCapacity,
+			a.cons_type consType,
+			a.market_status marketStatus,
+			a.direct_power directPower,
+			a.org_id orgId,
+			d.name orgName,
+			a.elec_type_code elecTypeCode,
+			a.volt_code voltCode,
+			a.industrial_zone industrialZone,
+			IF(b.iz_name IS NULL, '独立用户', b.iz_name) industrialZoneName,
+			a.parent_id parentId,
+			c.count count,
+		    a.cons_path consPath
+		FROM s_c_consumer_info a
+		LEFT JOIN (SELECT b.parent_id parent_id,COUNT(1) count FROM s_c_consumer_info b WHERE b.parent_id IS NOT NULL AND b.parent_id !='' GROUP BY parent_id) c
+		ON c.parent_id=a.id
+		LEFT JOIN s_c_industrial_zone b ON a.industrial_zone = b.id
+		LeFT JOIN s_c_org_info d ON a.org_id=d.id
+		where 1 = 1
+		and a.parent_id IS NULL
+		<if test="scConsumerInfo != null and scConsumerInfo.consName != null and scConsumerInfo.consName != ''">
+			and a.cons_name LIKE CONCAT('%',#{scConsumerInfo.consName},'%')
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.consType != null and scConsumerInfo.consType != ''">
+			and a.cons_type = #{scConsumerInfo.consType}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.orgId != null and scConsumerInfo.orgId != ''">
+			and a.org_id = #{scConsumerInfo.orgId}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.elecTypeCode != null and scConsumerInfo.elecTypeCode != ''">
+			and a.elec_type_code = #{scConsumerInfo.elecTypeCode}
+		</if>
+		<if test="splitVoltCode != null">
+			and a.volt_code IN
+			<foreach collection="splitVoltCode" index="index" item="item" open="(" separator="," close=")">
+           		#{item}
+        	</foreach>
+			<!-- and a.volt_code IN(SUBSTRING_INDEX(#{scConsumerInfo.voltCode}, ',', 1)) -->
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.sellPerson != null and scConsumerInfo.sellPerson != ''">
+			and a.sell_person LIKE CONCAT('%', #{scConsumerInfo.sellPerson},'%' )
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.marketStatus != null and scConsumerInfo.marketStatus != ''">
+			and a.market_status = #{scConsumerInfo.marketStatus}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.directPower != null and scConsumerInfo.directPower != ''">
+			and a.direct_power = #{scConsumerInfo.directPower}
+		</if>
+		<if test="consIds != null and consIds != '' and consIds.length > 0">
+			and a.id in	
+			<foreach collection="consIds" index="index" item="item" open="(" separator="," close=")">
+		   		#{item}
+			</foreach>
+		</if>
+		order by a.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<!-- 根据条件查询数量 -->
+	<select id="getScConsumerInfoCountByParams" resultType="int">
+		SELECT 
+			count(a.id)
+		FROM s_c_consumer_info a
+		where 1 = 1
+		and a.parent_id IS NULL
+		<if test="scConsumerInfo != null and scConsumerInfo.consName != null and scConsumerInfo.consName != ''">
+			and a.cons_name LIKE CONCAT('%',#{scConsumerInfo.consName},'%')
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.consType != null and scConsumerInfo.consType != ''">
+			and a.cons_type = #{scConsumerInfo.consType}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.orgId != null and scConsumerInfo.orgId != ''">
+			and a.org_id = #{scConsumerInfo.orgId}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.elecTypeCode != null and scConsumerInfo.elecTypeCode != ''">
+			and a.elec_type_code = #{scConsumerInfo.elecTypeCode}
+		</if>
+		<!-- <if test="scConsumerInfo != null and scConsumerInfo.voltCode != null and scConsumerInfo.voltCode != ''">
+			and a.volt_code = #{scConsumerInfo.voltCode}
+		</if> -->
+		<if test="splitVoltCode != null">
+			and a.volt_code IN
+			<foreach collection="splitVoltCode" index="index" item="item" open="(" separator="," close=")">
+           		#{item}
+        	</foreach>
+			<!-- and a.volt_code IN(SUBSTRING_INDEX(#{scConsumerInfo.voltCode}, ',', 1)) -->
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.sellPerson != null and scConsumerInfo.sellPerson != ''">
+			and a.sell_person LIKE CONCAT('%', #{scConsumerInfo.sellPerson},'%' )
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.marketStatus != null and scConsumerInfo.marketStatus != ''">
+			and a.market_status = #{scConsumerInfo.marketStatus}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.directPower != null and scConsumerInfo.directPower != ''">
+			and a.direct_power = #{scConsumerInfo.directPower}
+		</if>
+	</select>
+	
+	<!-- 查询用户列表子节点 -->
+	<select id="getScconsumerinfoChild" resultType="com.hhwy.purchaseweb.archives.scconsumerinfo.domain.ScConsumerInfoDetail">
+		SELECT 
+			a.id id,
+			a.cons_name consName,
+			a.sell_person sellPerson,
+			a.electric_capacity electricCapacity,
+			a.cons_type consType,
+			a.market_status marketStatus,
+			a.direct_power directPower,
+			a.org_id orgId,
+			d.name orgName,
+			a.elec_type_code elecTypeCode,
+			a.volt_code voltCode,
+			a.industrial_zone industrialZone,
+			IF(b.iz_name IS NULL, '独立用户', b.iz_name) industrialZoneName,
+			a.parent_id parentId,
+			c.count count,
+		    a.cons_path consPath
+		FROM s_c_consumer_info a
+		LEFT JOIN (SELECT b.parent_id parent_id,COUNT(1) count FROM s_c_consumer_info b WHERE b.parent_id IS NOT NULL AND b.parent_id !='' GROUP BY parent_id) c
+		ON c.parent_id=a.id
+		LEFT JOIN s_c_industrial_zone b ON a.industrial_zone = b.id
+		LeFT JOIN s_c_org_info d ON a.org_id=d.id
+		where 1 = 1
+		<if test="scConsumerInfo != null and scConsumerInfo.consName != null and scConsumerInfo.consName != ''">
+			and a.cons_name LIKE CONCAT('%',#{scConsumerInfo.consName},'%')
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.consType != null and scConsumerInfo.consType != ''">
+			and a.cons_type = #{scConsumerInfo.consType}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.orgId != null and scConsumerInfo.orgId != ''">
+			and a.org_id = #{scConsumerInfo.orgId}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.elecTypeCode != null and scConsumerInfo.elecTypeCode != ''">
+			and a.elec_type_code = #{scConsumerInfo.elecTypeCode}
+		</if>
+		<if test="splitVoltCode != null">
+			and a.volt_code IN
+			<foreach collection="splitVoltCode" index="index" item="item" open="(" separator="," close=")">
+           		#{item}
+        	</foreach>
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.sellPerson != null and scConsumerInfo.sellPerson != ''">
+			and a.sell_person LIKE CONCAT('%', #{scConsumerInfo.sellPerson},'%' )
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.marketStatus != null and scConsumerInfo.marketStatus != ''">
+			and a.market_status = #{scConsumerInfo.marketStatus}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.directPower != null and scConsumerInfo.directPower != ''">
+			and a.direct_power = #{scConsumerInfo.directPower}
+		</if>
+		<if test="id != null and id != '' " >
+			and a.parent_id = #{id}
+		</if>
+		order by a.create_time desc
+		
+	</select>
+	
+	<update id="updateAllConsType">
+		UPDATE s_c_consumer_info cons
+		LEFT JOIN (
+			SELECT
+				con.id cons_id,
+				COUNT(ppa.id) agreNum
+			FROM s_c_consumer_info con LEFT JOIN
+				s_m_ppa ppa	on ppa.cons_id=con.id
+			WHERE
+				(DATE_FORMAT(NOW(), '%Y-%m') &lt;= ppa.expiry_date
+					AND (ppa.agre_status != "00" || ppa.agre_status is null)) 
+				or ppa.id is null
+			GROUP BY con.id
+		) consStatus ON cons.id = consStatus.cons_id
+		SET cons.cons_type = IF (	consStatus.agreNum &gt; 0,	'01',	'02')
+		WHERE cons.cons_type != IF (consStatus.agreNum &gt; 0,	'01',	'02') or cons.cons_type is null
+	</update>
+	
+	
+	<!-- 根据用户id数组获取其中绑定了用电监测用户的数量 -->
+	<select id="getScConsUserRelaCountByConsIds" resultType="int">
+		select count(1)	from em_s_user_real where s_user_id in 
+		<foreach collection="array" index="index" item="tag" open="(" separator="," close=")">
+	   		#{tag}
+		</foreach>
+	</select>
+	
+	<select id="getScConsumerInfoDetailById" resultType="com.hhwy.purchaseweb.archives.scconsumerinfo.domain.ScConsumerInfoDetail">
+		SELECT 
+			a.id id,
+			a.cons_name consName,
+			a.cons_type consType,
+			a.market_status marketStatus,
+			a.direct_power directPower,
+			a.org_id orgId,
+			d.name orgName,
+			a.elec_type_code elecTypeCode,
+			a.volt_code voltCode,
+			a.sc_package scPackage,
+			a.industrial_zone industrialZone,
+			IF(b.iz_name IS NULL, '独立用户', b.iz_name) industrialZoneName
+		FROM s_c_consumer_info a
+		LEFT JOIN s_c_industrial_zone b ON a.industrial_zone = b.id
+		LeFT JOIN s_c_org_info d ON a.org_id=d.id
+		where a.id = #{id}
+	</select>
+	
+	<delete id="deleteScContactsInfo">
+		delete from s_c_contacts_info where cons_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+ 			#{item}  
+ 		</foreach> 
+	</delete>
+
+	<select id="getAgreList" resultType="com.hhwy.purchaseweb.archives.scconsumerinfo.domain.ConsAgreDetail">
+		SELECT 
+			a.id id,
+			DATE_FORMAT(a.effective_date,'%Y') year,
+			a.agre_no agreNo,
+			a.agre_name agreName,
+			a.agre_type agreType,
+			a.proxy_pq proxyPq,
+			a.effective_date effectiveDate,
+			a.expiry_date expiryDate,
+			a.file_id fileId,
+			IF(NOW() &lt; a.effective_date ,'未执行',IF(NOW() &gt; a.expiry_date,"已完成","执行中")) agreStatus,
+			CONVERT(((SELECT SUM(proxy_pq) FROM ph_m_balance_info WHERE cons_id = b.id AND ym &gt; DATE_FORMAT(a.effective_date, '%Y%m') AND ym &lt; DATE_FORMAT(a.expiry_date, '%Y%m') GROUP BY cons_id) / a.proxy_pq * 100), DECIMAL(18,2)) agreProp
+		FROM s_m_ppa a
+		LEFT JOIN s_c_consumer_info b ON b.id = a.cons_id
+		WHERE 
+		b.id = #{consId}
+		<if test="year != null and year != ''">
+			AND DATE_FORMAT(a.effective_date, '%Y') = #{year}
+		</if>
+	</select>
+	
+	<select id="getElecYear" resultType="com.hhwy.purchaseweb.archives.scconsumerinfo.domain.ElecYearDetail">
+		SELECT 
+			DATE_FORMAT(a.effective_date,'%Y') year,
+			IFNULL(CONVERT(a.proxy_pq, DECIMAL(18,2)),'') proxyPq,
+			IFNULL(CONVERT(SUM(d.total_pq), DECIMAL(18,2)),'') actualPq,
+			IFNULL(CONVERT(SUM(c.proxy_pq) - SUM(f.deal_pq), DECIMAL(18,2)),'') deviationPq,
+			IFNULL(CONVERT(((SUM(c.proxy_pq) - SUM(f.deal_pq)) * 100 / SUM(f.deal_pq)), DECIMAL(18,2)),'') deviationProp
+		FROM s_m_ppa a
+		LEFT JOIN ph_m_balance_info c ON a.cons_id = c.cons_id AND c.ym &gt; DATE_FORMAT(a.effective_date, '%Y%m') AND ym &lt; DATE_FORMAT(a.expiry_date, '%Y%m')
+		LEFT JOIN ph_m_elec_list d ON d.cons_id = a.cons_id AND d.ym = c.ym AND metering_type="05"
+		LEFT JOIN ph_m_deal_info f ON f.cons_id = a.cons_id AND f.ym = c.ym
+		WHERE 
+			a.cons_id = #{consId}
+			<if test="year != null and year != ''">
+				AND LEFT(c.ym, 4) = #{year}
+			</if>
+		GROUP BY LEFT(c.ym, 4) 
+	</select>
+	
+	<select id="getElecMonth" resultType="com.hhwy.purchaseweb.archives.scconsumerinfo.domain.ElecMonthDetail">
+		SELECT 
+			CONCAT(cast(RIGHT(a.ym, 2) as SIGNED INTEGER),'月') month,
+			IFNULL(CONVERT(a.agre_pq, DECIMAL(18,2)),'') agrePq,
+			(SELECT z.agre_prc FROM s_m_dist_mode z LEFT JOIN s_m_ppa x ON z.agre_id = x.id WHERE x.cons_id = a.cons_id) agrePrc,
+			IFNULL(CONVERT(SUM(c.proxy_pq), DECIMAL(18,2)),'') proxyPq,
+			IFNULL(CONVERT(d.total_pq, DECIMAL(18,2)),'') actualPq,
+			IFNULL(CONVERT(SUM(c.proxy_pq) - f.deal_pq, DECIMAL(18,2)),'') deviationPq,
+			IFNULL(CONVERT(((SUM(c.proxy_pq) - f.deal_pq) * 100 / f.deal_pq), DECIMAL(18,2)),'') deviationProp
+		FROM ph_m_agre_pq_examine a
+		LEFT JOIN ph_m_balance_info c ON a.cons_id = c.cons_id AND a.ym = c.ym
+		LEFT JOIN ph_m_elec_list d ON d.cons_id = a.cons_id AND d.ym = a.ym AND metering_type="05"
+		LEFT JOIN ph_m_deal_info f ON f.cons_id = a.cons_id AND f.ym = a.ym
+		WHERE 
+		a.cons_id = #{consId}
+		AND a.ym LIKE CONCAT(#{year},'%')
+		GROUP BY c.ym
+		ORDER BY a.ym ASC
+	</select>
+	
+	<select id="getConsProfit" resultType="map">
+		SELECT 
+			a.ym ym,
+			(cast(RIGHT(a.ym, 2) as SIGNED INTEGER)-1) inx,
+			a.cons_elec_profit consElecProfit,
+			a.cons_check_awt consCheckAwt,
+			a.cons_profit consProfit
+		FROM s_m_sell_delivery a
+		WHERE
+			a.cons_id = #{consId}
+			AND LEFT(a.ym, 4) = #{year}
+		ORDER BY a.ym ASC
+	</select>
+	
+	<!-- 重复性校验 用户名-->
+	<select id="checkScConsumerInfo" resultType="java.lang.String">
+		SELECT 
+			id
+		FROM
+		s_c_consumer_info WHERE
+		cons_name = #{scConsumerInfo.consName}
+		<if test="scConsumerInfo != null and scConsumerInfo.voltCode != null and scConsumerInfo.voltCode != ''">
+			and volt_code = #{scConsumerInfo.voltCode}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.id != null and scConsumerInfo.id != ''">
+			AND id != #{scConsumerInfo.id}
+		</if>
+	</select>
+	
+	<!-- 重复性校验 电能表编号 -->
+	<select id="checkScMpInfoMeterNo" resultType="map">
+		SELECT id id, 'marketConsNo' name
+		FROM s_c_mp_info
+		WHERE market_cons_no = #{marketConsNo}
+		<if test="consId != null and consId != ''">
+			AND cons_id != #{consId}
+		</if>
+		<if test="meterNo != null and meterNo != ''">
+			and meter_no = #{meterNo}
+		</if>
+	</select>
+	
+	<!-- 根据用户名和电压等级对的list来获取用户id， 用于excel导入用户时验证用户是新增还是更新 -->
+	<select id="getConsInfoListByParams" resultType="com.hhwy.selling.domain.ScConsumerInfo">
+		select
+			ID id,
+			cons_no consNo,
+			cons_name consName,
+			volt_code voltCode,
+			cons_path consPath
+		from s_c_consumer_info
+		<where>
+			<foreach collection="list" item="item" index="index" open="" close="" separator=" or "> 
+				( cons_name = #{item.consName} and volt_code = #{item.voltCode} )
+	    	</foreach> 
+		</where>
+	</select>
+	<!-- 根据查询条件获取用户档案信息，档案导出用 -->
+	<select id = "getConsInfoDetailByParams" resultType="com.hhwy.purchaseweb.archives.scconsumerinfo.domain.ConsInfoDetailForImport">
+		select cons.id id,
+			   cons.parent_id parentId,
+			   cons.cons_name consName,
+			   cons.cons_type consType,
+			   cons.deal_seq dealSeq,
+			   cons.industry_type industryType,
+			   org.name orgName,
+			   cons.province_code provinceCode,
+			   cons.city_code cityCode,
+			   cons.county_code countyCode,
+			   cons.scada_flag scadaFlag,
+			   cons.sc_package scPackage,
+			   cons.elec_addr elecAddr,
+			   cons.registration_no registrationNo,
+			   cons.vat_no vatNo,
+			   cons.org_code orgCode,
+			   cons.legal_agent legalAgent,
+			   cons.auth_agent authAgent,
+			   cons.registered_address registeredAddress,
+			   cons.bank_name bankName,
+			   cons.count_name countName,
+			   cons.count_no countNo,
+			   cons.electric_capacity electricCapacity,
+			   cons.elec_type_code elecTypeCode,
+			   cons.volt_code voltCode,
+			   cons.lode_attr_code lodeAttrCode,
+			   cons.upper_pq upperPq,
+			   mp.market_cons_no marketConsNo,
+			   cons.sell_person sellPerson,
+			   cons.sell_post sellPost,
+			   cons.sell_phone sellPhone,
+			   cons.office_phone officePhone,
+			   cons.fax_no faxNo,
+			   cons.sell_e_mail sellEMail,
+				cons.market_status marketStatus,
+				cons.direct_power directPower,
+			   contact.cont_name contName,
+			   contact.post post,
+			   contact.phone phone,
+			   contact.office_phone officePhone2,
+			   contact.fax fax,
+			   contact.e_mail eMail,
+			   contact.addr addr,
+			   zone.iz_name industrialZoneName,
+			   contact.postcode postcode
+		from s_c_consumer_info cons 
+			 left join s_c_contacts_info contact on cons.id = contact.cons_id
+			 left join s_c_org_info org on cons.org_id = org.id
+			 left join s_c_industrial_zone zone on zone.id = cons.industrial_zone
+			 left join s_c_mp_info mp on mp.cons_id = cons.id
+			 where 1 = 1
+		<if test="consIds != null and consIds != '' and consIds.size() > 0">
+			and cons.id IN
+			<foreach collection="consIds" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.consName != null and scConsumerInfo.consName != ''">
+			and cons.cons_name LIKE CONCAT('%',#{scConsumerInfo.consName},'%')
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.consType != null and scConsumerInfo.consType != ''">
+			and cons.cons_type = #{scConsumerInfo.consType}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.orgId != null and scConsumerInfo.orgId != ''">
+			and cons.org_id = #{scConsumerInfo.orgId}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.elecTypeCode != null and scConsumerInfo.elecTypeCode != ''">
+			and cons.elec_type_code = #{scConsumerInfo.elecTypeCode}
+		</if>
+		<if test="splitVoltCode != null">
+			and cons.volt_code IN
+			<foreach collection="splitVoltCode" index="index" item="item" open="(" separator="," close=")">
+           		#{item}
+        	</foreach>
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.sellPerson != null and scConsumerInfo.sellPerson != ''">
+			and cons.sell_person LIKE CONCAT('%', #{scConsumerInfo.sellPerson},'%' )
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.marketStatus != null and scConsumerInfo.marketStatus != ''">
+			and a.market_status = #{scConsumerInfo.marketStatus}
+		</if>
+		<if test="scConsumerInfo != null and scConsumerInfo.directPower != null and scConsumerInfo.directPower != ''">
+			and a.direct_power = #{scConsumerInfo.directPower}
+		</if>
+		order by cons.create_time desc
+	</select>
+	
+	<!-- 根据parentIdList获取父级单位信息 -->
+	<select id="getParentInfoDetailByIds" resultType="com.hhwy.purchaseweb.archives.scconsumerinfo.domain.ConsInfoDetailForImport">
+		select id id,
+			   cons_name parentName,
+			   elec_type_code parentElecTypeCode,
+			   volt_code parentVoltCode
+		from s_c_consumer_info where id in 
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+	   		#{item}
+		</foreach>
+	</select>
+</mapper>

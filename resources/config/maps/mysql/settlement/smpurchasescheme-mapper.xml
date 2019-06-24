@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smPurchaseScheme.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSchemeViewListByParams" resultType="com.hhwy.purchaseweb.settlement.base.smpurchasescheme.domain.SmPurchaseSchemeView">
+		select
+			compro.dev_dam devDam,
+			compro.cons_amt_total consAmtTotal,
+			scheme.ID id,
+			scheme.settle_id settleId,
+			scheme.ym ym,
+			scheme.scheme_status schemeStatus,
+			scheme.scheme_name schemeName,
+			scheme.comp_profit compProfit,
+			scheme.cons_profit consProfit,
+			scheme.cons_compensate consCompensate,
+			scheme.delivery_pq deliveryPq,
+			scheme.cons_num consNum,
+			scheme.total_proxy_pq totalProxyPq,
+			scheme.total_purchase_pq totalPurchasePq,
+			scheme.total_lc_pq totalLcPq,
+			scheme.total_bid_pq totalBidPq,
+			scheme.total_listed_pq totalListedPq,
+			scheme.org_no orgNo		
+		from s_m_purchase_scheme scheme
+			left join s_m_company_profit compro on scheme.id=compro.scheme_id
+		where 1=1
+		<if test="smPurchaseScheme != null and smPurchaseScheme.settleId != null and smPurchaseScheme.settleId != ''">
+			and scheme.settle_id = #{smPurchaseScheme.settleId}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.ym != null and smPurchaseScheme.ym != ''">
+			and scheme.ym = #{smPurchaseScheme.ym}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.schemeStatus != null and smPurchaseScheme.schemeStatus != ''">
+			and scheme.scheme_status = #{smPurchaseScheme.schemeStatus}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.schemeName != null and smPurchaseScheme.schemeName != ''">
+			and scheme.scheme_name = #{smPurchaseScheme.schemeName}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.compProfit != null and smPurchaseScheme.compProfit != ''">
+			and scheme.comp_profit = #{smPurchaseScheme.compProfit}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consProfit != null and smPurchaseScheme.consProfit != ''">
+			and scheme.cons_profit = #{smPurchaseScheme.consProfit}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consCompensate != null and smPurchaseScheme.consCompensate != ''">
+			and scheme.cons_compensate = #{smPurchaseScheme.consCompensate}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.deliveryPq != null and smPurchaseScheme.deliveryPq != ''">
+			and scheme.delivery_pq = #{smPurchaseScheme.deliveryPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consNum != null and smPurchaseScheme.consNum != ''">
+			and scheme.cons_num = #{smPurchaseScheme.consNum}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalProxyPq != null and smPurchaseScheme.totalProxyPq != ''">
+			and scheme.total_proxy_pq = #{smPurchaseScheme.totalProxyPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalPurchasePq != null and smPurchaseScheme.totalPurchasePq != ''">
+			and scheme.total_purchase_pq = #{smPurchaseScheme.totalPurchasePq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalLcPq != null and smPurchaseScheme.totalLcPq != ''">
+			and scheme.total_lc_pq = #{smPurchaseScheme.totalLcPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalBidPq != null and smPurchaseScheme.totalBidPq != ''">
+			and scheme.total_bid_pq = #{smPurchaseScheme.totalBidPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalListedPq != null and smPurchaseScheme.totalListedPq != ''">
+			and scheme.total_listed_pq = #{smPurchaseScheme.totalListedPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.orgNo != null and smPurchaseScheme.orgNo != ''">
+			and scheme.org_no = #{smPurchaseScheme.orgNo}
+		</if>
+		order by scheme.scheme_status desc , scheme.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<!-- 根据条件查询列表 -->
+	<select id="getSmPurchaseSchemeListByParams" resultType="com.hhwy.purchase.domain.SmPurchaseScheme">
+		select
+			ID id,
+			settle_id settleId,
+			ym ym,
+			scheme_status schemeStatus,
+			scheme_name schemeName,
+			comp_profit compProfit,
+			cons_profit consProfit,
+			cons_compensate consCompensate,
+			delivery_pq deliveryPq,
+			cons_num consNum,
+			total_proxy_pq totalProxyPq,
+			total_purchase_pq totalPurchasePq,
+			total_lc_pq totalLcPq,
+			total_bid_pq totalBidPq,
+			total_listed_pq totalListedPq,
+			org_no orgNo		
+		from s_m_purchase_scheme where 1=1
+		<if test="smPurchaseScheme != null and smPurchaseScheme.settleId != null and smPurchaseScheme.settleId != ''">
+			and settle_id = #{smPurchaseScheme.settleId}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.ym != null and smPurchaseScheme.ym != ''">
+			and ym = #{smPurchaseScheme.ym}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.schemeStatus != null and smPurchaseScheme.schemeStatus != ''">
+			and scheme_status = #{smPurchaseScheme.schemeStatus}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.schemeName != null and smPurchaseScheme.schemeName != ''">
+			and scheme_name = #{smPurchaseScheme.schemeName}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.compProfit != null and smPurchaseScheme.compProfit != ''">
+			and comp_profit = #{smPurchaseScheme.compProfit}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consProfit != null and smPurchaseScheme.consProfit != ''">
+			and cons_profit = #{smPurchaseScheme.consProfit}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consCompensate != null and smPurchaseScheme.consCompensate != ''">
+			and cons_compensate = #{smPurchaseScheme.consCompensate}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.deliveryPq != null and smPurchaseScheme.deliveryPq != ''">
+			and delivery_pq = #{smPurchaseScheme.deliveryPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consNum != null and smPurchaseScheme.consNum != ''">
+			and cons_num = #{smPurchaseScheme.consNum}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalProxyPq != null and smPurchaseScheme.totalProxyPq != ''">
+			and total_proxy_pq = #{smPurchaseScheme.totalProxyPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalPurchasePq != null and smPurchaseScheme.totalPurchasePq != ''">
+			and total_purchase_pq = #{smPurchaseScheme.totalPurchasePq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalLcPq != null and smPurchaseScheme.totalLcPq != ''">
+			and total_lc_pq = #{smPurchaseScheme.totalLcPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalBidPq != null and smPurchaseScheme.totalBidPq != ''">
+			and total_bid_pq = #{smPurchaseScheme.totalBidPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalListedPq != null and smPurchaseScheme.totalListedPq != ''">
+			and total_listed_pq = #{smPurchaseScheme.totalListedPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.orgNo != null and smPurchaseScheme.orgNo != ''">
+			and org_no = #{smPurchaseScheme.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmPurchaseSchemeCountByParams" resultType="int">
+		select count(1)	from s_m_purchase_scheme where 1=1
+		<if test="smPurchaseScheme != null and smPurchaseScheme.settleId != null and smPurchaseScheme.settleId != ''">
+			and settle_id = #{smPurchaseScheme.settleId}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.ym != null and smPurchaseScheme.ym != ''">
+			and ym = #{smPurchaseScheme.ym}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.schemeStatus != null and smPurchaseScheme.schemeStatus != ''">
+			and scheme_status = #{smPurchaseScheme.schemeStatus}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.schemeName != null and smPurchaseScheme.schemeName != ''">
+			and scheme_name = #{smPurchaseScheme.schemeName}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.compProfit != null and smPurchaseScheme.compProfit != ''">
+			and comp_profit = #{smPurchaseScheme.compProfit}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consProfit != null and smPurchaseScheme.consProfit != ''">
+			and cons_profit = #{smPurchaseScheme.consProfit}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consCompensate != null and smPurchaseScheme.consCompensate != ''">
+			and cons_compensate = #{smPurchaseScheme.consCompensate}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.deliveryPq != null and smPurchaseScheme.deliveryPq != ''">
+			and delivery_pq = #{smPurchaseScheme.deliveryPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.consNum != null and smPurchaseScheme.consNum != ''">
+			and cons_num = #{smPurchaseScheme.consNum}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalProxyPq != null and smPurchaseScheme.totalProxyPq != ''">
+			and total_proxy_pq = #{smPurchaseScheme.totalProxyPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalPurchasePq != null and smPurchaseScheme.totalPurchasePq != ''">
+			and total_purchase_pq = #{smPurchaseScheme.totalPurchasePq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalLcPq != null and smPurchaseScheme.totalLcPq != ''">
+			and total_lc_pq = #{smPurchaseScheme.totalLcPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalBidPq != null and smPurchaseScheme.totalBidPq != ''">
+			and total_bid_pq = #{smPurchaseScheme.totalBidPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.totalListedPq != null and smPurchaseScheme.totalListedPq != ''">
+			and total_listed_pq = #{smPurchaseScheme.totalListedPq}
+		</if>
+		<if test="smPurchaseScheme != null and smPurchaseScheme.orgNo != null and smPurchaseScheme.orgNo != ''">
+			and org_no = #{smPurchaseScheme.orgNo}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询列表 -->
+	<select id="validateSubmitCanOrNot" resultType="int" parameterType="string">
+		select
+			count(id)
+		from s_m_purchase_scheme where settle_id = (select
+			settle_id
+		from s_m_purchase_scheme where id=#{string}) and scheme_status=1
+	</select>
+	
+	<!-- 根据条件查询列表 -->
+	<select id="validateCalculateCanOrNot" resultType="int" parameterType="string">
+		select
+			count(scheme.id)
+		from s_m_purchase_scheme scheme 
+			inner join s_m_company_profit pro on pro.scheme_id=scheme.id where scheme.id=#{string}
+	</select>
+	
+	<!-- 根据年月计算得到当月的竞价、双边、挂牌的加权平均价（原方法） ，原方法由于权限过滤去除有用“，”,所以需要改写 -->
+	<select id="getLcBidListedAvgPrcByYm1" resultType="map" parameterType="string">
+		select 
+			if(prcInfo.bidPrcAvg is null or prcInfo.bidPrcAvg = 0, 
+					ROUND((select avg(d.deal_prc) from ph_m_deal_info d
+						inner JOIN ph_m_purchase_plan_month p on p.id=d.plan_id  and d.ym = #{string} and p.trade_mode='01') ,2)
+				,prcInfo.bidPrcAvg) bidPrcAvg,
+			if(prcInfo.lcPrcAvg is null or prcInfo.lcPrcAvg = 0, 
+					ROUND((select avg(d.deal_prc) from ph_m_deal_info d
+						inner JOIN ph_m_purchase_plan_month p on p.id=d.plan_id  and d.ym = #{string} and p.trade_mode='02'),2)
+				,prcInfo.lcPrcAvg) lcPrcAvg,
+			if(prcInfo.listedPrcAvg is null or prcInfo.listedPrcAvg = 0, 
+					ROUND((select avg(d.deal_prc) from ph_m_deal_info d
+						inner JOIN ph_m_purchase_plan_month p on p.id=d.plan_id  and d.ym = #{string} and p.trade_mode='03'),2)
+				,prcInfo.listedPrcAvg) listedPrcAvg
+		from 
+		(SELECT 
+				ROUND( 
+					SUM(if(plan.trade_mode='01' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq*dealInfo.deal_prc ,-dealInfo.deal_pq*dealInfo.deal_prc) ,0))/
+					SUM(if(plan.trade_mode='01' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq ,-dealInfo.deal_pq) ,0)) 
+				,2)	bidPrcAvg,
+				ROUND( 
+					SUM(if(plan.trade_mode='02' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq*dealInfo.deal_prc ,-dealInfo.deal_pq*dealInfo.deal_prc) ,0))/
+					SUM(if(plan.trade_mode='02' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))
+				,2)	lcPrcAvg,
+				ROUND( 
+					SUM(if(plan.trade_mode='03' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq*dealInfo.deal_prc ,-dealInfo.deal_pq*dealInfo.deal_prc) ,0))/
+					SUM(if(plan.trade_mode='03' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))
+				,2)	listedPrcAvg
+		from ph_m_deal_info dealInfo
+		inner JOIN ph_m_purchase_plan_month plan on plan.id=dealInfo.plan_id  and dealInfo.ym = #{string}) prcInfo
+	</select>
+	
+	<!-- 根据年月计算得到当月的竞价、双边、挂牌的加权平均价 （新方法 ——by LiXinze） ，原方法由于权限过滤去除有用“，”,所以需要改写-->
+	<select id="getLcBidListedAvgPrcByYm" resultType="map" parameterType="string">
+		select 
+			if(prcInfo.bidPrcAvg is null or prcInfo.bidPrcAvg = 0, dealAvg.bidPrcAvg , prcInfo.bidPrcAvg) bidPrcAvg,
+			if(prcInfo.lcPrcAvg is null or prcInfo.lcPrcAvg = 0, dealAvg.lcPrcAvg , prcInfo.lcPrcAvg) lcPrcAvg,
+			if(prcInfo.listedPrcAvg is null or prcInfo.listedPrcAvg = 0, dealAvg.listedPrcAvg ,prcInfo.listedPrcAvg) listedPrcAvg
+		from 
+			( select dealBig.prc bidPrcAvg,
+					 dealLc.prc lcPrcAvg,
+					 dealListed.prc listedPrcAvg,
+					 #{string} ym
+			 from(
+			 	(select ROUND(avg(d.deal_prc),2) prc, #{string} ym
+					from ph_m_deal_info d 
+					inner JOIN ph_m_purchase_plan_month p on p.id=d.plan_id and d.ym = #{string} and p.trade_mode='01') dealBig 
+				inner join 
+				(select ROUND(avg(d.deal_prc),2) prc, #{string} ym
+					from ph_m_deal_info d 
+					inner JOIN ph_m_purchase_plan_month p on p.id=d.plan_id and d.ym = #{string} and p.trade_mode='02'
+				) dealLc on dealLc.ym = dealBig.ym
+				inner join
+				(select ROUND(avg(d.deal_prc),2) prc, #{string} ym
+					from ph_m_deal_info d
+					inner JOIN ph_m_purchase_plan_month p on p.id=d.plan_id  and d.ym = #{string} and p.trade_mode='03'
+				) dealListed on dealListed.ym = dealBig.ym
+			 )
+		) dealAvg
+		left join
+		(SELECT 
+				ROUND( 
+					SUM(if(plan.trade_mode='01' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq*dealInfo.deal_prc ,-dealInfo.deal_pq*dealInfo.deal_prc) ,0))/
+					SUM(if(plan.trade_mode='01' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq ,-dealInfo.deal_pq) ,0)) 
+				,2)	bidPrcAvg,
+				ROUND( 
+					SUM(if(plan.trade_mode='02' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq*dealInfo.deal_prc ,-dealInfo.deal_pq*dealInfo.deal_prc) ,0))/
+					SUM(if(plan.trade_mode='02' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))
+				,2)	lcPrcAvg,
+				ROUND( 
+					SUM(if(plan.trade_mode='03' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq*dealInfo.deal_prc ,-dealInfo.deal_pq*dealInfo.deal_prc) ,0))/
+					SUM(if(plan.trade_mode='03' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, 
+						dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))
+				,2)	listedPrcAvg,
+				dealInfo.ym ym
+		from ph_m_deal_info dealInfo
+		inner JOIN ph_m_purchase_plan_month plan on plan.id=dealInfo.plan_id  and dealInfo.ym = #{string}
+		) prcInfo on prcInfo.ym = dealAvg.ym
+	</select>
+	
+	<!-- 根据id归档结算方案 -->
+	<update id="submitSchemeById">
+		UPDATE s_m_purchase_scheme SET scheme_status='1' 
+		WHERE id=#{schemeId}
+	</update>
+</mapper>

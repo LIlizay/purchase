@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmPurchasePlanYear.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmPurchasePlanYearListByParams" resultType="com.hhwy.purchase.domain.PhmPurchasePlanYear">  
+		select
+			ID id,
+			year year,
+			plan_name planName,
+			setters setters,
+			plan_status planStatus,
+			org_no orgNo		
+		from ph_m_purchase_plan_year where 1=1
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.year != null and phmPurchasePlanYear.year != ''">
+			and year = #{phmPurchasePlanYear.year}
+		</if>
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.planName != null and phmPurchasePlanYear.planName != ''">
+			and plan_name = #{phmPurchasePlanYear.planName}
+		</if>
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.setters != null and phmPurchasePlanYear.setters != ''">
+			and setters = #{phmPurchasePlanYear.setters}
+		</if>
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.planStatus != null and phmPurchasePlanYear.planStatus != ''">
+			and plan_status = #{phmPurchasePlanYear.planStatus}
+		</if>
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.orgNo != null and phmPurchasePlanYear.orgNo != ''">
+			and org_no = #{phmPurchasePlanYear.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmPurchasePlanYearCountByParams" resultType="int">
+		select count(1)	from ph_m_purchase_plan_year where 1=1
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.year != null and phmPurchasePlanYear.year != ''">
+			and year = #{phmPurchasePlanYear.year}
+		</if>
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.planName != null and phmPurchasePlanYear.planName != ''">
+			and plan_name = #{phmPurchasePlanYear.planName}
+		</if>
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.setters != null and phmPurchasePlanYear.setters != ''">
+			and setters = #{phmPurchasePlanYear.setters}
+		</if>
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.planStatus != null and phmPurchasePlanYear.planStatus != ''">
+			and plan_status = #{phmPurchasePlanYear.planStatus}
+		</if>
+		<if test="phmPurchasePlanYear != null and phmPurchasePlanYear.orgNo != null and phmPurchasePlanYear.orgNo != ''">
+			and org_no = #{phmPurchasePlanYear.orgNo}
+		</if>
+		<if test="startYear != null and startYear != ''">
+			and year &gt;= #{startYear}
+		</if>
+		<if test="endYear != null and endYear != ''">
+			and year &lt;= #{endYear}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询年度购电计划 -->
+	<select id="getPurchasePlanYearListByParams" resultType="com.hhwy.purchaseweb.plan.phmpurchaseplanyear.domain.PurchasePlanYearDetail">
+		SELECT
+			a.id id,
+			a.id planId,
+			a.year year,
+			a.plan_name name,
+			a.plan_name planName,
+			a.setters setters,
+			a.plan_status planStatus,
+			COUNT(DISTINCT(b.cons_id)) consSum,
+			CONVERT(SUM(c.proxy_pq),DECIMAL(18,2)) agrePq,
+			CONVERT(SUM(d.agre_prc * c.proxy_pq),DECIMAL(18,2)) agreAmt,
+			IF((SELECT count(1) FROM ph_m_ph_plan_year_scheme WHERE plan_id = a.id)!=0,'closed','open') state
+		FROM ph_m_purchase_plan_year a
+		LEFT JOIN ph_m_plan_year_cons_rela b ON a.id = b.plan_id
+		LEFT JOIN s_m_ppa c ON c.cons_id = b.cons_id AND (SUBSTR(c.effective_date,1,4) = a.year OR SUBSTR(c.expiry_date,1,4) = a.year)
+		LEFT JOIN s_m_dist_mode d ON d.agre_id = c.id
+		<where>
+			<if test="startYear != null and startYear != ''">
+				and a.year &gt;= #{startYear}
+			</if>
+			<if test="endYear != null and endYear != ''">
+				and a.year &lt;= #{endYear}
+			</if>
+		</where>
+		GROUP BY a.id
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 查询所有合同用户 -->
+	<select id="getAgreConsList" resultType="com.hhwy.purchaseweb.plan.phmpurchaseplanyear.domain.ConsInfoDetail">
+		SELECT 
+			b.id id,
+			b.cons_name consName,
+			b.volt_code voltCode,
+			a.proxy_pq proxyPq,
+			c.agre_prc agrePrc,
+			d.cont_name contName,
+			d.phone phone,
+			b.elec_addr elecAddr
+		FROM s_m_ppa a 
+		inner JOIN s_c_consumer_info b ON b.id = a.cons_id 
+		LEFT JOIN s_c_contacts_info d ON d.cons_id = b.id 
+		LEFT JOIN s_m_dist_mode c ON c.agre_id = a.id 
+		WHERE  SUBSTR(a.effective_date,1,4) &lt;= #{startYear}
+		AND SUBSTR(a.expiry_date,1,4) &gt;= #{startYear} and a.agre_type!='00'
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 查询所有合同用户 -->
+	<select id="getAgreConsCount" resultType="int">
+		SELECT 
+			COUNT(1)
+		FROM s_m_ppa a 
+		LEFT JOIN s_c_consumer_info b ON b.id = a.cons_id
+		LEFT JOIN s_c_contacts_info d ON d.cons_id = b.id
+		LEFT JOIN s_m_dist_mode c ON c.agre_id = a.id 
+		WHERE SUBSTR(a.effective_date,1,4) &lt;= #{startYear}
+		AND SUBSTR(a.expiry_date,1,4) &gt;= #{startYear}
+	</select>
+	
+	<delete id="deletePlan">
+		DELETE FROM ph_m_plan_year_cons_rela WHERE plan_id in 
+			<foreach collection="array" item="id" open="(" close=")" separator=",">  
+				#{id}  
+			</foreach>  
+	</delete>
+	
+	<delete id="deleteScheme">
+		DELETE FROM ph_m_ph_plan_year_scheme WHERE plan_id in 
+			<foreach collection="array" item="id" open="(" close=")" separator=",">  
+				#{id}  
+			</foreach>  
+	</delete>
+	
+	<delete id="deleteLc">
+	DELETE FROM ph_m_lc_dist WHERE scheme_id in(
+		SELECT id FROM ph_m_ph_plan_year_scheme WHERE 
+		plan_id in 
+		<foreach collection="array" item="id" open="(" close=")" separator=",">  
+		#{id}  
+		</foreach>  
+		
+	)
+	</delete>
+	
+	<select id="getInitScheme" resultType="com.hhwy.purchaseweb.plan.phmpurchaseplanyear.domain.SchemeDetail">
+		SELECT 
+			CONVERT(SUM(a.proxy_pq),DECIMAL(18,2)) agrePq,
+			CONVERT(SUM(a.proxy_pq*c.agre_prc),DECIMAL(18,2)) agreAmt,
+			CONVERT(SUM(a.proxy_pq*c.agre_prc)/SUM(a.proxy_pq),DECIMAL(18,2)) avgPrc
+		FROM s_m_ppa a 
+		LEFT JOIN s_m_dist_mode c ON c.agre_id = a.id 
+		WHERE SUBSTR(a.effective_date,1,4) &lt;= #{year}
+		AND SUBSTR(a.expiry_date,1,4) &gt;= #{year}
+	</select>
+</mapper>

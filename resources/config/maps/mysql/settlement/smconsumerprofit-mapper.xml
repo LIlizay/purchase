@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smConsumerProfit.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmConsumerProfitListByParams" resultType="com.hhwy.purchaseweb.settlement.base.smconsumerprofit.domain.SmConsumerProfitDetail">
+		select
+			info.cons_name consName,
+			profit.ID id,
+			profit.scheme_id schemeId,
+			profit.cons_id consId,
+			profit.lc_dist_pq lcDistPq,
+			profit.bid_dist_pq bidDistPq,
+			profit.listed_pq listedPq,
+			profit.proxy_pq proxyPq,
+			profit.dist_total_pq distTotalPq,
+			profit.cons_del_pq consDelPq,
+			profit.trans_total_pro transTotalPro,
+			profit.comp_unchecked_pro compUncheckedPro,
+			profit.cons_unchecked_pro consUncheckedPro,
+			profit.cons_elec_dev consElecDev,
+			profit.cons_checked_pro consCheckedPro,
+			profit.cons_total_pro consTotalPro,
+			profit.comp_checked_pro compCheckedPro,
+			profit.divi_code diviCode,
+			profit.cons_compensate consCompensate,
+			profit.delivery_prc deliveryPrc,
+			profit.marketize_pq marketizePq,
+			profit.nmarketize_pq nmarketizePq,
+			profit.delivery_cost deliveryCost,
+			profit.org_no orgNo		
+		from s_m_consumer_profit profit
+			left join s_c_consumer_info info on info.id = profit.cons_id
+		where 1=1
+		<if test="smConsumerProfit != null and smConsumerProfit.schemeId != null and smConsumerProfit.schemeId != ''">
+			and scheme_id = #{smConsumerProfit.schemeId}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consId != null and smConsumerProfit.consId != ''">
+			and cons_id = #{smConsumerProfit.consId}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.lcDistPq != null and smConsumerProfit.lcDistPq != ''">
+			and lc_dist_pq = #{smConsumerProfit.lcDistPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.bidDistPq != null and smConsumerProfit.bidDistPq != ''">
+			and bid_dist_pq = #{smConsumerProfit.bidDistPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.listedPq != null and smConsumerProfit.listedPq != ''">
+			and listed_pq = #{smConsumerProfit.listedPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.proxyPq != null and smConsumerProfit.proxyPq != ''">
+			and proxy_pq = #{smConsumerProfit.proxyPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.distTotalPq != null and smConsumerProfit.distTotalPq != ''">
+			and dist_total_pq = #{smConsumerProfit.distTotalPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consDelPq != null and smConsumerProfit.consDelPq != ''">
+			and cons_del_pq = #{smConsumerProfit.consDelPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.transTotalPro != null and smConsumerProfit.transTotalPro != ''">
+			and trans_total_pro = #{smConsumerProfit.transTotalPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.compUncheckedPro != null and smConsumerProfit.compUncheckedPro != ''">
+			and comp_unchecked_pro = #{smConsumerProfit.compUncheckedPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consUncheckedPro != null and smConsumerProfit.consUncheckedPro != ''">
+			and cons_unchecked_pro = #{smConsumerProfit.consUncheckedPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consElecDev != null and smConsumerProfit.consElecDev != ''">
+			and cons_elec_dev = #{smConsumerProfit.consElecDev}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consCheckedPro != null and smConsumerProfit.consCheckedPro != ''">
+			and cons_checked_pro = #{smConsumerProfit.consCheckedPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consTotalPro != null and smConsumerProfit.consTotalPro != ''">
+			and cons_total_pro = #{smConsumerProfit.consTotalPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.compCheckedPro != null and smConsumerProfit.compCheckedPro != ''">
+			and comp_checked_pro = #{smConsumerProfit.compCheckedPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.diviCode != null and smConsumerProfit.diviCode != ''">
+			and divi_code = #{smConsumerProfit.diviCode}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consCompensate != null and smConsumerProfit.consCompensate != ''">
+			and cons_compensate = #{smConsumerProfit.consCompensate}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.deliveryPrc != null and smConsumerProfit.deliveryPrc != ''">
+			and delivery_prc = #{smConsumerProfit.deliveryPrc}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.marketizePq != null and smConsumerProfit.marketizePq != ''">
+			and marketize_pq = #{smConsumerProfit.marketizePq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.nmarketizePq != null and smConsumerProfit.nmarketizePq != ''">
+			and nmarketize_pq = #{smConsumerProfit.nmarketizePq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.deliveryCost != null and smConsumerProfit.deliveryCost != ''">
+			and delivery_cost = #{smConsumerProfit.deliveryCost}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.orgNo != null and smConsumerProfit.orgNo != ''">
+			and org_no = #{smConsumerProfit.orgNo}
+		</if>
+		order by profit.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmConsumerProfitCountByParams" resultType="int">
+		select count(1)	from s_m_consumer_profit where 1=1
+		<if test="smConsumerProfit != null and smConsumerProfit.schemeId != null and smConsumerProfit.schemeId != ''">
+			and scheme_id = #{smConsumerProfit.schemeId}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consId != null and smConsumerProfit.consId != ''">
+			and cons_id = #{smConsumerProfit.consId}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.lcDistPq != null and smConsumerProfit.lcDistPq != ''">
+			and lc_dist_pq = #{smConsumerProfit.lcDistPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.bidDistPq != null and smConsumerProfit.bidDistPq != ''">
+			and bid_dist_pq = #{smConsumerProfit.bidDistPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.listedPq != null and smConsumerProfit.listedPq != ''">
+			and listed_pq = #{smConsumerProfit.listedPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.proxyPq != null and smConsumerProfit.proxyPq != ''">
+			and proxy_pq = #{smConsumerProfit.proxyPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.distTotalPq != null and smConsumerProfit.distTotalPq != ''">
+			and dist_total_pq = #{smConsumerProfit.distTotalPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consDelPq != null and smConsumerProfit.consDelPq != ''">
+			and cons_del_pq = #{smConsumerProfit.consDelPq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.transTotalPro != null and smConsumerProfit.transTotalPro != ''">
+			and trans_total_pro = #{smConsumerProfit.transTotalPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.compUncheckedPro != null and smConsumerProfit.compUncheckedPro != ''">
+			and comp_unchecked_pro = #{smConsumerProfit.compUncheckedPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consUncheckedPro != null and smConsumerProfit.consUncheckedPro != ''">
+			and cons_unchecked_pro = #{smConsumerProfit.consUncheckedPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consElecDev != null and smConsumerProfit.consElecDev != ''">
+			and cons_elec_dev = #{smConsumerProfit.consElecDev}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consCheckedPro != null and smConsumerProfit.consCheckedPro != ''">
+			and cons_checked_pro = #{smConsumerProfit.consCheckedPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consTotalPro != null and smConsumerProfit.consTotalPro != ''">
+			and cons_total_pro = #{smConsumerProfit.consTotalPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.compCheckedPro != null and smConsumerProfit.compCheckedPro != ''">
+			and comp_checked_pro = #{smConsumerProfit.compCheckedPro}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.diviCode != null and smConsumerProfit.diviCode != ''">
+			and divi_code = #{smConsumerProfit.diviCode}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.consCompensate != null and smConsumerProfit.consCompensate != ''">
+			and cons_compensate = #{smConsumerProfit.consCompensate}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.deliveryPrc != null and smConsumerProfit.deliveryPrc != ''">
+			and delivery_prc = #{smConsumerProfit.deliveryPrc}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.marketizePq != null and smConsumerProfit.marketizePq != ''">
+			and marketize_pq = #{smConsumerProfit.marketizePq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.nmarketizePq != null and smConsumerProfit.nmarketizePq != ''">
+			and nmarketize_pq = #{smConsumerProfit.nmarketizePq}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.deliveryCost != null and smConsumerProfit.deliveryCost != ''">
+			and delivery_cost = #{smConsumerProfit.deliveryCost}
+		</if>
+		<if test="smConsumerProfit != null and smConsumerProfit.orgNo != null and smConsumerProfit.orgNo != ''">
+			and org_no = #{smConsumerProfit.orgNo}
+		</if>
+	</select>
+	
+	<!-- 根据方案id列表删除用户结算信息 -->
+	<delete id="deleteSmConsumerProfitBySchemeIds">
+		DELETE
+		FROM
+			s_m_consumer_profit
+		WHERE scheme_id IN 
+		<foreach item="item" index="index" collection="schemeIds" open="(" separator="," close=")">
+       		#{item}
+		</foreach>
+	</delete>
+	
+	<!-- 根据用户id、结算方案id获取用户结算电价 -->
+	<select id="getDeliveryPqByParams" resultType="map">
+		select cons_del_pq pq ,
+			   cons_id consId
+		from s_m_consumer_profit where scheme_id = #{schemeId}
+		and cons_id in
+		<foreach collection="list" item="item" index="index" separator="," open="(" close=")"> 
+			#{item.consId}
+    	</foreach> 
+	</select>
+	
+</mapper>

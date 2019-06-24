@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smWarningInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmWarningInfoListByParams" resultType="com.hhwy.selling.domain.SmWarningInfo">
+		select
+			ID id,
+			rule_id ruleId,
+			min_prop minProp,
+			max_prop maxProp,
+			warn_prompt warnPrompt,
+			warn_type warnType,
+			org_no orgNo		
+		from s_m_warning_info where 1=1
+		<if test="smWarningInfo != null and smWarningInfo.ruleId != null and smWarningInfo.ruleId != ''">
+			and rule_id = #{smWarningInfo.ruleId}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.minProp != null and smWarningInfo.minProp != ''">
+			and min_prop = #{smWarningInfo.minProp}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.maxProp != null and smWarningInfo.maxProp != ''">
+			and max_prop = #{smWarningInfo.maxProp}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.warnPrompt != null and smWarningInfo.warnPrompt != ''">
+			and warn_prompt = #{smWarningInfo.warnPrompt}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.warnType != null and smWarningInfo.warnType != ''">
+			and warn_type = #{smWarningInfo.warnType}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.orgNo != null and smWarningInfo.orgNo != ''">
+			and org_no = #{smWarningInfo.orgNo}
+		</if>
+		order by min_prop ASC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmWarningInfoCountByParams" resultType="int">
+		select count(1)	from s_m_warning_info where 1=1
+		<if test="smWarningInfo != null and smWarningInfo.ruleId != null and smWarningInfo.ruleId != ''">
+			and rule_id = #{smWarningInfo.ruleId}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.minProp != null and smWarningInfo.minProp != ''">
+			and min_prop = #{smWarningInfo.minProp}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.maxProp != null and smWarningInfo.maxProp != ''">
+			and max_prop = #{smWarningInfo.maxProp}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.warnPrompt != null and smWarningInfo.warnPrompt != ''">
+			and warn_prompt = #{smWarningInfo.warnPrompt}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.warnType != null and smWarningInfo.warnType != ''">
+			and warn_type = #{smWarningInfo.warnType}
+		</if>
+		<if test="smWarningInfo != null and smWarningInfo.orgNo != null and smWarningInfo.orgNo != ''">
+			and org_no = #{smWarningInfo.orgNo}
+		</if>
+	</select>
+</mapper>

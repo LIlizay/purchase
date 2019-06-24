@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmBusinessPlan.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmBusinessPlanListByParams" resultType="com.hhwy.purchase.domain.PhmBusinessPlan">  
+		select
+			ID id,
+			year year,
+			plan_name planName,
+			setters setters,
+			plan_status planStatus,
+			org_no orgNo		
+		from ph_m_business_plan where 1=1
+		<if test="phmBusinessPlan != null and phmBusinessPlan.year != null and phmBusinessPlan.year != ''">
+			and year = #{phmBusinessPlan.year}
+		</if>
+		<if test="phmBusinessPlan != null and phmBusinessPlan.planName != null and phmBusinessPlan.planName != ''">
+			and plan_name = #{phmBusinessPlan.planName}
+		</if>
+		<if test="phmBusinessPlan != null and phmBusinessPlan.setters != null and phmBusinessPlan.setters != ''">
+			and setters = #{phmBusinessPlan.setters}
+		</if>
+		<if test="phmBusinessPlan != null and phmBusinessPlan.planStatus != null and phmBusinessPlan.planStatus != ''">
+			and plan_status = #{phmBusinessPlan.planStatus}
+		</if>
+		<if test="phmBusinessPlan != null and phmBusinessPlan.orgNo != null and phmBusinessPlan.orgNo != ''">
+			and org_no = #{phmBusinessPlan.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmBusinessPlanCountByParams" resultType="int">
+		select count(1)	from ph_m_business_plan where 1=1
+		<if test="phmBusinessPlan != null and phmBusinessPlan.year != null and phmBusinessPlan.year != ''">
+			and year = #{phmBusinessPlan.year}
+		</if>
+		<if test="phmBusinessPlan != null and phmBusinessPlan.planName != null and phmBusinessPlan.planName != ''">
+			and plan_name = #{phmBusinessPlan.planName}
+		</if>
+		<if test="phmBusinessPlan != null and phmBusinessPlan.setters != null and phmBusinessPlan.setters != ''">
+			and setters = #{phmBusinessPlan.setters}
+		</if>
+		<if test="phmBusinessPlan != null and phmBusinessPlan.planStatus != null and phmBusinessPlan.planStatus != ''">
+			and plan_status = #{phmBusinessPlan.planStatus}
+		</if>
+		<if test="phmBusinessPlan != null and phmBusinessPlan.orgNo != null and phmBusinessPlan.orgNo != ''">
+			and org_no = #{phmBusinessPlan.orgNo}
+		</if>
+		<if test="startYear != null and startYear != ''">
+			and year &gt;= #{startYear}
+		</if>
+		<if test="endYear != null and endYear != ''">
+			and year &lt;= #{endYear}
+		</if>
+	</select>
+	
+	<select id="getBusinessPlanDetailList" resultType="com.hhwy.purchaseweb.plan.phmbusinessplan.domain.PhmBusinessPlanDetail">  
+		select
+			a.id id,
+			a.id planId,
+			a.year year,
+			a.plan_name name,
+			a.plan_name planName,
+			a.setters setters,
+			a.plan_status planStatus,
+			COUNT(DISTINCT(b.cons_id)) consSum,
+			SUM(b.forecast_agre_pq)	agrePq,
+			IF(EXISTS(SELECT id FROM ph_m_business_plan_scheme WHERE plan_id = a.id),'closed','open') state
+		from ph_m_business_plan a
+		LEFT JOIN ph_m_business_cons_rela b ON a.id = b.plan_id
+		<where>
+			<if test="startYear != null and startYear != ''">
+				and a.year &gt;= #{startYear}
+			</if>
+			<if test="endYear != null and endYear != ''">
+				and a.year &lt;= #{endYear}
+			</if>
+		</where>
+		GROUP BY a.id
+		order by a.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<delete id="deleteRela">
+		DELETE FROM ph_m_business_cons_rela WHERE plan_id = #{id};
+	</delete>
+	<delete id="deleteRelaByConsIds">
+		DELETE FROM ph_m_business_cons_rela WHERE cons_id in
+		  <foreach collection="array" index="index" item="tag" open="(" separator="," close=")">
+		   		#{tag}
+		  </foreach>
+	</delete>
+	
+	<select id="getSequence" resultType="string">
+		SELECT SUBSTR(max(plan_name),11)+1 FROM ph_m_business_plan WHERE year = #{year}
+	</select>
+</mapper>

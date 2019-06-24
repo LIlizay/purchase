@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smFundPrcInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmFundPrcInfoListByParams" resultType="com.hhwy.purchaseweb.delivery.smfundprcinfo.domain.SmFundPrcInfoDetail">  
+		select
+			ID id,
+			prc_id prcId,
+			prc_code prcCode,
+			elec_type elecType,
+			sell_prc sellPrc,
+			state state,
+			org_no orgNo		
+		from s_m_fund_prc_info where 1=1
+		<if test="smFundPrcInfo != null and smFundPrcInfo.prcId != null and smFundPrcInfo.prcId != ''">
+			and prc_id = #{smFundPrcInfo.prcId}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.prcCode != null and smFundPrcInfo.prcCode != ''">
+			and prc_code = #{smFundPrcInfo.prcCode}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.elecType != null and smFundPrcInfo.elecType != ''">
+			and elec_type = #{smFundPrcInfo.elecType}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.sellPrc != null and smFundPrcInfo.sellPrc != ''">
+			and sell_prc = #{smFundPrcInfo.sellPrc}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.state != null and smFundPrcInfo.state != ''">
+			and state = #{smFundPrcInfo.state}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.orgNo != null and smFundPrcInfo.orgNo != ''">
+			and org_no = #{smFundPrcInfo.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmFundPrcInfoCountByParams" resultType="int">
+		select count(1)	from s_m_fund_prc_info where 1=1
+		<if test="smFundPrcInfo != null and smFundPrcInfo.prcId != null and smFundPrcInfo.prcId != ''">
+			and prc_id = #{smFundPrcInfo.prcId}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.prcCode != null and smFundPrcInfo.prcCode != ''">
+			and prc_code = #{smFundPrcInfo.prcCode}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.elecType != null and smFundPrcInfo.elecType != ''">
+			and elec_type = #{smFundPrcInfo.elecType}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.sellPrc != null and smFundPrcInfo.sellPrc != ''">
+			and sell_prc = #{smFundPrcInfo.sellPrc}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.state != null and smFundPrcInfo.state != ''">
+			and state = #{smFundPrcInfo.state}
+		</if>
+		<if test="smFundPrcInfo != null and smFundPrcInfo.orgNo != null and smFundPrcInfo.orgNo != ''">
+			and org_no = #{smFundPrcInfo.orgNo}
+		</if>
+	</select>
+	
+	<!-- 根据电价信息（SmPrcInfo）id数组删除对象SmFundPrcInfo -->
+	<delete id="deletePhmAgreDeviationByAgreIds">
+		DELETE
+		FROM
+			s_m_fund_prc_info
+		WHERE prc_id in <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            	#{item}
+            </foreach>
+	</delete>
+</mapper>

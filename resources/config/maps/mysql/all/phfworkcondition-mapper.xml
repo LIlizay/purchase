@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phfWorkCondition.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhfWorkConditionListByParams" resultType="com.hhwy.purchase.domain.PhfWorkCondition">
+		select
+			ID id,
+			temperature temperature,
+			humidity humidity,
+			ymd ymd,
+			holiday_flag holidayFlag,
+			org_no orgNo		
+		from ph_f_work_condition where 1=1
+		<if test="phfWorkCondition != null and phfWorkCondition.ymd != null and phfWorkCondition.ymd != ''">
+			and substr(ymd,1,6) = #{phfWorkCondition.ymd}
+		</if>
+		<if test="phfWorkCondition != null and phfWorkCondition.temperature != null and phfWorkCondition.temperature != ''">
+			and temperature = #{phfWorkCondition.temperature}
+		</if>
+		<if test="phfWorkCondition != null and phfWorkCondition.humidity != null and phfWorkCondition.humidity != ''">
+			and humidity = #{phfWorkCondition.humidity}
+		</if>
+		<if test="phfWorkCondition != null and phfWorkCondition.holidayFlag != null and phfWorkCondition.holidayFlag != ''">
+			and holiday_flag = #{phfWorkCondition.holidayFlag}
+		</if>
+		<if test="phfWorkCondition != null and phfWorkCondition.orgNo != null and phfWorkCondition.orgNo != ''">
+			and org_no = #{phfWorkCondition.orgNo}
+		</if>
+		order by ymd
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhfWorkConditionCountByParams" resultType="int">
+		select count(1)	from ph_f_work_condition where 1=1
+		<if test="phfWorkCondition != null and phfWorkCondition.ymd != null and phfWorkCondition.ymd != ''">
+			and substr(ymd,1,6) = #{phfWorkCondition.ymd}
+		</if>
+		<if test="phfWorkCondition != null and phfWorkCondition.temperature != null and phfWorkCondition.temperature != ''">
+			and temperature = #{phfWorkCondition.temperature}
+		</if>
+		<if test="phfWorkCondition != null and phfWorkCondition.humidity != null and phfWorkCondition.humidity != ''">
+			and humidity = #{phfWorkCondition.humidity}
+		</if>
+		<if test="phfWorkCondition != null and phfWorkCondition.holidayFlag != null and phfWorkCondition.holidayFlag != ''">
+			and holiday_flag = #{phfWorkCondition.holidayFlag}
+		</if>
+		<if test="phfWorkCondition != null and phfWorkCondition.orgNo != null and phfWorkCondition.orgNo != ''">
+			and org_no = #{phfWorkCondition.orgNo}
+		</if>
+	</select>
+</mapper>

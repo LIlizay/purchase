@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ssAgreScheme.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSsAgreSchemeListByParams" resultType="com.hhwy.purchaseweb.crm.ssagrescheme.domain.SsAgreSchemeDetail">
+		select
+			ID id,
+			cons_id consId,
+			cons_name consName,
+			scheme_name schemeName,
+			divi_code diviCode,
+			settlement_mode settlementMode,
+			discount_upper_flag discountUpperFlag,
+			discount_upper_amt discountUpperAmt,
+			discount_lower_flag discountLowerFlag,
+			discount_lower_amt discountLowerAmt,
+			agre_prc agrePrc,
+			party_b_lc_prop partyBLcProp,
+			party_a_lc_prop partyALcProp,
+			party_b_bid_prop partyBBidProp,
+			party_a_bid_prop partyABidProp,
+			profit_mode profitMode,
+			pq_sharing_ratio pqSharingRatio,
+			punish_type_upper punishTypeUpper,
+			punish_type_lower punishTypeLower,
+			punish_upper_threshold punishUpperThreshold,
+			punish_lower_threshold punishLowerThreshold,
+			punish_upper_type punishUpperType,
+			punish_lower_type punishLowerType,
+			punish_upper_prop punishUpperProp,
+			punish_lower_prop punishLowerProp,
+			upper_prc upperPrc,
+			lower_prc lowerPrc,
+			punish_flag punishFlag,
+			compensate_flag compensateFlag,
+			compensate_threshold compensateThreshold,
+			compensate_type compensateType,
+			compensate_prc compensatePrc,
+			compensate_prop compensateProp,
+			report_pq reportPq,
+			lc_pq lcPq,
+			lc_prc lcPrc,
+			bid_pq bidPq,
+			bid_prc bidPrc,
+			del_pq delPq,
+			trans_total_pro transTotalPro,
+			cons_pro consPro,
+			cons_checked_pro consCheckedPro,
+			create_time createTime,
+			sell_total_pro sellTotalPro,
+			compensate_amt compensateAmt,
+			comp_checked_pro compCheckedPro
+		from s_s_agre_scheme where 1=1
+		<if test="ssAgreScheme != null and ssAgreScheme.consId != null and ssAgreScheme.consId != ''">
+			and cons_id = #{ssAgreScheme.consId}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.consName != null and ssAgreScheme.consName != ''">
+			and cons_name = #{ssAgreScheme.consName}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.schemeName != null and ssAgreScheme.schemeName != ''">
+			and scheme_name = #{ssAgreScheme.schemeName}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.diviCode != null and ssAgreScheme.diviCode != ''">
+			and divi_code = #{ssAgreScheme.diviCode}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.settlementMode != null and ssAgreScheme.settlementMode != ''">
+			and settlement_mode = #{ssAgreScheme.settlementMode}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountUpperFlag != null and ssAgreScheme.discountUpperFlag != ''">
+			and discount_upper_flag = #{ssAgreScheme.discountUpperFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountUpperAmt != null and ssAgreScheme.discountUpperAmt != ''">
+			and discount_upper_amt = #{ssAgreScheme.discountUpperAmt}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountLowerFlag != null and ssAgreScheme.discountLowerFlag != ''">
+			and discount_lower_flag = #{ssAgreScheme.discountLowerFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountLowerAmt != null and ssAgreScheme.discountLowerAmt != ''">
+			and discount_lower_amt = #{ssAgreScheme.discountLowerAmt}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.agrePrc != null and ssAgreScheme.agrePrc != ''">
+			and agre_prc = #{ssAgreScheme.agrePrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyBLcProp != null and ssAgreScheme.partyBLcProp != ''">
+			and party_b_lc_prop = #{ssAgreScheme.partyBLcProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyALcProp != null and ssAgreScheme.partyALcProp != ''">
+			and party_a_lc_prop = #{ssAgreScheme.partyALcProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyBBidProp != null and ssAgreScheme.partyBBidProp != ''">
+			and party_b_bid_prop = #{ssAgreScheme.partyBBidProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyABidProp != null and ssAgreScheme.partyABidProp != ''">
+			and party_a_bid_prop = #{ssAgreScheme.partyABidProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.profitMode != null and ssAgreScheme.profitMode != ''">
+			and profit_mode = #{ssAgreScheme.profitMode}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.pqSharingRatio != null and ssAgreScheme.pqSharingRatio != ''">
+			and pq_sharing_ratio = #{ssAgreScheme.pqSharingRatio}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishTypeUpper != null and ssAgreScheme.punishTypeUpper != ''">
+			and punish_type = #{ssAgreScheme.punishTypeUpper}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishTypeLower != null and ssAgreScheme.punishTypeLower != ''">
+			and punish_type = #{ssAgreScheme.punishTypeLower}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperThreshold != null and ssAgreScheme.punishUpperThreshold != ''">
+			and punish_upper_threshold = #{ssAgreScheme.punishUpperThreshold}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerThreshold != null and ssAgreScheme.punishLowerThreshold != ''">
+			and punish_lower_threshold = #{ssAgreScheme.punishLowerThreshold}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperType != null and ssAgreScheme.punishUpperType != ''">
+			and punish_upper_type = #{ssAgreScheme.punishUpperType}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerType != null and ssAgreScheme.punishLowerType != ''">
+			and punish_lower_type = #{ssAgreScheme.punishLowerType}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperProp != null and ssAgreScheme.punishUpperProp != ''">
+			and punish_upper_prop = #{ssAgreScheme.punishUpperProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerProp != null and ssAgreScheme.punishLowerProp != ''">
+			and punish_lower_prop = #{ssAgreScheme.punishLowerProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.upperPrc != null and ssAgreScheme.upperPrc != ''">
+			and upper_prc = #{ssAgreScheme.upperPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.lowerPrc != null and ssAgreScheme.lowerPrc != ''">
+			and lower_prc = #{ssAgreScheme.lowerPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishFlag != null and ssAgreScheme.punishFlag != ''">
+			and punish_flag = #{ssAgreScheme.punishFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensateFlag != null and ssAgreScheme.compensateFlag != ''">
+			and compensate_flag = #{ssAgreScheme.compensateFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensateThreshold != null and ssAgreScheme.compensateThreshold != ''">
+			and compensate_threshold = #{ssAgreScheme.compensateThreshold}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensateType != null and ssAgreScheme.compensateType != ''">
+			and compensate_type = #{ssAgreScheme.compensateType}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensatePrc != null and ssAgreScheme.compensatePrc != ''">
+			and compensate_prc = #{ssAgreScheme.compensatePrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensateProp != null and ssAgreScheme.compensateProp != ''">
+			and compensate_prop = #{ssAgreScheme.compensateProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.reportPq != null and ssAgreScheme.reportPq != ''">
+			and report_pq = #{ssAgreScheme.reportPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.lcPq != null and ssAgreScheme.lcPq != ''">
+			and lc_pq = #{ssAgreScheme.lcPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.lcPrc != null and ssAgreScheme.lcPrc != ''">
+			and lc_prc = #{ssAgreScheme.lcPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.bidPq != null and ssAgreScheme.bidPq != ''">
+			and bid_pq = #{ssAgreScheme.bidPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.bidPrc != null and ssAgreScheme.bidPrc != ''">
+			and bid_prc = #{ssAgreScheme.bidPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.delPq != null and ssAgreScheme.delPq != ''">
+			and del_pq = #{ssAgreScheme.delPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.transTotalPro != null and ssAgreScheme.transTotalPro != ''">
+			and trans_total_pro = #{ssAgreScheme.transTotalPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.consPro != null and ssAgreScheme.consPro != ''">
+			and cons_pro = #{ssAgreScheme.consPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.consCheckedPro != null and ssAgreScheme.consCheckedPro != ''">
+			and cons_checked_pro = #{ssAgreScheme.consCheckedPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.sellTotalPro != null and ssAgreScheme.sellTotalPro != ''">
+			and sell_total_pro = #{ssAgreScheme.sellTotalPro}
+		</if>
+		<if test="ssAgreScheme.createTime != null and ssAgreScheme.createTime != ''">
+			and create_time LIKE CONCAT(#{ssAgreScheme.createTime},'%')
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSsAgreSchemeCountByParams" resultType="int">
+		select count(1)	from s_s_agre_scheme where 1=1
+		<if test="ssAgreScheme != null and ssAgreScheme.consId != null and ssAgreScheme.consId != ''">
+			and cons_id = #{ssAgreScheme.consId}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.consName != null and ssAgreScheme.consName != ''">
+			and cons_name = #{ssAgreScheme.consName}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.schemeName != null and ssAgreScheme.schemeName != ''">
+			and scheme_name = #{ssAgreScheme.schemeName}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.diviCode != null and ssAgreScheme.diviCode != ''">
+			and divi_code = #{ssAgreScheme.diviCode}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.settlementMode != null and ssAgreScheme.settlementMode != ''">
+			and settlement_mode = #{ssAgreScheme.settlementMode}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountUpperFlag != null and ssAgreScheme.discountUpperFlag != ''">
+			and discount_upper_flag = #{ssAgreScheme.discountUpperFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountUpperAmt != null and ssAgreScheme.discountUpperAmt != ''">
+			and discount_upper_amt = #{ssAgreScheme.discountUpperAmt}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountLowerFlag != null and ssAgreScheme.discountLowerFlag != ''">
+			and discount_lower_flag = #{ssAgreScheme.discountLowerFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountLowerAmt != null and ssAgreScheme.discountLowerAmt != ''">
+			and discount_lower_amt = #{ssAgreScheme.discountLowerAmt}
+		</if>
+		<if test="ssAgreScheme.createTime != null and ssAgreScheme.createTime != ''">
+			and create_time LIKE CONCAT(#{ssAgreScheme.createTime},'%')
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.agrePrc != null and ssAgreScheme.agrePrc != ''">
+			and agre_prc = #{ssAgreScheme.agrePrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyBLcProp != null and ssAgreScheme.partyBLcProp != ''">
+			and party_b_lc_prop = #{ssAgreScheme.partyBLcProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyALcProp != null and ssAgreScheme.partyALcProp != ''">
+			and party_a_lc_prop = #{ssAgreScheme.partyALcProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyBBidProp != null and ssAgreScheme.partyBBidProp != ''">
+			and party_b_bid_prop = #{ssAgreScheme.partyBBidProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyABidProp != null and ssAgreScheme.partyABidProp != ''">
+			and party_a_bid_prop = #{ssAgreScheme.partyABidProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.profitMode != null and ssAgreScheme.profitMode != ''">
+			and profit_mode = #{ssAgreScheme.profitMode}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.pqSharingRatio != null and ssAgreScheme.pqSharingRatio != ''">
+			and pq_sharing_ratio = #{ssAgreScheme.pqSharingRatio}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishTypeUpper != null and ssAgreScheme.punishTypeUpper != ''">
+			and punish_type = #{ssAgreScheme.punishTypeUpper}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishTypeLower != null and ssAgreScheme.punishTypeLower != ''">
+			and punish_type = #{ssAgreScheme.punishTypeLower}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperThreshold != null and ssAgreScheme.punishUpperThreshold != ''">
+			and punish_upper_threshold = #{ssAgreScheme.punishUpperThreshold}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerThreshold != null and ssAgreScheme.punishLowerThreshold != ''">
+			and punish_lower_threshold = #{ssAgreScheme.punishLowerThreshold}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperType != null and ssAgreScheme.punishUpperType != ''">
+			and punish_upper_type = #{ssAgreScheme.punishUpperType}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerType != null and ssAgreScheme.punishLowerType != ''">
+			and punish_lower_type = #{ssAgreScheme.punishLowerType}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperProp != null and ssAgreScheme.punishUpperProp != ''">
+			and punish_upper_prop = #{ssAgreScheme.punishUpperProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerProp != null and ssAgreScheme.punishLowerProp != ''">
+			and punish_lower_prop = #{ssAgreScheme.punishLowerProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.upperPrc != null and ssAgreScheme.upperPrc != ''">
+			and upper_prc = #{ssAgreScheme.upperPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.lowerPrc != null and ssAgreScheme.lowerPrc != ''">
+			and lower_prc = #{ssAgreScheme.lowerPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishFlag != null and ssAgreScheme.punishFlag != ''">
+			and punish_flag = #{ssAgreScheme.punishFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensateFlag != null and ssAgreScheme.compensateFlag != ''">
+			and compensate_flag = #{ssAgreScheme.compensateFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensateThreshold != null and ssAgreScheme.compensateThreshold != ''">
+			and compensate_threshold = #{ssAgreScheme.compensateThreshold}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensateType != null and ssAgreScheme.compensateType != ''">
+			and compensate_type = #{ssAgreScheme.compensateType}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensatePrc != null and ssAgreScheme.compensatePrc != ''">
+			and compensate_prc = #{ssAgreScheme.compensatePrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.compensateProp != null and ssAgreScheme.compensateProp != ''">
+			and compensate_prop = #{ssAgreScheme.compensateProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.reportPq != null and ssAgreScheme.reportPq != ''">
+			and report_pq = #{ssAgreScheme.reportPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.lcPq != null and ssAgreScheme.lcPq != ''">
+			and lc_pq = #{ssAgreScheme.lcPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.lcPrc != null and ssAgreScheme.lcPrc != ''">
+			and lc_prc = #{ssAgreScheme.lcPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.bidPq != null and ssAgreScheme.bidPq != ''">
+			and bid_pq = #{ssAgreScheme.bidPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.bidPrc != null and ssAgreScheme.bidPrc != ''">
+			and bid_prc = #{ssAgreScheme.bidPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.delPq != null and ssAgreScheme.delPq != ''">
+			and del_pq = #{ssAgreScheme.delPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.transTotalPro != null and ssAgreScheme.transTotalPro != ''">
+			and trans_total_pro = #{ssAgreScheme.transTotalPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.consPro != null and ssAgreScheme.consPro != ''">
+			and cons_pro = #{ssAgreScheme.consPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.consCheckedPro != null and ssAgreScheme.consCheckedPro != ''">
+			and cons_checked_pro = #{ssAgreScheme.consCheckedPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.sellTotalPro != null and ssAgreScheme.sellTotalPro != ''">
+			and sell_total_pro = #{ssAgreScheme.sellTotalPro}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询每个客户的新方案的数量 -->
+	<select id="getNewSchemeNameSsAgreSchemeCountByParams" resultType="int">
+		SELECT  count( distinct cons_name) FROM s_s_agre_scheme where 1=1
+		<if test="ssAgreScheme != null and ssAgreScheme.consName != null and ssAgreScheme.consName != ''">
+			and cons_name LIKE CONCAT('%',#{ssAgreScheme.consName},'%')
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.schemeName != null and ssAgreScheme.schemeName != ''">
+			and scheme_name = #{ssAgreScheme.schemeName}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.diviCode != null and ssAgreScheme.diviCode != ''">
+			and divi_code = #{ssAgreScheme.diviCode}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.settlementMode != null and ssAgreScheme.settlementMode != ''">
+			and settlement_mode = #{ssAgreScheme.settlementMode}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountUpperFlag != null and ssAgreScheme.discountUpperFlag != ''">
+			and discount_upper_flag = #{ssAgreScheme.discountUpperFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountUpperAmt != null and ssAgreScheme.discountUpperAmt != ''">
+			and discount_upper_amt = #{ssAgreScheme.discountUpperAmt}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountLowerFlag != null and ssAgreScheme.discountLowerFlag != ''">
+			and discount_lower_flag = #{ssAgreScheme.discountLowerFlag}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.discountLowerAmt != null and ssAgreScheme.discountLowerAmt != ''">
+			and discount_lower_amt = #{ssAgreScheme.discountLowerAmt}
+		</if>
+		<if test="ssAgreScheme.createTime != null and ssAgreScheme.createTime != ''">
+			and create_time LIKE CONCAT(#{ssAgreScheme.createTime},'%')
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.agrePrc != null and ssAgreScheme.agrePrc != ''">
+			and agre_prc = #{ssAgreScheme.agrePrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyBLcProp != null and ssAgreScheme.partyBLcProp != ''">
+			and party_b_lc_prop = #{ssAgreScheme.partyBLcProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyALcProp != null and ssAgreScheme.partyALcProp != ''">
+			and party_a_lc_prop = #{ssAgreScheme.partyALcProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyBBidProp != null and ssAgreScheme.partyBBidProp != ''">
+			and party_b_bid_prop = #{ssAgreScheme.partyBBidProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.partyABidProp != null and ssAgreScheme.partyABidProp != ''">
+			and party_a_bid_prop = #{ssAgreScheme.partyABidProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishTypeUpper != null and ssAgreScheme.punishTypeUpper != ''">
+			and punish_type = #{ssAgreScheme.punishTypeUpper}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishTypeLower != null and ssAgreScheme.punishTypeLower != ''">
+			and punish_type = #{ssAgreScheme.punishTypeLower}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperThreshold != null and ssAgreScheme.punishUpperThreshold != ''">
+			and punish_upper_threshold = #{ssAgreScheme.punishUpperThreshold}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerThreshold != null and ssAgreScheme.punishLowerThreshold != ''">
+			and punish_lower_threshold = #{ssAgreScheme.punishLowerThreshold}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperType != null and ssAgreScheme.punishUpperType != ''">
+			and punish_upper_type = #{ssAgreScheme.punishUpperType}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerType != null and ssAgreScheme.punishLowerType != ''">
+			and punish_lower_type = #{ssAgreScheme.punishLowerType}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishUpperProp != null and ssAgreScheme.punishUpperProp != ''">
+			and punish_upper_prop = #{ssAgreScheme.punishUpperProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.punishLowerProp != null and ssAgreScheme.punishLowerProp != ''">
+			and punish_lower_prop = #{ssAgreScheme.punishLowerProp}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.reportPq != null and ssAgreScheme.reportPq != ''">
+			and report_pq = #{ssAgreScheme.reportPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.lcPq != null and ssAgreScheme.lcPq != ''">
+			and lc_pq = #{ssAgreScheme.lcPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.lcPrc != null and ssAgreScheme.lcPrc != ''">
+			and lc_prc = #{ssAgreScheme.lcPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.bidPq != null and ssAgreScheme.bidPq != ''">
+			and bid_pq = #{ssAgreScheme.bidPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.bidPrc != null and ssAgreScheme.bidPrc != ''">
+			and bid_prc = #{ssAgreScheme.bidPrc}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.delPq != null and ssAgreScheme.delPq != ''">
+			and del_pq = #{ssAgreScheme.delPq}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.transTotalPro != null and ssAgreScheme.transTotalPro != ''">
+			and trans_total_pro = #{ssAgreScheme.transTotalPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.consPro != null and ssAgreScheme.consPro != ''">
+			and cons_pro = #{ssAgreScheme.consPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.consCheckedPro != null and ssAgreScheme.consCheckedPro != ''">
+			and cons_checked_pro = #{ssAgreScheme.consCheckedPro}
+		</if>
+		<if test="ssAgreScheme != null and ssAgreScheme.sellTotalPro != null and ssAgreScheme.sellTotalPro != ''">
+			and sell_total_pro = #{ssAgreScheme.sellTotalPro}
+		</if>
+	</select>
+	<!-- 分组查询客户Id -->
+	<select id="getConsIdsByLimit" resultType="String">
+		select b.cons_id from s_s_agre_scheme b group by b.cons_id 
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<!-- 根据客户Id查询方案数据 -->
+	<select id="getSsAgreSchemeByConsIdlist" resultType="com.hhwy.purchaseweb.crm.ssagrescheme.domain.SsAgreSchemeDetail">
+		SELECT 
+			ID id,
+			a.cons_id consId,
+			a.cons_name consName,
+			a.scheme_name schemeName,
+			a.divi_code diviCode,
+			a.settlement_mode settlementMode,
+			a.discount_upper_flag discountUpperFlag,
+			a.discount_upper_amt discountUpperAmt,
+			a.discount_lower_flag discountLowerFlag,
+			a.discount_lower_amt discountLowerAmt,
+			a.agre_prc agrePrc,
+			a.party_b_lc_prop partyBLcProp,
+			a.party_a_lc_prop partyALcProp,
+			a.party_b_bid_prop partyBBidProp,
+			a.party_a_bid_prop partyABidProp,
+			a.punish_type_upper punishTypeUpper,
+			a.punish_type_lower punishTypeLower,
+			a.punish_upper_threshold punishUpperThreshold,
+			a.punish_lower_threshold punishLowerThreshold,
+			a.punish_upper_type punishUpperType,
+			a.punish_lower_type punishLowerType,
+			a.punish_upper_prop punishUpperProp,
+			a.punish_lower_prop punishLowerProp,
+			a.report_pq reportPq,
+			a.lc_pq lcPq,
+			a.lc_prc lcPrc,
+			a.bid_pq bidPq,
+			a.bid_prc bidPrc,
+			a.del_pq delPq,
+			a.trans_total_pro transTotalPro,
+			a.cons_pro consPro,
+			a.cons_checked_pro consCheckedPro,
+			a.create_time createTime,
+			a.sell_total_pro sellTotalPro,
+			a.company_id companyId,
+			a.profit_mode profitMode,
+			a.pq_sharing_ratio pqSharingRatio,
+			a.upper_prc upperPrc,
+			a.lower_prc lowerPrc,
+			a.punish_flag punishFlag,
+			a.compensate_flag compensateFlag,
+			a.compensate_threshold compensateThreshold,
+			a.compensate_type compensateType,
+			a.compensate_prc compensatePrc,
+			a.compensate_prop compensateProp,
+			a.compensate_amt compensateAmt,
+			a.comp_checked_pro compCheckedPro
+		FROM s_s_agre_scheme a
+		where 1=1   
+			<if test="ssAgreScheme != null and consIdlist != null and consIdlist != ''">
+				and a.cons_id in
+				<foreach collection="consIdlist" item="item" open="(" close=")" index="index" separator=",">
+		       		'${item}'
+		    	</foreach>
+			</if>
+	    	<if test="ssAgreScheme != null and ssAgreScheme.consId != null and ssAgreScheme.consId != ''">
+				and cons_id = #{ssAgreScheme.consId}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.consName != null and ssAgreScheme.consName != ''">
+				and cons_name LIKE CONCAT('%',#{ssAgreScheme.consName},'%')
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.schemeName != null and ssAgreScheme.schemeName != ''">
+				and scheme_name = #{ssAgreScheme.schemeName}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.diviCode != null and ssAgreScheme.diviCode != ''">
+				and divi_code = #{ssAgreScheme.diviCode}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.settlementMode != null and ssAgreScheme.settlementMode != ''">
+				and settlement_mode = #{ssAgreScheme.settlementMode}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.discountUpperFlag != null and ssAgreScheme.discountUpperFlag != ''">
+				and discount_upper_flag = #{ssAgreScheme.discountUpperFlag}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.discountUpperAmt != null and ssAgreScheme.discountUpperAmt != ''">
+				and discount_upper_amt = #{ssAgreScheme.discountUpperAmt}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.discountLowerFlag != null and ssAgreScheme.discountLowerFlag != ''">
+				and discount_lower_flag = #{ssAgreScheme.discountLowerFlag}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.discountLowerAmt != null and ssAgreScheme.discountLowerAmt != ''">
+				and discount_lower_amt = #{ssAgreScheme.discountLowerAmt}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.agrePrc != null and ssAgreScheme.agrePrc != ''">
+				and agre_prc = #{ssAgreScheme.agrePrc}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.partyBLcProp != null and ssAgreScheme.partyBLcProp != ''">
+				and party_b_lc_prop = #{ssAgreScheme.partyBLcProp}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.partyALcProp != null and ssAgreScheme.partyALcProp != ''">
+				and party_a_lc_prop = #{ssAgreScheme.partyALcProp}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.partyBBidProp != null and ssAgreScheme.partyBBidProp != ''">
+				and party_b_bid_prop = #{ssAgreScheme.partyBBidProp}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.partyABidProp != null and ssAgreScheme.partyABidProp != ''">
+				and party_a_bid_prop = #{ssAgreScheme.partyABidProp}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.punishTypeUpper != null and ssAgreScheme.punishTypeUpper != ''">
+				and punish_type = #{ssAgreScheme.punishTypeUpper}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.punishTypeLower != null and ssAgreScheme.punishTypeLower != ''">
+				and punish_type = #{ssAgreScheme.punishTypeLower}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.punishUpperThreshold != null and ssAgreScheme.punishUpperThreshold != ''">
+				and punish_upper_threshold = #{ssAgreScheme.punishUpperThreshold}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.punishLowerThreshold != null and ssAgreScheme.punishLowerThreshold != ''">
+				and punish_lower_threshold = #{ssAgreScheme.punishLowerThreshold}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.punishUpperType != null and ssAgreScheme.punishUpperType != ''">
+				and punish_upper_type = #{ssAgreScheme.punishUpperType}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.punishLowerType != null and ssAgreScheme.punishLowerType != ''">
+				and punish_lower_type = #{ssAgreScheme.punishLowerType}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.punishUpperProp != null and ssAgreScheme.punishUpperProp != ''">
+				and punish_upper_prop = #{ssAgreScheme.punishUpperProp}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.punishLowerProp != null and ssAgreScheme.punishLowerProp != ''">
+				and punish_lower_prop = #{ssAgreScheme.punishLowerProp}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.reportPq != null and ssAgreScheme.reportPq != ''">
+				and report_pq = #{ssAgreScheme.reportPq}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.lcPq != null and ssAgreScheme.lcPq != ''">
+				and lc_pq = #{ssAgreScheme.lcPq}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.lcPrc != null and ssAgreScheme.lcPrc != ''">
+				and lc_prc = #{ssAgreScheme.lcPrc}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.bidPq != null and ssAgreScheme.bidPq != ''">
+				and bid_pq = #{ssAgreScheme.bidPq}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.bidPrc != null and ssAgreScheme.bidPrc != ''">
+				and bid_prc = #{ssAgreScheme.bidPrc}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.delPq != null and ssAgreScheme.delPq != ''">
+				and del_pq = #{ssAgreScheme.delPq}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.transTotalPro != null and ssAgreScheme.transTotalPro != ''">
+				and trans_total_pro = #{ssAgreScheme.transTotalPro}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.consPro != null and ssAgreScheme.consPro != ''">
+				and cons_pro = #{ssAgreScheme.consPro}
+			</if>
+			<if test="ssAgreScheme.createTime != null and ssAgreScheme.createTime != ''">
+				and create_time LIKE CONCAT(#{ssAgreScheme.createTime},'%')
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.consCheckedPro != null and ssAgreScheme.consCheckedPro != ''">
+				and cons_checked_pro = #{ssAgreScheme.consCheckedPro}
+			</if>
+			<if test="ssAgreScheme != null and ssAgreScheme.sellTotalPro != null and ssAgreScheme.sellTotalPro != ''">
+				and sell_total_pro = #{ssAgreScheme.sellTotalPro}
+			</if>
+			order by create_time asc
+	</select>
+	<!-- 根据consId查询对应条数 -->
+	<select id="getSsAgreSchemeCountByConsId" resultType="int">
+		SELECT  count(*) FROM s_s_agre_scheme where cons_id = #{consId}
+	</select>
+	
+	<!-- 根据条件查询每个客户最新的方案的数据(父节点数据) -->
+	<select id="getNewSchemeNameSsAgreSchemeListByParams" resultType="com.hhwy.purchaseweb.crm.ssagrescheme.domain.SsAgreSchemeDetail">
+	(SELECT
+			a.cons_id id,
+			a.cons_id consId,
+			a.cons_name consName,
+			null schemeName,
+			null diviCode,
+			null settlementMode,
+			null discountUpperFlag,
+			null discountUpperAmt,
+			null discountLowerFlag,
+			null discountLowerAmt,
+			null agrePrc,
+			null partyBLcProp,
+			null partyALcProp,
+			null partyBBidProp,
+			null partyABidProp,
+			null profitMode,
+			null pqSharingRatio,
+			null punishTypeUpper,
+			null punishTypeLower,
+			null punishUpperThreshold,
+			null punishLowerThreshold,
+			null punishUpperType,
+			null punishLowerType,
+			null punishUpperProp,
+			null punishLowerProp,
+			null upperPrc,
+			null lowerPrc,
+			null punishFlag,
+			null compensateFlag,
+			null compensateThreshold,
+			null compensateType,
+			null compensatePrc,
+			null compensateProp,
+			null reportPq,
+			null lcPq,
+			null lcPrc,
+			null bidPq,
+			null bidPrc,
+			null delPq,
+			null transTotalPro,
+			null consPro,
+			null consCheckedPro,
+			null createTime,
+			null sellTotalPro,
+			null compensateAmt,
+			null compCheckedPro
+			from s_s_agre_scheme a
+			<if test="loginUserId != null and loginUserId != ''">
+				INNER JOIN ac_user_org_auth auth ON auth.org_id = a.org_no AND auth.user_id = #{loginUserId}
+			</if>
+			WHERE 1=1
+			<if test="ssAgreScheme != null and ssAgreScheme.consName != null and ssAgreScheme.consName != ''">
+			and cons_name LIKE CONCAT('%',#{ssAgreScheme.consName},'%')
+		</if>
+		GROUP BY cons_id
+		HAVING COUNT(a.id) > 1)
+	UNION
+		(select 
+			a.ID id,
+			a.cons_id consId,
+			a.cons_name consName,
+			a.scheme_name schemeName,
+			a.divi_code diviCode,
+			a.settlement_mode settlementMode,
+			a.discount_upper_flag discountUpperFlag,
+			a.discount_upper_amt discountUpperAmt,
+			a.discount_lower_flag discountLowerFlag,
+			a.discount_lower_amt discountLowerAmt,
+			a.agre_prc agrePrc,
+			a.party_b_lc_prop partyBLcProp,
+			a.party_a_lc_prop partyALcProp,
+			a.party_b_bid_prop partyBBidProp,
+			a.party_a_bid_prop partyABidProp,
+			a.profit_mode profitMode,
+			a.pq_sharing_ratio pqSharingRatio,
+			a.punish_type_upper punishTypeUpper,
+			a.punish_type_lower punishTypeLower,
+			a.punish_upper_threshold punishUpperThreshold,
+			a.punish_lower_threshold punishLowerThreshold,
+			a.punish_upper_type punishUpperType,
+			a.punish_lower_type punishLowerType,
+			a.punish_upper_prop punishUpperProp,
+			a.punish_lower_prop punishLowerProp,
+			a.upper_prc upperPrc,
+			a.lower_prc lowerPrc,
+			a.punish_flag punishFlag,
+			a.compensate_flag compensateFlag,
+			a.compensate_threshold compensateThreshold,
+			a.compensate_type compensateType,
+			a.compensate_prc compensatePrc,
+			a.compensate_prop compensateProp,
+			a.report_pq reportPq,
+			a.lc_pq lcPq,
+			a.lc_prc lcPrc,
+			a.bid_pq bidPq,
+			a.bid_prc bidPrc,
+			a.del_pq delPq,
+			a.trans_total_pro transTotalPro,
+			a.cons_pro consPro,
+			a.cons_checked_pro consCheckedPro,
+			a.create_time createTime,
+			a.sell_total_pro sellTotalPro,
+			a.compensate_amt compensateAmt,
+			a.comp_checked_pro compCheckedPro
+			from s_s_agre_scheme a
+			<if test="loginUserId != null and loginUserId != ''">
+				INNER JOIN ac_user_org_auth auth ON auth.org_id = a.org_no AND auth.user_id = #{loginUserId}
+			</if>
+			WHERE 1=1
+			<if test="ssAgreScheme != null and ssAgreScheme.consName != null and ssAgreScheme.consName != ''">
+				and cons_name LIKE CONCAT('%',#{ssAgreScheme.consName},'%')
+			</if>
+		GROUP BY cons_id
+		HAVING COUNT(a.id) = 1)
+		order by createTime desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据父节点id查询子节点对象 -->
+	<select id="getSsAgreSchemeById" resultType="com.hhwy.purchaseweb.crm.ssagrescheme.domain.SsAgreSchemeDetail">
+		SELECT 
+			ID id,
+			cons_id consId,
+			'' consName,
+			scheme_name schemeName,
+			divi_code diviCode,
+			settlement_mode settlementMode,
+			discount_upper_flag discountUpperFlag,
+			discount_upper_amt discountUpperAmt,
+			discount_lower_flag discountLowerFlag,
+			discount_lower_amt discountLowerAmt,
+			agre_prc agrePrc,
+			party_b_lc_prop partyBLcProp,
+			party_a_lc_prop partyALcProp,
+			party_b_bid_prop partyBBidProp,
+			party_a_bid_prop partyABidProp,
+			profit_mode profitMode,
+			pq_sharing_ratio pqSharingRatio,
+			punish_type_upper punishTypeUpper,
+			punish_type_lower punishTypeLower,
+			punish_upper_threshold punishUpperThreshold,
+			punish_lower_threshold punishLowerThreshold,
+			punish_upper_type punishUpperType,
+			punish_lower_type punishLowerType,
+			punish_upper_prop punishUpperProp,
+			punish_lower_prop punishLowerProp,
+			upper_prc upperPrc,
+			lower_prc lowerPrc,
+			punish_flag punishFlag,
+			compensate_flag compensateFlag,
+			compensate_threshold compensateThreshold,
+			compensate_type compensateType,
+			compensate_prc compensatePrc,
+			compensate_prop compensateProp,
+			report_pq reportPq,
+			lc_pq lcPq,
+			lc_prc lcPrc,
+			bid_pq bidPq,
+			bid_prc bidPrc,
+			del_pq delPq,
+			trans_total_pro transTotalPro,
+			cons_pro consPro,
+			cons_checked_pro consCheckedPro,
+			create_time createTime,
+			sell_total_pro sellTotalPro,
+			compensate_amt compensateAmt,
+			comp_checked_pro compCheckedPro
+		 FROM s_s_agre_scheme WHERE cons_id = #{id}
+			ORDER BY scheme_name asc
+	</select>
+	
+	<select id="getByCosId" resultType="com.hhwy.purchaseweb.crm.ssagrescheme.domain.SmPpaDetail">
+		SELECT
+			ppa.ID id,
+			mo.id modeId,
+			con.id conId,
+			com.id comId
+		FROM
+			s_m_ppa ppa
+		LEFT JOIN s_m_dist_mode mo ON ppa.id = mo.agre_id
+		LEFT JOIN s_m_agre_punish_cons con ON  ppa.id = con.agre_id 
+		LEFT JOIN s_m_agre_punish_comp com ON  ppa.id = com.agre_id
+		WHERE ppa.agre_status = '00' 
+		<if test="smPpa != null and smPpa.consId != null and smPpa.consId != ''">
+			AND ppa.cons_id = #{smPpa.consId}
+		</if>
+	</select>
+	
+	<!-- 数据导出 -->
+	<select id="getExcelData" resultType="map">
+		SELECT
+			ID id,
+			cons_id consId,
+			cons_name consName,
+			scheme_name schemeName,
+			divi_code diviCode,
+			settlement_mode settlementMode,
+			discount_upper_flag discountUpperFlag,
+			discount_upper_amt discountUpperAmt,
+			discount_lower_flag discountLowerFlag,
+			discount_lower_amt discountLowerAmt,
+			agre_prc agrePrc,
+			party_b_lc_prop partyBLcProp,
+			party_a_lc_prop partyALcProp,
+			party_b_bid_prop partyBBidProp,
+			party_a_bid_prop partyABidProp,
+			profit_mode profitMode,
+			pq_sharing_ratio pqSharingRatio,
+			punish_type_upper punishTypeUpper,
+			(select name from s_p_code where code_type='sell_punishFlag' and value= punishTypeUpper) punishTypeUpperName,
+			punish_type_lower punishTypeLower,
+			(select name from s_p_code where code_type='sell_punishFlag' and value= punishTypeLower) punishTypeLowerName,
+			punish_upper_threshold punishUpperThreshold,
+			punish_lower_threshold punishLowerThreshold,
+			punish_upper_type punishUpperType,
+			(select name from s_p_code where code_type='sell_enaltyPrc' and value= punishUpperType) punishUpperTypeName,
+			punish_lower_type punishLowerType,
+			(select name from s_p_code where code_type='sell_enaltyPrc' and value= punishLowerType) punishLowerTypeName,
+			punish_upper_prop punishUpperProp,
+			punish_lower_prop punishLowerProp,
+			upper_prc upperPrc,
+			lower_prc lowerPrc,
+			punish_flag punishFlag,
+			compensate_flag compensateFlag,
+			(select name from s_p_code where code_type='sell_compensateFlag' and value= compensateFlag) compensateFlagName,
+			compensate_threshold compensateThreshold,
+			compensate_type compensateType,
+			(select name from s_p_code where code_type='sell_enaltyPrc' and value= compensateType) compensateTypeName,
+			compensate_prc compensatePrc,
+			compensate_prop compensateProp,
+			report_pq reportPq,
+			lc_pq lcPq,
+			lc_prc lcPrc,
+			bid_pq bidPq,
+			bid_prc bidPrc,
+			del_pq delPq,
+			trans_total_pro transTotalPro,
+			cons_pro consPro,
+			cons_checked_pro consCheckedPro,
+			create_time createTime,
+			sell_total_pro sellTotalPro,
+			compensate_amt compensateAmt,
+			comp_checked_pro compCheckedPro
+			From s_s_agre_scheme
+			WHERE 1 = 1
+				AND id IN
+				<foreach collection="ids" item="item" separator="," open="(" close=")" index="index">  
+   				#{item}  
+    			</foreach>
+    		ORDER BY cons_id asc ,scheme_name DESC
+	</select>
+	
+	
+	
+</mapper>

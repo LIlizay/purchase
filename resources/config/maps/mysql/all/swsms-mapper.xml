@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="swsms.sql">
+	
+	<!-- 获取已发送短信用户信息 -->
+	<select id="getSwSmsByParams" resultType="com.hhwy.purchase.domain.SwSms">
+		SELECT
+			id id,
+			receive_person receivePerson,
+			send_person sendPerson,
+			content content,	
+			send_date sendDate,
+			receive_phone receivePhone,
+			cons_id consId,
+			company_id companyId,
+			org_no orgNo,
+			plan_id planId,
+			sms_type smsType,
+			status status
+		FROM
+			s_w_sms
+		WHERE
+			cons_id = #{consId}
+		<if test="status != null and status != '' ">
+			AND `status` = #{status}
+		</if>
+		AND send_date = DATE_FORMAT(#{sendDate},'%Y-%m-%d')
+		AND content = #{content}
+	</select>
+	
+</mapper>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+    <style type="text/css">
+    	.finshTitle{color:#000000;text-decoration:none;}
+    	.finshTitle:hover{color:#39b3d7;text-decoration:none;}
+    </style>
+	</head>
+	<body>
+		<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>我的已办</div>
+				<div class="panel-body">
+					<div class="col-md-1"><span class="leftbox">开始日期</span></div>
+					<div class="col-md-2">
+						<div class="from-group">
+             						<input type="text" class="form-control selectDate" placeholder="yyyy/mm/dd" id="bgnDate">
+             						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:86%;"><i class="fa icon-rili"></i></span> -->
+         						</div>
+					</div>
+					<div class="col-md-1"><span class="leftbox">结束日期</span></div>
+					<div class="col-md-2">
+						<div class="from-group">
+             						<input type="text" class="form-control selectDate" placeholder="yyyy/mm/dd" id="endDate">
+             						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:86%;"><i class="fa icon-rili"></i></span> -->
+         						</div>
+					</div>
+					<div class="col-md-1">
+						<a href="javascript:void(0)" onClick="searchData()" class="btn btn-info btn-sm mt10">查询</a>
+					</div>
+				</div>
+				<div class="panel-body" style="padding-top:0px">
+					<div class="table-responsive">
+						<div class="bg-info grid-title">我的已办列表</div>	
+               			<div class="grid-table"><table class="table table-bordered table-striped table-hover">
+                         </table></div>
+					</div>
+					<div class="col-sm-12 foot_paging">
+							<div class="col-sm-6">
+								<div class="dataTables_info paginationPage" style="margin-top:16px;"></div>
+							</div>
+							<div class="col-sm-6 text-right">
+								<div class="dataTables_paginate paging_simple_numbers" id="dataTables-example_paginate">
+									<ul class="pagination">
+										<li class="paginate_button previous disabled" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_previous"><a href="javascript:void(0)">上一页</a></li>
+										<li class="paginate_button active" aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">1</a></li><li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">2</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">3</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">4</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">5</a></li><li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">6</a></li>
+										<li class="paginate_button next" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_next"><a href="javascript:void(0)">下一页</a></li>
+									</ul>
+								</div>
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>						
+	</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+     <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    laydate.render({
+  	  elem: '#bgnDate', //指定元素
+  	  done:function(value, date, endDate){setYear('bgnDate',value)}
+  });
+  laydate.render({
+  	  elem: '#endDate', //指定元素
+  	  done:function(value, date, endDate){setYear('endDate',value)}
+  });
+  var params = {
+  		bgnDate:'',
+  		endDate:'',
+  		consId:'',
+  }
+  $(function(){
+	//设置页面的高度
+  	$.initpageCss();
+  	//计算表格高度
+  	$.initTableCss();
+  	$(window).resize(function(){
+  		$.initpageCss();
+  	});
+	  params.consId=window.parent.parent.loginObject.consId;
+  	//设置分页信息
+   	pageUtil.bindClick({handler:function(option){initData(option)}},".pagination");
+   	//初始化列表数据
+   	var option = pageUtil.getPage(".pagination");
+  	//初始化列表数据
+   	initData(option);
+  })
+
+  //初始化数据
+  function initData(option){
+  	//清空数据
+  	var queryParams = {
+  		 serviceKey:"w_getSwMessageList",
+  		 clientKey:"sellandpurchase",
+  		  params:{
+  		       "consId":params.consId,
+  		       "bgnDate":params.bgnDate,
+  		       "endDate":params.endDate,
+  		        "type":"finishType",
+  		      "index":option.nowIndex-1,
+				"pageSize":option.pageSize,
+  		  }
+  	};
+  	$("table").createtable({
+  		url:groovyPath + "w_getSwMessageList.do",
+  		method: 'POST',
+          queryParams:queryParams,
+  		rownumbers: true,
+  		fitColumns:true,
+  		column:[[
+  		     {field:'sendDate',title:'日期',width:60},
+  		     {field:'title',title:'已处理项',width:100,
+  		    	 formatter: function(value,row,index){
+  		    		 return "<a class='finshTitle'  href='javascript:void(0)' onClick='clickToDoList(\""+ row.msgId +"\")' >" + value + "</a>";
+  		    	 }
+  		     }
+  		]],
+  		onLoadSuccess:function(data){
+ 	    	 pageUtil.setpage({totalPage:data.totalPage},".pagination");
+ 	     }
+  	})
+  }
+  //查询
+  function searchData(){
+	  var option = pageUtil.getPage(".pagination");
+  	  var queryParams = {
+  		 serviceKey:"w_getSwMessageList",
+  		 clientKey:"sellandpurchase",
+  		  params:{
+  		       "consId":params.consId,
+  		       "bgnDate":params.bgnDate,
+  		       "endDate":params.endDate,
+  		        "type":"finishType",
+  		      "index":option.nowIndex-1,
+				"pageSize":option.pageSize,
+  		  }
+  	};
+  	$("table").createtable("load",queryParams);
+  }
+  //赋值日期
+  function setYear(index,value){
+  	params[index] = value;
+  }
+
+  //点击查看消息
+  function clickToDoList(id){
+	  MainFrameUtil.openDialog({
+ 		id:"message_newsdetail",
+		params:{id:id,type:"message"},
+		herf:"message-newsdetail.html",
+		maximizable:false,
+		width:540,
+		height:430,
+  	  });
+  }
+    </script>
+	</body>
+</html>

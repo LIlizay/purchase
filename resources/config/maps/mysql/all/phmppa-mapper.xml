@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmPpa.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmPpaListByParams" resultType="com.hhwy.purchaseweb.agreement.phmppa.domain.PhmPpaDetail">
+		select
+			ppa.ID id,
+			ppa.agre_no agreNo,
+			ppa.serial_no serialNo,
+			ppa.agre_name agreName,
+			ppa.tax_flag taxFlag,
+			ppa.template_id templateId,
+			ppa.elec_id elecId,
+			ppa.license_no licenseNo,
+			ppa.agre_pq agrePq,
+			ppa.agre_type agreType,
+			ppa.viol_explain violExplain,
+			ppa.bgn_date bgnDate,
+			ppa.end_date endDate,
+			ppa.sign_date signDate,
+			ppa.record_date recordDate,
+			ppa.party_b partyB,
+			ppa.party_a partyA,
+			ppa.sign_addr signAddr,
+			ppa.file_id fileId,
+			IF(NOW()&lt;ppa.bgn_date ,'01',IF(NOW()&gt;ppa.end_date,"03","02")) agreStatus,
+			ppa.org_no orgNo,
+			elec.elec_name elecName,
+			LEFT(bgn_date,4) year,
+			elec.network_flag networkFlag,
+			elec.bloc_id blocId,
+			elec.elec_type_code elecTypeCode		
+		from ph_m_ppa ppa left join ph_c_elec_info elec on ppa.elec_id = elec.id
+		where 1=1
+		<if test="phmPpa != null and phmPpa.agreNo != null and phmPpa.agreNo != ''">
+			and ppa.agre_no = #{phmPpa.agreNo}
+		</if>
+		<if test="phmPpa != null and phmPpa.agreName != null and phmPpa.agreName != ''">
+			and ppa.agre_name LIKE CONCAT('%',#{phmPpa.agreName},'%') 
+		</if>
+		<if test="phmPpa != null and phmPpa.taxFlag != null and phmPpa.taxFlag != ''">
+			and ppa.tax_flag = #{phmPpa.taxFlag}
+		</if>
+		<if test="phmPpa != null and phmPpa.elecId != null and phmPpa.elecId != ''">
+			and ppa.elec_id = #{phmPpa.elecId}
+		</if>
+		<if test="phmPpa != null and phmPpa.agrePq != null and phmPpa.agrePq != ''">
+			and ppa.agre_pq = #{phmPpa.agrePq}
+		</if>
+		<if test="phmPpa != null and phmPpa.agreType != null and phmPpa.agreType != ''">
+			and ppa.agre_type = #{phmPpa.agreType}
+		</if>
+		<if test="phmPpa != null and phmPpa.violExplain != null and phmPpa.violExplain != ''">
+			and ppa.viol_explain = #{phmPpa.violExplain}
+		</if>
+		
+		<choose>
+			<when test="phmPpa != null and phmPpa.bgnDate != null and phmPpa.bgnDate != '' and phmPpa.endDate != null and phmPpa.endDate != ''  ">
+				and NOT(#{phmPpa.bgnDate} &gt; DATE_FORMAT(ppa.end_date,'%Y-%m') OR #{phmPpa.endDate} &lt; DATE_FORMAT(ppa.bgn_date,'%Y-%m'))
+			</when>
+			<when test="phmPpa != null and phmPpa.bgnDate != null and phmPpa.bgnDate != '' ">
+				and DATE_FORMAT(ppa.bgn_date,'%Y-%m') &lt;= #{phmPpa.bgnDate} AND #{phmPpa.bgnDate} &lt;= DATE_FORMAT(ppa.end_date,'%Y-%m')
+			</when>
+			<when test="phmPpa != null and phmPpa.endDate != null and phmPpa.endDate != '' ">
+				and DATE_FORMAT(ppa.bgn_date,'%Y-%m') &lt;= #{phmPpa.endDate} AND #{phmPpa.endDate} &lt;= DATE_FORMAT(ppa.end_date,'%Y-%m')
+			</when>
+		</choose>
+		
+		<if test="phmPpa != null and phmPpa.signDate != null and phmPpa.signDate != ''">
+			and ppa.sign_date = #{phmPpa.signDate}
+		</if>
+		<if test="phmPpa != null and phmPpa.recordDate != null and phmPpa.recordDate != ''">
+			and ppa.record_date = #{phmPpa.recordDate}
+		</if>
+		<if test="phmPpa != null and phmPpa.partyB != null and phmPpa.partyB != ''">
+			and ppa.party_b = #{phmPpa.partyB}
+		</if>
+		<if test="phmPpa != null and phmPpa.partyA != null and phmPpa.partyA != ''">
+			and ppa.party_a = #{phmPpa.partyA}
+		</if>
+		<if test="phmPpa != null and phmPpa.signAddr != null and phmPpa.signAddr != ''">
+			and ppa.sign_addr = #{phmPpa.signAddr}
+		</if>
+		<if test="phmPpa != null and phmPpa.fileId != null and phmPpa.fileId != ''">
+			and ppa.file_id = #{phmPpa.fileId}
+		</if>
+		<if test="phmPpa != null and phmPpa.agreStatus != null and phmPpa.agreStatus != ''">
+			<choose>
+				<when test="phmPpa.agreStatus == '01'">
+					AND ppa.bgn_date &gt; now()
+				</when>
+				<when test="phmPpa.agreStatus == '02'">
+					AND ppa.bgn_date &lt; now() AND ppa.end_date &gt; now()
+				</when>
+				<when test="phmPpa.agreStatus == '03'">
+					AND ppa.end_date &lt; now()
+				</when>
+			</choose>
+		</if>
+		<if test="elecName != null and elecName != ''">
+			and elec.elec_name LIKE concat("%",#{elecName},"%")
+		</if>
+		<if test="phmPpa != null and phmPpa.orgNo != null and phmPpa.orgNo != ''">
+			and ppa.org_no = #{phmPpa.orgNo}
+		</if>
+		<if test="year != null and year != ''">
+			and (DATE_FORMAT(ppa.bgn_date,'%Y') <![CDATA[<=]]> #{year} and DATE_FORMAT(ppa.end_date,'%Y') <![CDATA[>=]]> #{year})
+		</if>
+		<if test="networkFlag != null and networkFlag != ''">
+			and elec.network_flag = #{networkFlag}
+		</if>
+		order by ppa.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmPpaCountByParams" resultType="int">
+		select count(1)	
+		from ph_m_ppa ppa left join ph_c_elec_info elec on ppa.elec_id = elec.id
+		where 1=1
+		<if test="phmPpa != null and phmPpa.agreNo != null and phmPpa.agreNo != ''">
+			and ppa.agre_no = #{phmPpa.agreNo}
+		</if>
+		<if test="phmPpa != null and phmPpa.agreName != null and phmPpa.agreName != ''">
+			and ppa.agre_name LIKE CONCAT('%',#{phmPpa.agreName},'%') 
+		</if>
+		<if test="phmPpa != null and phmPpa.taxFlag != null and phmPpa.taxFlag != ''">
+			and ppa.tax_flag = #{phmPpa.taxFlag}
+		</if>
+		<if test="phmPpa != null and phmPpa.elecId != null and phmPpa.elecId != ''">
+			and ppa.elec_id = #{phmPpa.elecId}
+		</if>
+		<if test="phmPpa != null and phmPpa.agrePq != null and phmPpa.agrePq != ''">
+			and ppa.agre_pq = #{phmPpa.agrePq}
+		</if>
+		<if test="phmPpa != null and phmPpa.agreType != null and phmPpa.agreType != ''">
+			and ppa.agre_type = #{phmPpa.agreType}
+		</if>
+		<if test="phmPpa != null and phmPpa.violExplain != null and phmPpa.violExplain != ''">
+			and ppa.viol_explain = #{phmPpa.violExplain}
+		</if>
+		
+		<choose>
+			<when test="phmPpa != null and phmPpa.bgnDate != null and phmPpa.bgnDate != '' and phmPpa.endDate != null and phmPpa.endDate != ''  ">
+				and NOT(#{phmPpa.bgnDate} &gt; DATE_FORMAT(ppa.end_date,'%Y-%m') OR #{phmPpa.endDate} &lt; DATE_FORMAT(ppa.bgn_date,'%Y-%m'))
+			</when>
+			<when test="phmPpa != null and phmPpa.bgnDate != null and phmPpa.bgnDate != '' ">
+				and DATE_FORMAT(ppa.bgn_date,'%Y-%m') &lt;= #{phmPpa.bgnDate} AND #{phmPpa.bgnDate} &lt;= DATE_FORMAT(ppa.end_date,'%Y-%m')
+			</when>
+			<when test="phmPpa != null and phmPpa.endDate != null and phmPpa.endDate != '' ">
+				and DATE_FORMAT(ppa.bgn_date,'%Y-%m') &lt;= #{phmPpa.endDate} AND #{phmPpa.endDate} &lt;= DATE_FORMAT(ppa.end_date,'%Y-%m')
+			</when>
+		</choose>
+		
+		<if test="phmPpa != null and phmPpa.signDate != null and phmPpa.signDate != ''">
+			and ppa.sign_date = #{phmPpa.signDate}
+		</if>
+		<if test="phmPpa != null and phmPpa.recordDate != null and phmPpa.recordDate != ''">
+			and ppa.record_date = #{phmPpa.recordDate}
+		</if>
+		<if test="phmPpa != null and phmPpa.partyB != null and phmPpa.partyB != ''">
+			and ppa.party_b = #{phmPpa.partyB}
+		</if>
+		<if test="phmPpa != null and phmPpa.partyA != null and phmPpa.partyA != ''">
+			and ppa.party_a = #{phmPpa.partyA}
+		</if>
+		<if test="phmPpa != null and phmPpa.signAddr != null and phmPpa.signAddr != ''">
+			and ppa.sign_addr = #{phmPpa.signAddr}
+		</if>
+		<if test="phmPpa != null and phmPpa.fileId != null and phmPpa.fileId != ''">
+			and ppa.file_id = #{phmPpa.fileId}
+		</if>
+		<if test="phmPpa != null and phmPpa.agreStatus != null and phmPpa.agreStatus != ''">
+			<choose>
+				<when test="phmPpa.agreStatus == '01'">
+					AND ppa.bgn_date &gt; now()
+				</when>
+				<when test="phmPpa.agreStatus == '02'">
+					AND ppa.bgn_date &lt; now() AND ppa.end_date &gt; now()
+				</when>
+				<when test="phmPpa.agreStatus == '03'">
+					AND ppa.end_date &lt; now()
+				</when>
+			</choose>
+		</if>
+		<if test="elecName != null and elecName != ''">
+			and elec.elec_name LIKE concat("%",#{elecName},"%")
+		</if>
+		<if test="phmPpa != null and phmPpa.orgNo != null and phmPpa.orgNo != ''">
+			and ppa.org_no = #{phmPpa.orgNo}
+		</if>
+		<if test="year != null and year != ''">
+			and (DATE_FORMAT(ppa.bgn_date,'%Y') <![CDATA[<=]]> #{year} and DATE_FORMAT(ppa.end_date,'%Y') <![CDATA[>=]]> #{year})
+		</if>
+		<if test="networkFlag != null and networkFlag != ''">
+			and elec.network_flag = #{networkFlag}
+		</if>
+	</select>
+	
+	<!-- 获取电厂信息 -->
+	<select id="getPhcElecInfoList" resultType="com.hhwy.purchaseweb.agreement.phmppa.domain.PhmPpaDetail">
+		SELECT
+			id id,
+			elec_name elecName
+		FROM
+			ph_c_elec_info
+	</select>
+	
+	<!-- 获取电厂合同数量 -->
+	<select id="getElecCountByParams" resultType="int">
+		select count(1)	from ph_m_ppa ppa
+		where 1=1
+		<if test="phmPpa != null and phmPpa.elecId != null and phmPpa.elecId != ''">
+			and ppa.elec_id = #{phmPpa.elecId}
+		</if>
+		<choose>  
+            <when test="phmPpa != null and phmPpa.bgnDate != null and phmPpa.bgnDate != '' and phmPpa.endDate != null and phmPpa.endDate != ''">  
+                and ((ppa.bgn_date <![CDATA[<=]]> #{phmPpa.bgnDate} and ppa.end_date <![CDATA[>=]]> #{phmPpa.bgnDate}) or 
+                (ppa.end_date <![CDATA[>=]]> #{phmPpa.endDate} and ppa.bgn_date <![CDATA[<=]]> #{phmPpa.endDate}))
+            </when >  
+            <when test="sex != null and sex != '' ">  
+                and ppa.bgn_date <![CDATA[<=]]> #{phmPpa.bgnDate} and ppa.end_date <![CDATA[>=]]> #{phmPpa.bgnDate}
+            </when >  
+            <when test="phmPpa != null and phmPpa.endDate != null and phmPpa.endDate != ''">  
+                and ppa.end_date <![CDATA[>=]]> #{phmPpa.endDate} and ppa.bgn_date <![CDATA[<=]]> #{phmPpa.endDate}
+            </when >  
+            <otherwise>  
+            </otherwise>  
+        </choose>  
+	</select>
+	
+	<!-- 查询查询参数年 -->
+	<select id="getYearList" resultType="map">
+		SELECT
+			MIN(LEFT(bgn_date,4)) minyear,
+			MAX(LEFT(end_date,4)) maxyear
+		FROM
+			ph_m_ppa
+	</select>
+	
+	<!-- 验证合同是否有月度结算数据 -->
+	<select id="check" resultType="int">
+		SELECT count(s.id) 
+		FROM ph_m_ppa p 
+		inner JOIN 	ph_m_purchase_plan_month pl 
+		ON p.id IN
+		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		and DATE_FORMAT(p.bgn_date,'%Y%m') &lt;= pl.ym and DATE_FORMAT(p.end_date,'%Y%m') &gt;= pl.ym
+		inner JOIN	s_m_purchase_scheme s ON s.plan_id = pl.id
+	</select>
+	
+	
+</mapper>

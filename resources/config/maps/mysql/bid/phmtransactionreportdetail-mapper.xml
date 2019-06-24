@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmTransactionReportDetail.sql">
+	<!-- 根据月度购电计划id获取对象PhmTransactionReportDetail(交易申报明细)列表 -->
+	<select id="getPhmTransactionReportDetailListByPlanId" resultType="com.hhwy.purchaseweb.bid.phmtransactionreportdetail.domain.PhmTransactionReportDetailDetail">
+		select
+			ID id,
+			plan_id planId,
+			report_pq reportPq,
+			report_prc reportPrc,
+			volt_code voltCode,
+			attorn_type attornType,
+			stage stage		
+		from ph_m_transaction_report_detail 
+		where plan_id = #{planId}
+		order by stage
+	</select>
+	
+	<!-- 竞价交易申报的交易申报明细中的 委托电量明细中用到，   用于获取用户信息及当月的委托电量 -->
+	<select id="getAgrePqDetailByPlanId" resultType="com.hhwy.purchaseweb.bid.phmtransactionreportdetail.domain.AgrePqDetail">
+		SELECT 
+			a.cons_id consId,
+			IFNULL(g.iz_name,"独立用户") izName,
+			c.cons_name consName, 
+			c.volt_code voltCode,
+			c.elec_type_code elecTypeCode,
+			a.agre_pq agrePq
+			
+		FROM ph_m_agre_pq_examine a
+		LEFT JOIN s_c_consumer_info c ON c.id = a.cons_id 
+		LEFT JOIN s_c_industrial_zone g ON g.id = c.industrial_zone
+		WHERE a.plan_id = #{planId} 
+		AND a.subitem_flag = '0'
+		ORDER BY c.industrial_zone,c.deal_seq
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据planId获取交易申报数量 ,山西辽宁分页用-->
+	<select id="getconsReportCountByPlanId" resultType="int">
+		select count(1)	
+		from ph_m_agre_pq_examine examine
+		left join ph_m_transaction_report_detail report on examine.plan_id = report.plan_id and report.cons_id = examine.cons_id 
+		where examine.plan_id = #{planId} and examine.subitem_flag = '0'
+	</select>
+	
+	<!-- 根据月度购电计划id获取对象PhmTransactionReportDetail(山西、辽宁交易申报明细)列表 -->
+	<select id="getconsReportDetailByPlanId" resultType="com.hhwy.purchaseweb.bid.phmtransactionreportdetail.domain.PhmTransactionReportDetailDetail">
+		select
+			report.id id,
+			examine.cons_id consId,
+			examine.plan_id planId,
+			cons.cons_name consName,
+			cons.elec_type_code elecTypeCode,
+			cons.volt_code voltCode,
+			examine.agre_pq agrePq,
+			report.attorn_type attornType,
+			report.report_pq reportPq,
+			report.report_prc reportPrc,
+			report.stage stage		
+		from  ph_m_agre_pq_examine examine
+			left join ph_m_transaction_report_detail report on examine.plan_id = report.plan_id and report.cons_id = examine.cons_id 
+			left join s_c_consumer_info cons on cons.id = examine.cons_id
+		where examine.plan_id = #{planId} and examine.subitem_flag = '0'
+		order by cons.cons_name,report.stage
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据月度购电计划id、consId获取对象PhmTransactionReportDetail(山西、辽宁指定用户下交易申报明细)列表 -->
+	<select id="getConsTransactionReportByIds" resultType="com.hhwy.purchaseweb.bid.phmtransactionreportdetail.domain.PhmTransactionReportDetailDetail">
+		select
+			id id,
+			plan_id planId,
+			cons_id consId,
+			attorn_type attornType,
+			report_pq reportPq,
+			report_prc reportPrc,
+			stage stage	
+		from ph_m_transaction_report_detail
+		where plan_id = #{planId} and cons_id = #{consId}
+		order by stage
+	</select>
+	
+	<!-- 根据月度购电计划id删除对象PhmTransactionReportDetail(交易申报明细) -->
+	<delete id="deletePhmTransactionReportDetailByPlanId">
+	    delete from ph_m_transaction_report_detail 
+	    where plan_id = #{planId}
+	</delete>
+</mapper>

@@ -1,0 +1,303 @@
+@CHARSET "UTF-8";
+
+body{
+	    	background-color:rgb(243,243,244) !important;
+	    }
+	
+		.nums{
+		  width:100%;
+		  height:110px;
+		  padding : 0px;
+		}
+		.num-box-inner{
+			background-color:white;
+			float: left;
+			font-size: 11px;
+			height:100%;
+ 			width:100%;
+		}
+		.unit{
+			float: right;
+			font-size: 11px;
+/* 			margin-top: 1%; */
+			border-radius: 10px;
+			border: 0px solid #ffffff;
+			background-color: #1c83c6;
+			color: #ffffff;
+			padding: 1px 10px 1px 10px;
+			margin-right:10px;
+		}
+		.body{
+			height: 74px;
+			float: left;
+			font-size: 30px;
+			width: 55%;
+			font-weight:bold;
+			text-align: center;
+	    	align-items:center;/*指定垂直居中*/
+	    	line-height: 74px;
+            display:table-cell;
+            vertical-align:middle;
+            
+		}
+		ul li{
+			list-style-type:none;
+			
+		}
+		ul{
+			padding-left:5px;
+		}
+		.blockRightData{
+			display:inline-block;
+			width:100px;
+			text-align: right;
+		}
+		.RightNumData{
+			margin-left:10px;
+		}
+		.top{
+			border-bottom:1px solid #DDDDDD;
+			padding-bottom:5px;
+			padding-top:8px;
+			border-top: 3px solid #e7eaec;
+			width:100%;
+			height:35px;
+			
+		}
+		.btn-label{
+			 cursor: pointer;
+		}
+		
+		.rightBlock{
+			height: 74px;
+			float:right;
+			display:inline-block;
+			margin-right:40px;
+			margin-top: 20px;
+		}
+		.bottom{
+			height:75px;
+			t
+		}
+		.title{
+			margin-left:10px;
+			font-size:15px;
+			font-weight:bold;
+		}
+		.icon{
+			margin-left:10px;
+			margin-bottom: 0.6%;
+			color:red;
+			display:inline-block;
+			border-radius: 50px;
+			vertical-align: middle;
+			text-align: center;
+			
+		}
+		.topSubtitle{
+			width:1px;
+			height:74px;
+			float:left;
+			margin-top: 10px;
+		}
+		
+		/* ---- */
+		.secondDiv{
+			margin-top:12px;
+			height:270px;
+			width:100%;
+			padding: 0px;
+		}
+		.secTranStatus{
+			height:100%;
+			width:69%;
+			background-color:white;	
+ 			padding:0px;
+		}
+		.secCommonApp{
+			padding-left:12px;
+			height:100%;
+			width:31%;
+			/* background-color:white; */	
+			padding:0px;
+		}
+		.row{
+			
+		}
+		.num-box{
+			float:left;
+			width: 33.33333%;
+			padding: 0px;
+			height: 100%;
+		}
+		.appBlock{
+			    height: 99%;
+			    width: 25%;
+			    float: left;
+				margin: auto;
+		}
+		.appImgText{
+			display: block;
+		    width: 100%;
+		    height: 20px;
+		    margin-top: 8px;
+		    text-align: center;
+		}
+		.commonApp{
+			background-color:  #C0C0C0;
+		    border-radius: 50px;
+		    height: 50px;
+    		width: 50px;
+		    text-align: center;
+		    display: block;
+		    margin: auto;
+		}
+		.commonApp img {   
+			width: 30px;
+		    height: 32px;
+		    margin-top: 19%;
+   		}
+   		
+   		.monthPhPlanBD{
+   			height:100%;
+   			width:20%;
+   			margin-left: 2%;
+   			float:left;
+   			text-align:center;
+   		}
+   		.topRightData{
+   			float :left;
+   			height :74px;
+   			width: 22%;
+   			text-align: center;
+   			padding-top: 20px;
+   			font-size: 13px;
+   		}
+   		/* ====流程图===== */
+   		.monthPhPq{
+			float: left;
+			height:70px;
+			width:15.9%;
+		}
+		.arrows{
+			float: left;;
+			width:12%;
+			height:50px;
+			margin-top:13px;
+			text-align: center;
+		}	
+		.monthPhPqText{
+			display: block;
+			width:100%;
+			height:30px;
+			margin-top: 8px;
+		}
+		.monthPhPq img{
+			height:40px;
+			width:40px;
+		}
+		.arrows img{
+			height:20px;
+			width:80px;
+		}
+		/* --- */
+		.thirdDiv{
+			margin-top:12px;
+			padding:0px;
+			width:100%;
+			height:340px;
+			
+		}
+		.shortStatus{
+			width:25%;
+			height:100%;
+			padding:0px;
+			background-color:white;
+			float:left;
+		}
+		.outSellPowerProfit{
+			float:left;
+			width: 75%;
+			height: 100%;
+			padding-left:12px;
+		}
+		.sellPowerProfit{
+			padding:0px;
+			width: 100%;
+			
+			height:100%;
+			background-color:white;
+		}
+		.shortStatusText{
+			text-align: right;
+			width:60%;
+			height:40px;
+			float:left;
+			font-size: 14px;
+			line-height: 40px;
+		}
+		.shortStatusTextR{
+			font-size:30px;
+			color: rgb(35,198,200);
+			width:40%;
+			font-weight: bold;
+			height:40px;
+			float:left;
+			text-align: left;
+			padding-left: 12px;
+		}
+		
+		
+		/* --- */
+		.fourthDiv{
+			margin-top:12px;
+			padding:0px;
+			padding-right: 2px;
+			height:300px;
+			width:100%;
+		}
+		.sellPowerCount{
+			background-color:white;
+			height:100%;
+			
+		}
+		
+		/* --- */
+		.bottomDiv{
+			margin-top:12px;
+			width:100%;
+			height:400px;
+			padding:0px
+			
+		}
+		.bottomEchart1{
+			background-color:white;
+			width:35%;
+			height:388px;
+			padding:0px;
+		}
+		.bottomEchart2{
+			background-color:white;
+			margin-left:12px;
+			width:35%;
+			height:388px;
+			padding:0px;
+		}
+		.bottomText{
+			width: 27.9352%;
+			    width: calc(30.0% - (24px));
+			padding:0px;
+			height:388px;
+			margin-left:12px;
+		}
+		.text1{
+			width: 100%;
+		    height: 48.5%;
+		    background-color: white;
+		}
+		.text2{
+			margin-top: 12px;
+			width:100%;
+			height: 48.5%;
+   			background-color: white;
+		}

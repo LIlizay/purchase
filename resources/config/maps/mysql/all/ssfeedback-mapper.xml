@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ssFeedback.sql">
+	<!-- 查询用户满意程度码表 -->
+	<select id="getConsSatisfaction" resultType="map">
+		SELECT name label,value
+		FROM s_p_code
+		WHERE code_type = 'sell_satisfaction'
+		ORDER BY value
+	</select>
+	<!-- 根据条件查询列表 -->
+	<select id="getSsFeedbackListByParams" resultType="com.hhwy.purchaseweb.ssfeedback.domain.SsFeedbackDetail">
+		select
+			ID id,
+			company company,
+			cons_feedback consFeedback,
+			cons_idea consIdea,
+			DATE_FORMAT(feedback_time,'%Y-%m-%d %H:%m') feedbackTime,
+			cons_satisfaction consSatisfaction,
+			admin_answer adminAnswer,
+			solve solve,
+			file_ids fileIds		
+		from s_s_feedback where 1=1
+		<if test="url != null and url != ''">
+			and url = #{url}
+		</if>
+		<if test="id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test="feedbackTimeS != null and feedbackTimeS != ''">
+			and DATE_FORMAT(feedback_time,'%Y-%m-%d') &gt;= #{feedbackTimeS}
+		</if>
+		<if test="feedbackTimeE != null and feedbackTimeE != ''">
+			and DATE_FORMAT(feedback_time,'%Y-%m-%d') &lt;= #{feedbackTimeE}
+		</if>
+		<if test="solve != null and solve != ''">
+			and solve = #{solve}
+		</if>
+		<if test="consSatisfaction != null and consSatisfaction != ''">
+			and  cons_satisfaction = #{consSatisfaction}
+		</if>
+		<if test="company != null and company != ''">
+			and company LIKE CONCAT('%',#{company},'%')
+		</if>
+		<if test="ids != null and ids != ''">
+			AND id IN
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            	#{item}
+      		 </foreach>
+		
+		</if>
+		
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSsFeedbackCountByParams" resultType="int">
+		select count(1)	from s_s_feedback where 1=1
+		<if test="url != null and url !=''">
+			and url = #{url}
+		</if>
+		<if test="feedbackTimeS != null and feedbackTimeS != ''">
+			and DATE_FORMAT(feedback_time,'%Y-%m-%d') &gt;= #{feedbackTimeS}
+		</if>
+		<if test="feedbackTimeE != null and feedbackTimeE != ''">
+			and DATE_FORMAT(feedback_time,'%Y-%m-%d') &lt;= #{feedbackTimeE}
+		</if>
+		<if test="solve != null and solve != ''">
+			and solve = #{solve}
+		</if>
+		<if test="consSatisfaction != null and consSatisfaction != ''">
+			and  cons_satisfaction = #{consSatisfaction}
+		</if>
+		<if test="company != null and company != ''">
+			and company LIKE CONCAT('%',#{company},'%')
+		</if>
+	</select>
+	
+	<!-- 查询售电公司名称  参数URL -->
+	<select id="getCompany" resultType="string">
+		SELECT company_name
+		FROM system_company_domain
+		WHERE company_domain= #{sellCom}
+	</select>
+	
+	
+</mapper>

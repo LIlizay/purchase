@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scContactsInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getScContactsInfoListByParams" resultType="com.hhwy.selling.domain.ScContactsInfo">
+		select
+			ID id,
+			fax fax,
+			addr addr,
+			e_mail eMail,
+			cont_name contName,
+			phone phone,
+			postcode postcode,
+			cons_id consId,
+			org_no orgNo,
+			office_phone officePhone,
+			post post		
+		from s_c_contacts_info where 1=1
+		<if test="scContactsInfo != null and scContactsInfo.fax != null and scContactsInfo.fax != ''">
+			and fax = #{scContactsInfo.fax}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.addr != null and scContactsInfo.addr != ''">
+			and addr = #{scContactsInfo.addr}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.eMail != null and scContactsInfo.eMail != ''">
+			and e_mail = #{scContactsInfo.eMail}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.contName != null and scContactsInfo.contName != ''">
+			and cont_name = #{scContactsInfo.contName}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.phone != null and scContactsInfo.phone != ''">
+			and phone = #{scContactsInfo.phone}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.postcode != null and scContactsInfo.postcode != ''">
+			and postcode = #{scContactsInfo.postcode}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.consId != null and scContactsInfo.consId != ''">
+			and cons_id = #{scContactsInfo.consId}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.orgNo != null and scContactsInfo.orgNo != ''">
+			and org_no = #{scContactsInfo.orgNo}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.officePhone != null and scContactsInfo.officePhone != ''">
+			and office_phone = #{scContactsInfo.officePhone}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.post != null and scContactsInfo.post != ''">
+			and post = #{scContactsInfo.post}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getScContactsInfoCountByParams" resultType="int">
+		select count(1)	from s_c_contacts_info where 1=1
+		<if test="scContactsInfo != null and scContactsInfo.fax != null and scContactsInfo.fax != ''">
+			and fax = #{scContactsInfo.fax}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.addr != null and scContactsInfo.addr != ''">
+			and addr = #{scContactsInfo.addr}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.eMail != null and scContactsInfo.eMail != ''">
+			and e_mail = #{scContactsInfo.eMail}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.contName != null and scContactsInfo.contName != ''">
+			and cont_name = #{scContactsInfo.contName}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.phone != null and scContactsInfo.phone != ''">
+			and phone = #{scContactsInfo.phone}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.postcode != null and scContactsInfo.postcode != ''">
+			and postcode = #{scContactsInfo.postcode}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.consId != null and scContactsInfo.consId != ''">
+			and cons_id = #{scContactsInfo.consId}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.orgNo != null and scContactsInfo.orgNo != ''">
+			and org_no = #{scContactsInfo.orgNo}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.officePhone != null and scContactsInfo.officePhone != ''">
+			and office_phone = #{scContactsInfo.officePhone}
+		</if>
+		<if test="scContactsInfo != null and scContactsInfo.post != null and scContactsInfo.post != ''">
+			and post = #{scContactsInfo.post}
+		</if>
+	</select>
+	
+</mapper>

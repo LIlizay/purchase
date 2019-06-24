@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="systemcompanyApproval.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSystemcompanyApprovalListByParams" resultType="com.hhwy.purchaseweb.systemcompanyapproval.domain.SystemcompanyApprovalDetail">
+		SELECT
+			a.ID id,
+			a.domain_id domainId,
+			a.system_effective_date systemEffectiveDate,
+			a.system_expiry_date systemExpiryDate,
+			a.effective_date effectiveDate,
+			a.expiry_date expiryDate,
+			a.system_effective_date_new systemEffectiveDateNew,
+			a.system_expiry_date_new systemExpiryDateNew,
+			a.effective_date_new effectiveDateNew,
+			a.expiry_date_new expiryDateNew,
+			a.cause cause,
+			a.file_id fileId,
+			a.agree_sign agreeSign,
+			a.approval_status approvalStatus,
+			a.approver approver,
+			a.opinion opinion,
+			a.create_time createTime,
+			a.org_no orgNo,
+			d.org_no province,
+			d.company_name companyName,
+			c.cons_type_code consTypeCode,
+			c.version_code versionCode,
+			c.manager_name managerName
+		FROM
+			system_company_approval a
+		LEFT JOIN system_company_domain d ON a.domain_id = d.id
+		LEFT JOIN system_company_contract c ON c.id = a.domain_id
+		 where 1=1
+		<if test="approvalStatus != null and approvalStatus != ''">
+			and a.approval_status = #{approvalStatus}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and a.create_time &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and #{endTime} &lt;= a.create_time
+		</if>
+		order by a.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSystemcompanyApprovalCountByParams" resultType="int">
+		select 
+			count(1)	
+		from(
+			SELECT
+				a.ID id
+			FROM
+				system_company_approval a
+			LEFT JOIN system_company_domain d
+				ON a.domain_id = d.id
+			 where 1=1
+			<if test="approvalStatus != null and approvalStatus != ''">
+				and a.approval_status = #{approvalStatus}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and a.create_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+			and #{endTime} &lt;= a.create_time
+		</if>
+		)x
+	</select>
+</mapper>

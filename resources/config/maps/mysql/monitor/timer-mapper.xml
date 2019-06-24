@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="timer.sql">
+
+	<!-- 获取所有分库名 -->
+	<select id="getDatabaseNameList" resultType="map">
+		SELECT 
+			company_domain companyDomain,
+			company_database companyDatabase
+		FROM system_company_domain
+	</select>
+	
+	<!-- 获取所有分库名 -->
+	<select id="getConsUserRelaList" resultType="map">
+		SELECT 
+			aa.s_user_id consId,
+			aa.em_user_id emUserId,
+			cons.org_no orgNo
+		FROM ${databaseName}.em_s_user_real aa
+		inner join ${databaseName}.s_c_consumer_info cons on aa.s_user_id = cons.id
+	</select>
+	<!-- 根据日期和用户的id列表（set类型）获取用户电量收集数据 
+			plan_id planId,
+			ymd ymd,
+			week week,
+			day_plan_pq dayPlanPq,
+			plan_pq planPq
+			ym ym,
+			org_no orgNo,
+	-->
+	<select id="getPowerViewDetailListByYmdAndConsIds" resultType="com.hhwy.selling.domain.SmConsPowerView">
+		SELECT
+			ID id,
+			cons_id consId,
+			day_actual_pq dayActualPq,
+			actual_pq actualPq
+		FROM
+			${databaseName}.s_m_cons_power_view
+		WHERE ymd=#{ymd} and 
+			cons_id in 
+			<foreach item="item" index="index" collection="consIds" open="(" separator="," close=")">
+ 				#{item}
+ 			</foreach>
+	</select>
+	<!-- 获取ymd之前的用户累积用电量最大值及对应日期 -->
+	<select id="getLastPowerViewListByConsIds" resultType="com.hhwy.selling.domain.SmConsPowerView">
+		select 
+			DISTINCT aa.ymd,
+			aa.cons_id consId,
+			bb.actual_pq actualPq
+		FROM
+			(SELECT MAX(ymd) ymd, cons_id FROM ${databaseName}.s_m_cons_power_view where actual_pq is not null and ymd &lt;= #{ymd} 
+				and cons_id in 
+				<foreach item="item" index="index" collection="consIds" open="(" separator="," close=")">
+	 				#{item}
+	 			</foreach>
+				GROUP BY cons_id) aa
+			INNER JOIN ${databaseName}.s_m_cons_power_view bb on aa.cons_id = bb.cons_id and aa.ymd=bb.ymd
+	</select>
+	<update id="updatePowerView">
+		UPDATE ${databaseName}.s_m_cons_power_view
+		SET 
+		 actual_pq = #{entity.actualPq},
+		 update_time = #{entity.updateTime},
+		 day_actual_pq = #{entity.dayActualPq}
+		WHERE id = #{entity.id}
+	</update>
+	<insert id="savePowerView">
+		INSERT INTO ${databaseName}.s_m_cons_power_view (
+			`id`,
+			`plan_id`,
+			`cons_id`,
+			`ymd`,
+			`week`,
+			`plan_pq`,
+			`actual_pq`,
+			`create_time`,
+			`create_user`,
+			`update_time`,
+			`update_user`,
+			`org_no`,
+			`ym`,
+			`day_plan_pq`,
+			`day_actual_pq`
+		)
+		VALUES
+			(
+				#{entity.id},
+				#{entity.planId},
+				#{entity.consId},
+				#{entity.ymd},
+				#{entity.week},
+				#{entity.planPq},
+				#{entity.actualPq},
+				#{entity.createTime},
+				#{entity.createUser},
+				#{entity.updateTime},
+				#{entity.updateUser},
+				#{entity.orgNo},
+				#{entity.ym},
+				#{entity.dayPlanPq},
+				#{entity.dayActualPq}
+			)
+	</insert>
+	
+	<!-- 查询例日 -->
+	<select id="getUsuallyDateByConsId" resultType="Map">
+		SELECT
+			a.id,
+			DATE_FORMAT(a.meter_read_date, '%Y%m%d') meterReadDate,
+			a.meter_read_pq meterReadPq
+		FROM ${databaseName}.s_c_mp_count a
+		LEFT JOIN ${databaseName}.s_c_mp_info b ON b.id = a.mp_id
+		WHERE 
+			b.cons_id = #{consId}
+			AND DATE_FORMAT(a.meter_read_date, '%Y%m') = DATE_FORMAT(DATE_SUB(CONCAT(#{ym}, '01'),INTERVAL 1 MONTH),'%Y%m')
+			AND a.usually_date = '1'
+		ORDER BY a.meter_read_date DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 查询当前月的例日 -->
+	<select id="getNowUsuallyDateByConsId" resultType="Map">
+		SELECT
+			DATE_FORMAT(b.meter_read_date, '%Y%m%d') meterReadDate
+		FROM ${databaseName}.s_c_mp_info a
+		LEFT JOIN ${databaseName}.s_c_mp_count b ON b.mp_id = a.id
+		WHERE 
+			a.cons_id = #{consId}
+			AND DATE_FORMAT(b.meter_read_date, '%Y%m') = #{ym}
+			AND b.usually_date = '1'
+		ORDER BY b.meter_read_date DESC
+		LIMIT 1
+	</select>
+</mapper>

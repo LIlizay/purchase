@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="settlement.js.sql">
+	<!-- 获取用户的合同中的 用户违约惩罚方式 和  售电公司违约惩罚方式 -->
+	<!-- <select id="getSellPpaPunishInfo" resultType="com.hhwy.purchaseweb.bid.settlementjs.domain.SellPpaPunishInfo">
+		SELECT
+			ppa.cons_id consId,
+			cons.agre_id agreId,
+			cons.punish_type_upper punishTypeUpper,
+			cons.punish_type_lower punishTypeLower,
+			cons.upper_threshold upperThreshold,
+			cons.upper_type upperType,
+			cons.upper_prop upperProp,
+			cons.lower_threshold lowerThreshold,
+			cons.lower_type lowerType,
+			cons.lower_prop lowerProp,
+			cons.upper_prc upperPrc,
+			cons.lower_prc lowerPrc,
+			
+			comp.punish_flag compPunishFlag,
+			comp.lower_threshold compLowerThreshold,
+			comp.lower_type compLowerType,
+			comp.lower_prc compLowerPrc,
+			comp.lower_prop compLowerProp
+			
+		FROM
+			(select id, cons_id from s_m_ppa where 
+				agre_status!="00" 
+				AND #{ym} &gt;= LEFT(effective_date, 7)
+				AND #{ym} &lt;= LEFT(expiry_date, 7) 
+				and cons_id in
+				<foreach item="item" index="index" collection="consIds" open="(" separator="," close=")">  
+		 			#{item}  
+		 		</foreach> 
+			) ppa
+			left join s_m_agre_punish_cons cons on cons.agre_id=ppa.id
+			left join s_m_agre_punish_comp comp on comp.agre_id=ppa.id
+	</select> -->
+	
+	<!-- 根据用户id和ym获取其合同中的“用户优先还是公司优先” -->
+	<select id="getSellPpaByConsIdAndYm" resultType="string">
+	    SELECT
+			max(dist.profit_mode)
+		FROM
+			 s_c_consumer_info cons
+		inner JOIN s_m_ppa ppa ON cons.id=#{consId} and cons.id = ppa.cons_id and ppa.agre_status!="00" 
+			and concat(left(#{ym},4),"-",right(#{ym},2)) &gt;= LEFT(ppa.effective_date ,7)
+			AND concat(left(#{ym},4),"-",right(#{ym},2)) &lt;= LEFT(ppa.expiry_date,7)
+		inner JOIN s_m_dist_mode dist ON ppa.id = dist.agre_id
+	</select>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="consStatistics.sql">
+
+	<!-- 用户统计 -->
+	<select id="getConsStatisticsData" resultType="map">
+		SELECT
+				COUNT(s.org_no) total,
+				t.item_name name
+		FROM
+			system_company_domain s
+		LEFT JOIN t_dictitem t ON s.org_no = t.item_code
+		LEFT JOIN system_company_contract c ON s.id = c.id
+		WHERE s.org_no IS NOT NULL AND s.org_no !='' AND c.cons_type_code in ('01','02')
+		and s.company_database is not null and s.company_database != ''
+		GROUP BY
+			s.org_no
+		ORDER BY COUNT(s.org_no) DESC		
+	</select>
+	<!-- 平台用户明细 -->
+	<select id="getConsDetail" resultType="map">
+		SELECT t.item_name provinceName,
+			s.company_name comName,
+			s.remark version,
+			DATE_FORMAT(s.register_date,'%Y-%m-%d %H:%i:%s') date,
+			CONCAT(s.company_domain, '/gip') url
+		FROM
+			system_company_domain s
+		LEFT JOIN t_dictitem t ON s.org_no = t.item_code
+		LEFT JOIN system_company_contract c ON s.id = c.id
+		WHERE
+			s.org_no IS NOT NULL AND s.org_no != '' AND c.cons_type_code in ('01','02')
+			and s.company_database is not null and s.company_database != ''
+		<if test="orgNo != null and orgNo != ''">
+			and s.org_no IN
+			<foreach collection="item" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and s.register_date &gt;=  #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and s.register_date &lt;=  #{endDate}
+		</if>
+		ORDER BY s.register_date DESC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 平台用户明细数量 -->
+	<select id="getConsDetailNum" resultType="int">
+		SELECT COUNT(1)
+		FROM system_company_domain s 
+		LEFT JOIN system_company_contract c ON s.id = c.id
+		WHERE s.org_no IS NOT NULL AND s.org_no !=''  AND c.cons_type_code in ('01','02')
+		and s.company_database is not null and s.company_database != ''
+		<if test="orgNo != null and orgNo != ''">
+			and s.org_no IN
+			<foreach collection="item" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and s.register_date &gt;=  #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and s.register_date &lt;=  #{endDate}
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

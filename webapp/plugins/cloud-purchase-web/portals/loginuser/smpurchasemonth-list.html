@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+			<div class="col-md-12">
+			    <div class="panel panel-default">
+					<div class="panel-heading"><span class="line-box"></span>月度购电量预测</div>
+                        	<div class="panel-body">
+						<div class="col-md-a"><span class="text-2">年份</span></div>
+						<div class="col-md-2">
+							<div class="from-group">
+              						<input type="text" class="form-control selectDate" placeholder="yyyy" id="selectYear">
+              						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:86%;"><i class="fa icon-rili"></i></span> -->
+          						</div>
+						</div>
+						<div class="col-md-1">
+							<a href="javascript:void(0)" onClick="initData()" class="btn btn-info btn-sm mt10">查询</a>
+						</div>
+					</div>
+					<div class="panel-body" style="padding-top:0px">
+                        <div class="table-responsive">
+                       		<div style="height:480px">
+                        		<div class="bg-info grid-title">月度购电量预测列表</div>
+                        		<div class="grid-table"><table id="listGrid" class="table table-striped table-bordered table-hover"></table></div>
+                                </div>
+                                <div style="margin-top: 20px;">
+                                	<div class="bg-info grid-title">历史用电量分析</div>
+                                	<div id="historyElec" style="width:100%;height:350px"></div>
+                                </div>
+                                <div style="margin-top: 20px;">
+                                	<div class="bg-info grid-title">预测电量与实际电量</div>
+                                	<div id="elecCompare" style="width:100%;height:350px"></div>
+                                </div>
+						</div>
+					</div>
+				</div>
+			</div>						
+		</div>
+		<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/echarts.js"></script>
+	<script src="assets/js/createEharts2.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    $(window).resize(throll(function(){
+    	if(myChart1){myChart1.resize();}
+    	if(myChart2){myChart2.resize();}
+    },100));
+    function throll(fn,delay){
+        var timer=null;
+        return function(){
+            clearTimeout(timer);
+            timer=setTimeout(fn,delay);
+        }
+    }
+    var myChart1=null;
+	var myChart2=null;
+    var params = {
+    		year:"",
+    		consId:$.getLoginUser().consId,
+    }
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	//初始化列表数据
+    	var date = new Date();
+    	params.year = date.getFullYear()+"";
+    	laydate.render({
+    		  elem: '#selectYear', //指定元素
+    		  type:"year",
+    		  value:params.year,
+    		  done:function(value, date, endDate){setYear(value)}
+    	});
+    	initData();
+    })
+
+    function initData(){
+    	if(!params.year){
+    		MainFrameUtil.alert({title:"提示",body:"请选择查询年份！"});
+      		return;
+    	}
+    	var queryParams = {
+    		serviceKey:"sw_getPurchaseMonthList",
+    		clientKey:"sellandpurchase",
+    		params:params
+    	}
+    	$("#listGrid").createtable({
+    		url:groovyPath + "sw_getPurchaseMonthList.do",
+    		method: 'POST',
+            queryParams:queryParams,
+    		rownumbers: true,
+    		fitColumns:true,
+    		column:[[
+    		     {field:'ym',title:'交易年月',width:60},
+    		     {field:'dataForecastPq',title:'大数据预测电量',width:120},
+    		     {field:'personForecastPq',title:'人工核定电量',width:120},
+    		     {field:'totalPq',title:'实际用电量',width:120},
+    		]],
+    		rowStyler:function(index,row){
+                /* return "height:35px;font-size:12px;"; */
+            },
+            onLoadBefore:function(data){
+            	var result=[];
+            	if(data && data.list && data.list.length > 1){
+            		result=data.list;
+            	} 
+            	var xList = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+            	var commonList=[null,null,null,null,null,null,null,null,null,null,null,null];
+            	var currentTotalPqList = data.currentTotalPqList;
+            	if(currentTotalPqList == null || currentTotalPqList.length == 0){
+            		currentTotalPqList = commonList;
+            	}
+            	var dataForecastPqList = data.dataForecastPqList;
+            	if(dataForecastPqList == null || dataForecastPqList.length == 0){
+            		dataForecastPqList = commonList;
+            	}
+            	var personForecastPqList = data.personForecastPqList;
+            	if(personForecastPqList == null || personForecastPqList.length == 0){
+            		personForecastPqList = commonList;
+            	}
+            	var lastTotalPqList = data.lastTotalPqList;
+            	if(lastTotalPqList == null || lastTotalPqList.length == 0){
+            		lastTotalPqList = commonList;
+            	}
+            	//生成历史用电量分析图
+            	myChart1 = $.initEcharts("historyElec","bar","历史用电量分析",["当年用电量","上一年用电量"],[currentTotalPqList,lastTotalPqList],xList);
+            	//生成预测电量与实际电量图
+            	myChart2 = $.initEcharts("elecCompare","line","预测电量与实际用电量曲线图",["大数据预测电量","人工核定电量","实际用电量"],[dataForecastPqList,personForecastPqList,currentTotalPqList],xList);
+            	return result;
+            }
+    	})
+    }
+    //赋值查询参数
+    function setYear(value){
+    	params.year = value;
+    }
+    </script>
+	</body>
+</html>

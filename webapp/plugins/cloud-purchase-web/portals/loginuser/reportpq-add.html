@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+		<div class="col-md-12">
+		    <div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>用电情况上报</div>
+				<div class="panel-body">
+                       		<div class="table-responsive">
+                       			<table class="table table-bordered">
+                                     <tbody>
+                                         <tr>
+                                             <td class="text-right w-4th"><span class="f-red">* </span>上报时间</td>
+                                             <td class="w-10th">
+                                             	<div class="form-group">
+                                     				<input type="text" class="form-control selectDate" placeholder="" id="reportDate">
+                                     			</div>
+                                             </td>
+                                             <td class="text-right w-4th">月度合同电量</td>
+                                             <td id="agrePq" class="w-10th">兆瓦时</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">累计用电量</td>
+                                             <td id="actualPq">兆瓦时</td>
+                                             <td class="text-right"></td>
+                                             <td></td>   
+                                         </tr>
+                                     </tbody>
+                                 </table>
+                                 <div class="text-right">
+                                 	<a href="javascript:void(0)" onClick="save()" class="btn btn-info" data-toggle="modal" data-target="#myModal">上报</a>
+                                 </div>
+					</div>
+				</div>
+			</div>
+		</div>						
+	</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    var org_id = $.getLoginUser().org_id;
+    var warnMsg = null;
+    var params = {
+    		id:null,
+    		consId:$.getLoginUser().consId,
+    		reportDate:null,
+    		meterReadPq:null,
+    }
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	//默认当前时间
+    	var date = new Date();
+    	var currentTime = date.getFullYear();
+    	var month = date.getMonth()+1;
+    	if(month < 10){
+    		currentTime += "-0"+month;
+    	}else{
+    		currentTime += "-"+month;
+    	}
+    	var day = date.getDate();
+    	if(day < 10){
+    		currentTime += "-0"+day;
+    	}else{
+    		currentTime += "-"+day;
+    	}
+    	var hours = date.getHours();
+    	if(hours < 10){
+    		currentTime += " 0" + hours;
+    	}else{
+    		currentTime += " " + hours;
+    	}
+    	var min = date.getMinutes();
+    	if(min < 10){
+    		currentTime += ":0" + min;
+    	}else{
+    		currentTime += ":" + min;
+    	}
+    	var seconds = date.getSeconds();
+    	if(seconds < 10){
+    		currentTime += ":0" + seconds;
+    	}else{
+    		currentTime += ":" + seconds;
+    	}
+    	laydate.render({
+	  		 elem:'#reportDate', //指定元素
+	  		 type:"datetime",
+	  		 value:currentTime,
+	  		 done:function(value, date, endDate){initParams(value)}
+	  	});
+    	params.reportDate = currentTime;
+    	initData();//初始化数据
+    });
+
+    //初始化数据
+    function initData(){
+    	//重置数据
+    	params = {
+    		consId:params.consId,
+    		reportDate:params.reportDate,
+    	};
+    	warnMsg = null;
+    	var queryParams = {
+    		 serviceKey:"s_getElecInfoInit",
+    		 clientKey:"sellandpurchase",
+    		  params:{
+    		       "consId":params.consId,
+    		       "reportDate":params.reportDate,
+    		       "org_id":org_id,
+    		  }
+    	}
+    	$.ajax({
+    		url : groovyPath + "s_getElecInfoInit.do",
+    		type : "post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+    		success : function(data) {
+    			if(!data.message){
+    				var cont = data.value.datas;
+    				var date = params.reportDate;
+    				params = cont;
+    				params["reportDate"]=date;
+    				if(cont){
+    					var agrePq = cont.agrePq;
+    					$("#agrePq").text(agrePq+"兆瓦时");
+    					var actualPq = cont.actualPq;
+    					$("#actualPq").text(actualPq+"兆瓦时");
+    					//生成计量点信息
+    					var list = cont.list;
+    					var html = "";
+    					for(var i in list){
+    						var obj = list[i];
+    						var meterNo = obj.meterNo;
+    						var meterRate = obj.mpRate;
+    						var meterReadPqMp = obj.lastMpNumber;
+    						var mpNumber = obj.mpNumber;
+    						//生成html
+    						html += "<tr><td class='text-right'>表记编号</td><td id='meterNo"+i+"'>"+meterNo+"</td><td class='text-right'>表记倍率</td><td id='meterRate"+i+"'>"+meterRate+"</td> </tr>"
+    						+" <tr><td class='text-right'>上月抄表示数</td><td id='meterReadPqMp"+i+"'>"+meterReadPqMp+"</td><td class='text-right'><span class='f-red'>* </span>电能表示数</td>"
+    						+"<td id='meterReadPq"+i+"'><div class='form-group'><input type='number' class='form-control' value='"+mpNumber+"'></div></td></tr>";
+    					}
+    					var trs = $("table tbody tr");
+    					$("table tbody").empty().append(trs[0]).append(trs[1]).append(html);
+    				}else{
+    					MainFrameUtil.alert({title:"提示",body:"用电情况上报创建失败！"});
+        				warnMsg = "用电情况上报创建失败！";
+        				return;
+    				}
+    			}else{
+    				MainFrameUtil.alert({title:"提示",body:data.message});
+    				warnMsg = data.message;
+    				return;
+    			}
+    		},
+    		error : function() {
+    			warnMsg = "请刷新页面重试！";
+    			MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+				return;
+    		}
+    	})
+    }
+
+    //保存
+    function save(){
+    	if(!params.reportDate){
+    		MainFrameUtil.alert({title:"提示",body:"请选择上报时间"});
+			return;
+    	}
+    	if(warnMsg){
+    		MainFrameUtil.alert({title:"提示",body:warnMsg});
+			return;
+    	}
+    	//获取表单数据
+    	if(params.list == null || params.list.length === 0){
+    		MainFrameUtil.alert({title:"提示",body:"不存在计量点信息！"});
+			return;
+    	}
+    	//必填验证
+    	for(var i in params.list){
+    		var val = $("#meterReadPq"+i+" input").val();
+    		if(val == null || val == ""){
+    			MainFrameUtil.alert({title:"提示",body:"请完善电能表示数！"});
+    			return;
+    		}
+    		params.list[i]["mpNumber"] = val;
+    	}
+    	params["org_id"] = org_id;
+    	var queryParams = {
+    			serviceKey:"s_saveElecInfo",
+    			clientKey:"sellandpurchase",
+    			params:params,
+    	}
+    	$.ajax({
+    		url : groovyPath + "s_saveElecInfo.do",
+    		type : "post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+    		success : function(data) {
+    			if(!data.message){
+    				MainFrameUtil.alert({title:"成功提示",body:"上报成功！"});
+        			return;
+    			}else{
+    				MainFrameUtil.alert({title:"失败提示",body:"上报失败！"});
+        			return;
+    			}
+    		},
+    		error : function() {
+    			MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+    			return;
+    		}
+    	})
+    }
+    
+    //设置时间
+    function initParams(value){
+    	if(value){
+    		params.reportDate = value;
+    		initData();
+    	}else{
+    		MainFrameUtil.alert({title:"提示",body:"请选择上报时间！"});
+			return;
+    	}
+    }
+    
+    </script>
+	</body>
+</html>

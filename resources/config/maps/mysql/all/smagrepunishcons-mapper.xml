@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smAgrePunishCons.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmAgrePunishConsListByParams" resultType="com.hhwy.selling.domain.SmAgrePunishCons">
+		select
+			ID id,
+			agre_id agreId,
+			punish_type_upper punishTypeUpper,
+			punish_type_lower punishTypeLower,
+			upper_threshold upperThreshold,
+			upper_type upperType,
+			upper_prop upperProp,
+			lower_threshold lowerThreshold,
+			lower_type lowerType,
+			lower_prop lowerProp,
+			upper_prc upperPrc,
+			lower_prc lowerPrc,
+			punish_flag punishFlag,
+			org_no orgNo
+		from s_m_agre_punish_cons where 1=1
+		<if test="smAgrePunishCons != null and smAgrePunishCons.agreId != null and smAgrePunishCons.agreId != ''">
+			and agre_id = #{smAgrePunishCons.agreId}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.punishTypeUpper != null and smAgrePunishCons.punishTypeUpper != ''">
+			and punish_type_upper = #{smAgrePunishCons.punishTypeUpper}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.punishTypeLower != null and smAgrePunishCons.punishTypeLower != ''">
+			and punish_type_lower = #{smAgrePunishCons.punishTypeLower}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.upperThreshold != null and smAgrePunishCons.upperThreshold != ''">
+			and upper_threshold = #{smAgrePunishCons.upperThreshold}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.upperType != null and smAgrePunishCons.upperType != ''">
+			and upper_type = #{smAgrePunishCons.upperType}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.upperProp != null and smAgrePunishCons.upperProp != ''">
+			and upper_prop = #{smAgrePunishCons.upperProp}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.lowerThreshold != null and smAgrePunishCons.lowerThreshold != ''">
+			and lower_threshold = #{smAgrePunishCons.lowerThreshold}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.lowerType != null and smAgrePunishCons.lowerType != ''">
+			and lower_type = #{smAgrePunishCons.lowerType}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.lowerProp != null and smAgrePunishCons.lowerProp != ''">
+			and lower_prop = #{smAgrePunishCons.lowerProp}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.upperPrc != null and smAgrePunishCons.upperPrc != ''">
+			and upper_prc = #{smAgrePunishCons.upperPrc}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.lowerPrc != null and smAgrePunishCons.lowerPrc != ''">
+			and lower_prc = #{smAgrePunishCons.lowerPrc}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.punishFlag != null and smAgrePunishCons.punishFlag != ''">
+			and punish_flag = #{smAgrePunishCons.punishFlag}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmAgrePunishConsCountByParams" resultType="int">
+		select count(1)	from s_m_agre_punish_cons where 1=1
+		<if test="smAgrePunishCons != null and smAgrePunishCons.agreId != null and smAgrePunishCons.agreId != ''">
+			and agre_id = #{smAgrePunishCons.agreId}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.punishTypeUpper != null and smAgrePunishCons.punishTypeUpper != ''">
+			and punish_type_upper = #{smAgrePunishCons.punishTypeUpper}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.punishTypeLower != null and smAgrePunishCons.punishTypeLower != ''">
+			and punish_type_lower = #{smAgrePunishCons.punishTypeLower}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.upperThreshold != null and smAgrePunishCons.upperThreshold != ''">
+			and upper_threshold = #{smAgrePunishCons.upperThreshold}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.upperType != null and smAgrePunishCons.upperType != ''">
+			and upper_type = #{smAgrePunishCons.upperType}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.upperProp != null and smAgrePunishCons.upperProp != ''">
+			and upper_prop = #{smAgrePunishCons.upperProp}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.lowerThreshold != null and smAgrePunishCons.lowerThreshold != ''">
+			and lower_threshold = #{smAgrePunishCons.lowerThreshold}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.lowerType != null and smAgrePunishCons.lowerType != ''">
+			and lower_type = #{smAgrePunishCons.lowerType}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.lowerProp != null and smAgrePunishCons.lowerProp != ''">
+			and lower_prop = #{smAgrePunishCons.lowerProp}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.upperPrc != null and smAgrePunishCons.upperPrc != ''">
+			and upper_prc = #{smAgrePunishCons.upperPrc}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.lowerPrc != null and smAgrePunishCons.lowerPrc != ''">
+			and lower_prc = #{smAgrePunishCons.lowerPrc}
+		</if>
+		<if test="smAgrePunishCons != null and smAgrePunishCons.punishFlag != null and smAgrePunishCons.punishFlag != ''">
+			and punish_flag = #{smAgrePunishCons.punishFlag}
+		</if>
+	</select>
+	
+	<!-- 根据合同标识删除用户惩罚信息 -->
+	<delete id="deleteSmAgrePunishConsByAgreId">
+		DELETE
+		FROM
+			s_m_agre_punish_cons
+		WHERE
+			agre_id IN 
+			<foreach item="item" index="index" collection="agreIds" open="(" separator="," close=")">
+            	#{item}
+       </foreach>
+	</delete>
+</mapper>

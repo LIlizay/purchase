@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmAgrePqExamine.sql">
+	<!-- 根据计划id获取电量审核用户数量 -->
+	<select id="getconsCountByPlanId" resultType="int">
+		SELECT COUNT(DISTINCT cons_id) FROM ph_m_agre_pq_examine WHERE plan_id = #{planId}
+	</select>
+	
+	<!-- 根据计划id获取用户列表 ,购电计划制定用-->
+	<select id="getPlanConsListPageByPlanId" resultType="com.hhwy.purchaseweb.bid.phmpurchaseplanmonth.domain.PhmPurchasePlanConsRelaDetail">
+		select
+			examine.id id,
+			examine.agre_pq agrePq,
+			examine.fileId fileId,
+			cons.id consId,
+			cons.cons_name consName,
+			cons.elec_type_code elecTypeCode,
+			cons.volt_code voltCode,
+			cons.electric_capacity electricCapacity,
+			cont.cont_name contName,
+			cont.phone contPhone,
+			cons.sell_person sellPerson,
+			cons.sell_person,
+			(CASE length(plan.ym) when 4 then ppa.proxy_pq else 
+				(CASE RIGHT(plan.ym,2) WHEN '01' THEN jan  WHEN '02' THEN feb WHEN '03' then mar when '04' then apr
+			 					 when '05' then may when '06' then jun when '07' then jul when '08' then aug
+			 					 when '09' then sept when '10' then oct when '11' then nov when '12' then dece ELSE 0 END) end
+			) ppaPq
+		FROM
+			ph_m_purchase_plan_month plan 
+			inner JOIN ph_m_agre_pq_examine examine on plan.id=#{planId} and examine.plan_id=plan.id and examine.subitem_flag = '0'
+			LEFT JOIN s_c_consumer_info cons ON cons.id = examine.cons_id
+			LEFT JOIN s_c_contacts_info cont ON cont.cons_id = examine.cons_id
+			LEFT JOIN s_m_ppa ppa ON ppa.cons_id = examine.cons_id AND ppa.agre_status != "00" 
+				and (CASE length(plan.ym) when 4 then (plan.ym &gt;= LEFT(ppa.effective_date ,4) and plan.ym &lt;= LEFT(ppa.expiry_date,4))
+					else (concat(left(plan.ym,4),"-",right(plan.ym,2)) &gt;= LEFT(ppa.effective_date ,7) 
+							AND concat(left(plan.ym,4),"-",right(plan.ym,2)) &lt;= LEFT(ppa.expiry_date,7)) end)
+		order by cons.id desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据planId获取月交易电量审核用户信息 -->
+	<select id="getExamineDetailByPlanId" resultType="com.hhwy.purchaseweb.bid.phmagrepqexamine.domain.PhmAgrePqExamineDetail">
+		SELECT 
+			a.id id,
+			a.cons_id consId,
+			a.plan_id planId,
+			c.cons_name consName, 
+			c.sell_person sellPerson,
+			f.cont_name contName,
+			f.phone contPhone,
+			c.upper_pq businessPqUpper,
+			a.forecast_pq forecastPq, 
+			a.fileId fileId,
+			a.subitem_flag subitemFlag,
+			a.ym ym,
+			a.agre_pq agrePq,
+			a.org_no orgNo,
+			(select sum(deal.deal_pq) from ph_m_purchase_plan_month plan left join ph_m_deal_info deal on deal.plan_id = plan.id where deal.ym = a.ym and plan.plan_status > '03' and deal.cons_id = a.cons_id)bidPq,
+			(select sum(agre_pq) from ph_m_agre_pq_examine where cons_id=a.cons_id and ym = a.ym and plan_id != #{planId}) reportPq,
+			(CASE (select ifnull(sum(agre_pq),0) from ph_m_agre_pq_examine where cons_id=a.cons_id and ym = a.ym) when  0 then
+				(CASE RIGHT(a.ym,2)  WHEN '01' THEN jan  WHEN '02' THEN feb WHEN '03' then mar when '04' then apr
+				 					 when '05' then may when '06' then jun when '07' then jul when '08' then aug when '09' then sept
+				 					 when '10' then oct when '11' then nov when '12' then dece ELSE 0 END) ELSE a.agre_pq END) newReportPq,
+				 					 
+			(SELECT elec.data_forecast_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 1 MONTH),'%Y%m'))) forecastPqMA,
+			(SELECT elec.practical_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND elec.ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 1 MONTH),'%Y%m'))) agrePqMA,
+		
+			(SELECT elec.data_forecast_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 2 MONTH),'%Y%m'))) forecastPqMB,
+			(SELECT elec.practical_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND elec.ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 2 MONTH),'%Y%m'))) agrePqMB,
+		
+			(SELECT elec.data_forecast_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 3 MONTH),'%Y%m'))) forecastPqMC,
+			(SELECT elec.practical_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND elec.ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 3 MONTH),'%Y%m'))) agrePqMC,
+		
+			(SELECT elec.data_forecast_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 1 YEAR),'%Y%m'))) forecastPqYA,
+			(SELECT elec.practical_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 1 YEAR),'%Y%m'))) agrePqYA,
+		
+			(SELECT elec.data_forecast_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 2 YEAR),'%Y%m'))) forecastPqYB,
+			(SELECT elec.practical_pq FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym = (SELECT DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'01'),INTERVAL 2 YEAR),'%Y%m'))) agrePqYB
+			
+		FROM ph_m_agre_pq_examine a
+		LEFT JOIN s_c_consumer_info c ON c.id = a.cons_id 
+		LEFT JOIN s_c_contacts_info f ON c.id = f.cons_id
+		left join s_m_ppa ppa on ppa.cons_id = a.cons_id and ppa.agre_status!="00"
+				  and concat(left(a.ym,4),"-",right(a.ym,2)) &gt;= LEFT(ppa.effective_date ,7)
+				  and concat(left(a.ym,4),"-",right(a.ym,2)) &lt;= LEFT(ppa.expiry_date,7)
+		WHERE a.plan_id = #{planId}
+		GROUP BY a.cons_id
+		ORDER BY c.cons_name
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据year和consId获取所有年交易电量审核该用户的分月电量信息 -->
+	<select id="getYearPlanProxyPqDetailByParams" resultType="com.hhwy.purchaseweb.bid.phmagrepqexamine.domain.YearPlanProxyPqDetail">
+		SELECT 
+			plan.ym year,
+			plan.plan_name planName,
+			plan.trade_mode tradeMode,
+			examine.plan_id planId,
+			c.id consId,
+			c.cons_name consName,
+			MAX(if( length(examine.ym) = 4, examine.agre_pq ,null) ) total,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '01', examine.agre_pq ,null) ) jan,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '02', examine.agre_pq ,null) ) feb,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '03', examine.agre_pq ,null) ) mar,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '04', examine.agre_pq ,null) ) apr,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '05', examine.agre_pq ,null) ) may,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '06', examine.agre_pq ,null) ) jun,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '07', examine.agre_pq ,null) ) jul,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '08', examine.agre_pq ,null) ) aug,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '09', examine.agre_pq ,null) ) sept,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '10', examine.agre_pq ,null) ) oct,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '11', examine.agre_pq ,null) ) nov,
+			MAX(if( length(examine.ym)=6 and RIGHT(examine.ym,2) = '12', examine.agre_pq ,null) ) dece
+		FROM ph_m_purchase_plan_month plan
+		inner join ph_m_agre_pq_examine examine on plan.id = examine.plan_id and plan.ym = #{year} and plan.trade_period='01'
+		inner JOIN s_c_consumer_info c ON c.id = examine.cons_id  and c.id=#{consId}
+		group by plan.id
+		ORDER BY plan.create_time
+	</select>
+	
+	<!-- 根据year和consId获取所有年交易电量审核该用户的分月电量信息 -->
+	<select id="getYearPlanProxyByYearAndConsIds" resultType="com.hhwy.purchase.domain.PhmAgrePqExamine">
+		SELECT 
+			examine.id,
+			examine.ym ym,
+			examine.plan_id planId,
+			examine.cons_id consId,
+			examine.agre_pq agrePq
+		FROM ph_m_purchase_plan_month plan
+		inner join ph_m_agre_pq_examine examine on plan.id = examine.plan_id and plan.trade_period='01' 
+			and plan.ym = #{year} 
+			and examine.cons_id in 
+			<foreach collection="consIds" open="(" close=")" separator="," item="consId">#{consId}</foreach>
+		ORDER BY plan.id,examine.ym
+	</select>
+	
+	<update id="updateProxyPqById">
+		UPDATE ph_m_agre_pq_examine 
+		SET agre_pq=#{agrePq},
+			update_time= now(),
+			update_user=#{updateUser}
+		WHERE id=#{id}
+	</update>
+	
+	<!-- 根据planId获取年交易电量审核用户信息 -->
+	<select id="getExamineDetailYearByPlanId" resultType="com.hhwy.purchaseweb.bid.phmagrepqexamine.domain.PhmAgrePqExamineDetail">
+		SELECT 
+			a.id id,
+			a.cons_id consId,
+			a.plan_id planId,
+			c.cons_name consName, 
+			c.sell_person sellPerson,
+			f.cont_name contName,
+			f.phone contPhone,
+			c.upper_pq businessPqUpper,
+			a.forecast_pq forecastPq, 
+			a.fileId fileId,
+			a.subitem_flag subitemFlag,
+			a.ym ym,
+			a.agre_pq agrePq,
+			a.org_no orgNo,
+			(select sum(deal.deal_pq) from ph_m_purchase_plan_month plan left join ph_m_deal_info deal on deal.plan_id = plan.id where deal.ym = a.ym and plan.plan_status > '03'  and deal.cons_id = a.cons_id)bidPq,
+			(select sum(agre_pq) from ph_m_agre_pq_examine where cons_id=a.cons_id and ym LIKE CONCAT(a.ym,'%') and plan_id != #{planId} and subitem_flag = '0') reportPq,
+			(CASE (select ifnull(sum(agre_pq),0) from ph_m_agre_pq_examine where cons_id=a.cons_id and ym LIKE CONCAT(a.ym,'%')) when 0 then ppa.proxy_pq ELSE a.agre_pq END) newReportPq,
+			(SELECT sum(elec.practical_pq) FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym LIKE CONCAT(DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'0101'),INTERVAL 1 YEAR),'%Y'),'%')) agrePqYA,
+			(SELECT sum(elec.practical_pq) FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym LIKE CONCAT(DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'0101'),INTERVAL 2 YEAR),'%Y'),'%')) agrePqYB,
+			(SELECT sum(elec.practical_pq) FROM s_c_cons_electricity elec WHERE elec.cons_id = a.cons_id AND ym LIKE CONCAT(DATE_FORMAT(DATE_SUB(CONCAT(#{ym},'0101'),INTERVAL 3 YEAR),'%Y'),'%')) agrePqYC
+		FROM ph_m_agre_pq_examine a
+		LEFT JOIN s_c_consumer_info c ON c.id = a.cons_id 
+		LEFT JOIN s_c_contacts_info f ON c.id = f.cons_id
+		left join s_m_ppa ppa on ppa.cons_id = a.cons_id and ppa.agre_status!="00"
+				  and a.ym &gt;= LEFT(ppa.effective_date ,4)
+				  and a.ym &lt;= LEFT(ppa.expiry_date,4)
+		WHERE a.plan_id = #{planId}
+		GROUP BY a.cons_id
+		ORDER BY c.cons_name
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据planId获取用户年度交易拆分月列表 -->
+	<select id="getSubMonthDetailByPlanId" resultType="com.hhwy.purchaseweb.bid.phmpurchaseplanmonth.domain.PhmSubMonthDetail">
+		SELECT 
+			examine.id id,
+			examine.cons_id consId,
+			examine.plan_id planId,
+			c.cons_name consName, 
+			c.sell_person sellPerson,
+			f.cont_name contName,
+			f.phone contPhone,
+			examine.agre_pq agrePq,
+			MAX(CASE RIGHT(e.ym,2) WHEN '01' THEN e.agre_pq ELSE 0 END ) jan,
+			MAX(CASE RIGHT(e.ym,2) WHEN '02' THEN e.agre_pq ELSE 0 END ) feb,
+			MAX(CASE RIGHT(e.ym,2) WHEN '03' THEN e.agre_pq ELSE 0 END ) mar,
+			MAX(CASE RIGHT(e.ym,2) WHEN '04' THEN e.agre_pq ELSE 0 END ) apr,
+			MAX(CASE RIGHT(e.ym,2) WHEN '05' THEN e.agre_pq ELSE 0 END ) may,
+			MAX(CASE RIGHT(e.ym,2) WHEN '06' THEN e.agre_pq ELSE 0 END ) jun,
+			MAX(CASE RIGHT(e.ym,2) WHEN '07' THEN e.agre_pq ELSE 0 END ) jul,
+			MAX(CASE RIGHT(e.ym,2) WHEN '08' THEN e.agre_pq ELSE 0 END ) aug,
+			MAX(CASE RIGHT(e.ym,2) WHEN '09' THEN e.agre_pq ELSE 0 END ) sept,
+			MAX(CASE RIGHT(e.ym,2) WHEN '10' THEN e.agre_pq ELSE 0 END ) oct,
+			MAX(CASE RIGHT(e.ym,2) WHEN '11' THEN e.agre_pq ELSE 0 END ) nov,
+			MAX(CASE RIGHT(e.ym,2) WHEN '12' THEN e.agre_pq ELSE 0 END ) dece
+		FROM ph_m_agre_pq_examine examine
+		LEFT JOIN s_c_consumer_info c ON c.id = examine.cons_id 
+		LEFT JOIN s_c_contacts_info f ON c.id = f.cons_id
+		left join  ph_m_agre_pq_examine e on e.cons_id = examine.cons_id and e.plan_id = examine.plan_id and e.subitem_flag = '1'
+				
+		WHERE examine.plan_id = #{planId} and examine.subitem_flag = '0'
+		GROUP BY examine.cons_id
+		ORDER BY c.cons_name
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+
+	<!-- 根据计划id、consId 删除购电计划相关数据-->
+	<delete id="deletePhmAgrePqExamineByPlanId" parameterType="string">
+		DELETE FROM ph_m_agre_pq_examine WHERE plan_id = #{planId};
+		DELETE from ph_m_transaction_report_detail where plan_id = #{planId};
+		delete from ph_m_deal_info where plan_id = #{planId};
+	</delete>
+	
+	<!-- 根据计划id删除购电交易 -->
+	<delete id="deletePlanByPlanIdAndConsIds" parameterType="map">
+		DELETE FROM ph_m_agre_pq_examine WHERE plan_id = #{planId} and cons_id in 
+			<foreach collection="ids" item="item" index="index" open="(" close=")" separator=","> 
+				#{item}
+	    	</foreach> ;
+		DELETE FROM ph_m_transaction_report_detail WHERE plan_id = #{planId} and cons_id in
+			<foreach collection="ids" item="item" index="index" open="(" close=")" separator=","> 
+				#{item}
+	    	</foreach> ;
+	    DELETE FROM ph_m_plan_year_subitem where id in (
+			select id from ph_m_deal_info where plan_id = #{planId} and subitem_flag = '0' and cons_id in
+			<foreach collection="ids" item="item" index="index" open="(" close=")" separator=","> 
+				#{item}
+	    	</foreach>
+		);
+		DELETE FROM ph_m_deal_info WHERE plan_id = #{planId} and cons_id in
+			<foreach collection="ids" item="item" index="index" open="(" close=")" separator=","> 
+				#{item}
+	    	</foreach> ;
+	</delete>
+	
+	<!-- 根据计划id删除购电交易 -->
+	<delete id="deletePlanByPlanId" parameterType="string">
+		DELETE FROM ph_m_agre_pq_examine WHERE plan_id = #{planId};
+		DELETE FROM ph_m_transaction_report_detail WHERE plan_id = #{planId};
+	    DELETE FROM ph_m_plan_year_subitem WHERE plan_id = #{planId};
+		DELETE FROM ph_m_deal_info WHERE plan_id = #{planId};
+	</delete>
+	
+	<!-- 根据计划id、consId删除委托电量信息 -->
+	<delete id="deleteByPlanIdAndConsId" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";"> 
+			DELETE FROM ph_m_agre_pq_examine WHERE plan_id = #{item.planId} and cons_id = #{item.consId}
+	    </foreach>
+	</delete>
+	
+	<!-- 更新委托电量 -->
+	<update id="saveAgrePqs" >
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";"> 
+			REPLACE INTO ph_m_agre_pq_examine(id,ym,agre_pq,plan_id,cons_id,org_no,fileId,subitem_flag)
+			values (#{item.id},#{item.ym},#{item.newReportPq},#{item.planId},#{item.consId},#{item.orgNo},#{item.fileId},#{item.subitemFlag})
+	    </foreach> 
+	</update>
+	
+	<!-- 根据planId获取委托电量未填数据 -->
+	<select id="getExamineDetailIsNullByPlanId" resultType="com.hhwy.purchaseweb.bid.phmagrepqexamine.domain.PhmAgrePqExamineDetail">
+		SELECT 
+			cons_id consId,
+			agre_pq agrePq, 
+			fileId fileId
+		FROM ph_m_agre_pq_examine
+		WHERE plan_id = #{planId} and subitem_flag='0' and (agre_pq is NULL)
+	</select>
+	
+	<!-- 查询用户月度负荷预测权限 -->
+	<select id="getUserForecastRes" resultType="String">
+		SELECT
+			res.name
+		FROM
+			ac_user_role role
+		inner JOIN ac_role_resource r ON r.role_id = role.role_id
+		inner JOIN ac_resource res ON res.id = r.resource_id
+		WHERE
+			role.user_id = #{userId}
+		AND res.code = 'cloud_selling_010205forecast'
+		GROUP by res.id
+	</select>
+	
+	<!-- 更新用户的负荷预测值 -->
+	<update id="updateForecastData">
+		<foreach collection="forecastData" item="item" index="index" open="" close="" separator=";"> 
+			update ph_m_agre_pq_examine
+            <set>
+				forecast_pq = #{item.dl}
+            </set>
+                where cons_id = #{item.consNo} and ym=#{item.ym}
+	    </foreach> 
+		
+	</update>
+	
+	<!-- 根据planId获取用户数量 ,购电计划制定用-->
+	<select id="getPurchasePlanConsCountByPlanId" resultType="int">
+		select count(DISTINCT cons_id)	
+		from ph_m_agre_pq_examine where plan_id = #{planId}
+	</select>
+	
+	<!-- 查询该用户当天消息 -->
+	<select id="getSwMessageListByParams" resultType="map">
+		SELECT
+			id id,
+			message_status messageStatus,
+			plan_id planId
+		FROM
+			s_w_message
+		WHERE
+			cons_id = #{consId}
+		AND send_date = DATE_FORMAT(#{sendDate},'%Y-%m-%d')
+		AND title = #{title}
+		AND message_type = #{messageType}
+	</select>
+	
+</mapper>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smCompanyProfit.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmCompanyProfitListByParams" resultType="com.hhwy.purchase.domain.SmCompanyProfit">
+		select
+			ID id,
+			ym ym,
+			scheme_id schemeId,
+			proxy_pq proxyPq,
+			lc_total_pq lcTotalPq,
+			bid_total_pq bidTotalPq,
+			listed_total_pq listedTotalPq,
+			lc_avg_prc lcAvgPrc,
+			bid_avg_prc bidAvgPrc,
+			listed_avg_prc listedAvgPrc,
+			pur_total_pq purTotalPq,
+			del_total_pq delTotalPq,
+			dev_pq devPq,
+			dev_pq_prop devPqProp,
+			dev_dam devDam,
+			company_pro companyPro,
+			cons_checked_pro_total consCheckedProTotal,
+			pay_cons_money payConsMoney,
+			company_id companyId,
+			company_cost_total companyCostTotal,
+			cons_amt_total consAmtTotal,
+			org_no orgNo		
+		from s_m_company_profit where 1=1
+		<if test="smCompanyProfit != null and smCompanyProfit.ym != null and smCompanyProfit.ym != ''">
+			and ym = #{smCompanyProfit.ym}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.schemeId != null and smCompanyProfit.schemeId != ''">
+			and scheme_id = #{smCompanyProfit.schemeId}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.proxyPq != null and smCompanyProfit.proxyPq != ''">
+			and proxy_pq = #{smCompanyProfit.proxyPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.lcTotalPq != null and smCompanyProfit.lcTotalPq != ''">
+			and lc_total_pq = #{smCompanyProfit.lcTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.bidTotalPq != null and smCompanyProfit.bidTotalPq != ''">
+			and bid_total_pq = #{smCompanyProfit.bidTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.listedTotalPq != null and smCompanyProfit.listedTotalPq != ''">
+			and listed_total_pq = #{smCompanyProfit.listedTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.lcAvgPrc != null and smCompanyProfit.lcAvgPrc != ''">
+			and lc_avg_prc = #{smCompanyProfit.lcAvgPrc}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.bidAvgPrc != null and smCompanyProfit.bidAvgPrc != ''">
+			and bid_avg_prc = #{smCompanyProfit.bidAvgPrc}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.listedAvgPrc != null and smCompanyProfit.listedAvgPrc != ''">
+			and listed_avg_prc = #{smCompanyProfit.listedAvgPrc}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.purTotalPq != null and smCompanyProfit.purTotalPq != ''">
+			and pur_total_pq = #{smCompanyProfit.purTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.delTotalPq != null and smCompanyProfit.delTotalPq != ''">
+			and del_total_pq = #{smCompanyProfit.delTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.devPq != null and smCompanyProfit.devPq != ''">
+			and dev_pq = #{smCompanyProfit.devPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.devPqProp != null and smCompanyProfit.devPqProp != ''">
+			and dev_pq_prop = #{smCompanyProfit.devPqProp}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.devDam != null and smCompanyProfit.devDam != ''">
+			and dev_dam = #{smCompanyProfit.devDam}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.companyPro != null and smCompanyProfit.companyPro != ''">
+			and company_pro = #{smCompanyProfit.companyPro}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.consCheckedProTotal != null and smCompanyProfit.consCheckedProTotal != ''">
+			and cons_checked_pro_total = #{smCompanyProfit.consCheckedProTotal}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.payConsMoney != null and smCompanyProfit.payConsMoney != ''">
+			and pay_cons_money = #{smCompanyProfit.payConsMoney}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.companyId != null and smCompanyProfit.companyId != ''">
+			and company_id = #{smCompanyProfit.companyId}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.companyCostTotal != null and smCompanyProfit.companyCostTotal != ''">
+			and company_cost_total = #{smCompanyProfit.companyCostTotal}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.consAmtTotal != null and smCompanyProfit.consAmtTotal != ''">
+			and cons_amt_total = #{smCompanyProfit.consAmtTotal}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.orgNo != null and smCompanyProfit.orgNo != ''">
+			and org_no = #{smCompanyProfit.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmCompanyProfitCountByParams" resultType="int">
+		select count(1)	from s_m_company_profit where 1=1
+		<if test="smCompanyProfit != null and smCompanyProfit.ym != null and smCompanyProfit.ym != ''">
+			and ym = #{smCompanyProfit.ym}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.schemeId != null and smCompanyProfit.schemeId != ''">
+			and scheme_id = #{smCompanyProfit.schemeId}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.proxyPq != null and smCompanyProfit.proxyPq != ''">
+			and proxy_pq = #{smCompanyProfit.proxyPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.lcTotalPq != null and smCompanyProfit.lcTotalPq != ''">
+			and lc_total_pq = #{smCompanyProfit.lcTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.bidTotalPq != null and smCompanyProfit.bidTotalPq != ''">
+			and bid_total_pq = #{smCompanyProfit.bidTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.listedTotalPq != null and smCompanyProfit.listedTotalPq != ''">
+			and listed_total_pq = #{smCompanyProfit.listedTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.lcAvgPrc != null and smCompanyProfit.lcAvgPrc != ''">
+			and lc_avg_prc = #{smCompanyProfit.lcAvgPrc}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.bidAvgPrc != null and smCompanyProfit.bidAvgPrc != ''">
+			and bid_avg_prc = #{smCompanyProfit.bidAvgPrc}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.listedAvgPrc != null and smCompanyProfit.listedAvgPrc != ''">
+			and listed_avg_prc = #{smCompanyProfit.listedAvgPrc}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.purTotalPq != null and smCompanyProfit.purTotalPq != ''">
+			and pur_total_pq = #{smCompanyProfit.purTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.delTotalPq != null and smCompanyProfit.delTotalPq != ''">
+			and del_total_pq = #{smCompanyProfit.delTotalPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.devPq != null and smCompanyProfit.devPq != ''">
+			and dev_pq = #{smCompanyProfit.devPq}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.devPqProp != null and smCompanyProfit.devPqProp != ''">
+			and dev_pq_prop = #{smCompanyProfit.devPqProp}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.devDam != null and smCompanyProfit.devDam != ''">
+			and dev_dam = #{smCompanyProfit.devDam}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.companyPro != null and smCompanyProfit.companyPro != ''">
+			and company_pro = #{smCompanyProfit.companyPro}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.consCheckedProTotal != null and smCompanyProfit.consCheckedProTotal != ''">
+			and cons_checked_pro_total = #{smCompanyProfit.consCheckedProTotal}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.payConsMoney != null and smCompanyProfit.payConsMoney != ''">
+			and pay_cons_money = #{smCompanyProfit.payConsMoney}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.companyId != null and smCompanyProfit.companyId != ''">
+			and company_id = #{smCompanyProfit.companyId}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.companyCostTotal != null and smCompanyProfit.companyCostTotal != ''">
+			and company_cost_total = #{smCompanyProfit.companyCostTotal}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.consAmtTotal != null and smCompanyProfit.consAmtTotal != ''">
+			and cons_amt_total = #{smCompanyProfit.consAmtTotal}
+		</if>
+		<if test="smCompanyProfit != null and smCompanyProfit.orgNo != null and smCompanyProfit.orgNo != ''">
+			and org_no = #{smCompanyProfit.orgNo}
+		</if>
+	</select>
+	
+	<!-- 根据方案id删除公司结算信息 -->
+	<delete id="deleteSmComponyProfitBySchemeId">
+		DELETE
+		FROM
+			s_m_company_profit
+		WHERE
+			scheme_id IN <foreach item="item" index="index" collection="schemeIds" open="(" separator="," close=")">
+            	#{item}
+       </foreach>
+	</delete>
+	
+</mapper>

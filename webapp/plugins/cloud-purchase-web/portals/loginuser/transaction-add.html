@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+		<div class="col-md-12">
+		    <div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>月度竞价电量申报新增</div>
+				<div class="panel-body">
+                       		<div class="table-responsive">
+                       			<table class="table table-bordered">
+                                     <tbody>
+                                         <tr>
+                                             <td class="text-right w-4th">用户名称</td>
+                                             <td id="consName" class="w-10th"></td>
+                                             <td class="text-right w-4th"><span class="f-red">* </span>申报年月</td>
+                                             <td id="ym" class="w-10th"></td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">申报时间</td>
+                                             <td id="reportTime"></td>
+                                             <td class="text-right"><a href="javascript:void(0)" style="font-size:12px;padding:0px;height:28px;line-height:28px;width: 55px;" onClick="ckForecastPq()" class="btn btn-info" data-toggle="modal" data-target="#myModal">预测电量</a></td>
+                                             <td id="forecastPq">
+                                             	<div class="input-group">
+                                         			<input type="text" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">兆瓦时</span>
+                                     			</div>
+									</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right"><span class="f-red">* </span>申报电量</td>
+                                             <td id="agrePq">
+                                             	<div class="input-group">
+                                         			<input type="text" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">兆瓦时</span>
+                                     			</div>
+									</td>
+                                             <td class="text-right"><span class="f-red">* </span>委托协议</td>
+                                             <td id="fileid">
+                                             	<div class="input-group">
+                                         			<input type="text" class="form-control">
+											<span class="input-group-addon am-form-file">
+                                   						<div class="weui-cell__ft">浏览</div>
+                                    					<input id="fileLoad" onChange="getFile('fileid',value)" type="file" value=""></span>
+                                     			</div>
+									</td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+                                 <div class="text-right">
+                                 	<a href="javascript:void(0)" onClick="save()" class="btn btn-info" data-toggle="modal" data-target="#myModal">申报</a>
+                                 </div>
+					</div>
+				</div>
+			</div>
+		</div>		
+	</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script type="text/javascript">
+    var org_id=$.getLoginUser().org_id;
+    var selectFlag = false;
+    var params = {
+    		consId:$.getLoginUser().consId,
+    		ym:null,
+    		reportTime:null,
+    		applicant:null,
+    		agrePq:null,
+    		fileid:null,
+    }
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	$("#consName").html($.getLoginUser().userName);
+    	//初始化数据
+    	initData();
+    });
+
+    //查询预测值
+    function ckForecastPq(){
+    	if(!selectFlag || params === null){
+    		MainFrameUtil.alert({title:"提示",body:"交易月份的购电计划不<br/>存在或申报电量已审核！"});
+      		return;
+    	}
+    	var queryParams = {
+    			 serviceKey:"ph_forecastPq",
+    			 clientKey:"sellandpurchase",
+    			  params:{
+    			       "consId":params.consId,
+    			       "ym":params.ym,
+    			       "org_id":org_id,
+    			  }
+    		}
+    		$.ajax({
+    			url : groovyPath + "ph_forecastPq.do",
+    			type : "post",
+    			data:$.toJSON(queryParams),
+    	        contentType:'application/json;charset=UTF-8',  
+    			success : function(data) {
+    				if(!data.message){
+    					var cont = data.value.datas;
+    					//处理null
+    					if(cont){
+    						params["forecastPq"] = cont.predict_power;
+    						$("#forecastPq input").val(cont.predict_power)
+    					}else{
+    						params["forecastPq"] = null;
+    					}
+    				}else{
+    					MainFrameUtil.alert({title:"提示",body:data.message});
+    		      		return;
+    				}
+    			},
+    			error : function() {
+    				MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+		      		return;
+    			}
+    		})
+    }
+
+    //初始化数据
+    function initData(){
+    	var queryParams = {
+    		serviceKey:"s_getReportPqInfoInit",
+    		clientKey:"sellandpurchase",
+    		params:{
+    			"consId":params.consId,
+    			"org_id":org_id,
+    		}
+    	}
+    	$.ajax({
+    		url : groovyPath + "s_getReportPqInfoInit.do",
+    		type : "post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+    		success : function(data) {
+    			console.log("data: ", data);
+    			if(!data.message){
+    				var cont = data.value.datas;
+    				selectFlag = true;
+    				//处理null
+    				if(cont){
+    					var consId = params.consId;
+    					params = cont;
+    					params["consId"] = consId;
+    					if(cont){
+    						$("#reportTime").text(cont.reportTime);
+    						$("#ym").text(cont.ym);
+    					}
+    				}else{
+    					params = null;
+    				}
+    			}else{
+    				MainFrameUtil.alert({title:"提示",body:data.message});
+    	      		return;
+    			}
+    		},
+    		error : function() {
+    			MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+	      		return;
+    		}
+    	})
+    }
+
+    //保存
+    function save(){
+    	if(!selectFlag || params === null){
+    		MainFrameUtil.alert({title:"提示",body:"交易月份的购电计划不<br/>存在或申报电量已审核！"});
+      		return;
+    	}
+    	//验证申报电量
+    	var agrePq = $("#agrePq input").val();
+    	//验证文件
+    	if(!agrePq){
+    		MainFrameUtil.alert({title:"提示",body:"请填写申报电量信息！"});
+      		return;
+    	}
+    	params["agrePq"] = agrePq;
+    	//验证图片
+    	var file = $("#fileid input").val();
+    	if(!file){
+    		MainFrameUtil.alert({title:"提示",body:"请选择委托协议！"});
+      		return;
+    	}
+    	//上传图片
+    	var formData = new FormData();
+        formData.append("myfile", document.getElementById("fileLoad").files[0]);   
+        $.ajax({
+            url: filePath,
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+            	if(data){
+            		var cont = data.split("[")[1].split("]")[0];
+            		cont = eval("("+ cont + ")");
+            		params["fileId"] = cont.id;
+            		params["fileName"] = cont.fileName + cont.extension;
+            		submit();
+            	}else{
+            		MainFrameUtil.alert({title:"失败提示",body:"上传失败！"});
+              		return;
+            	}
+            },
+            error: function () {
+            	MainFrameUtil.alert({title:"失败提示",body:"上传失败！"});
+          		return;
+            }
+        })
+    }
+
+    //保存信息
+    function submit(){
+    	params["org_id"] = org_id;
+    	var queryParams = {
+    			serviceKey:"s_saveReportPqInfo",
+    			clientKey:"sellandpurchase",
+    			params:params,
+    	}
+    	$.ajax({
+    		url :  groovyPath + "s_saveReportPqInfo.do",
+    		type : "post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+    		success : function(data) {
+    			if(!data.message){
+    				MainFrameUtil.alert({title:"成功提示",body:"申报成功！"});
+              		return;
+    			}else{
+    				MainFrameUtil.alert({title:"失败提示",body:"申报失败！"});
+              		return;
+    			}
+    		},
+    		error : function() {
+    			MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+          		return;
+    		}
+    	})
+    }
+
+    //设置文件上传
+    function getFile(id,value){
+    	if(value){
+    		fileUrl = value;
+    		var cont = value.split("\\");
+    		var val = cont[cont.length-1];
+    		$("#" + id + " input").first().val(val);
+    	}else{
+    		$("#" + id + " input").first().val("");
+    	}
+    }
+    </script>
+	</body>
+</html>

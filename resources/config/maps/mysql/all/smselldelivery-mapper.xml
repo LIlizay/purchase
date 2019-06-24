@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smSellDelivery.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmSellDeliveryListByParams" resultType="com.hhwy.purchaseweb.delivery.smselldelivery.domain.SmSellDeliveryDetail">  
+		select
+			b.cons_name consName,
+			a.id id,
+			a.cons_id consId,
+			a.elec_type_code elecTypeCode,
+			a.volt_code voltCode,
+			a.ym ym,
+			CONVERT(a.agre_pq, DECIMAL(18,2)) agrePq,
+			CONVERT(a.bid_pq, DECIMAL(18,2)) bidPq,
+			CONVERT(a.delivery_pq, DECIMAL(18,2)) deliveryPq,
+			CONVERT(a.proxy_pq, DECIMAL(18,2)) proxyPq,
+			CONVERT(a.deviation_pq, DECIMAL(18,2)) deviationPq,
+			CONVERT(a.kwh_prc, DECIMAL(18,2)) kwhPrc,
+			CONVERT(a.pl_prc, DECIMAL(18,2)) plPrc,
+			CONVERT(a.agre_prc, DECIMAL(18,2)) agrePrc,
+			CONVERT(a.trans_prc, DECIMAL(18,2)) transPrc,
+			CONVERT(a.d_value, DECIMAL(18,2)) dValue,
+			CONVERT(a.cons_elec_profit, DECIMAL(18,2)) consElecProfit,
+			CONVERT(a.compensate_amt, DECIMAL(18,2)) compensateAmt,
+			CONVERT(a.cons_profit, DECIMAL(18,2))  consProfit,
+			CONVERT(a.org_no, DECIMAL(18,2)) orgNo,
+			CONVERT(a.cons_check_awt, DECIMAL(18,2)) consCheckAwt,
+			CONVERT(a.cons_check_pq, DECIMAL(18,2)) consCheckPq,
+			CONVERT(a.cons_check_prc, DECIMAL(18,2)) consCheckPrc,
+			CONVERT(a.compensate_pq, DECIMAL(18,2)) compensatePq,
+			CONVERT(a.compensate_prc, DECIMAL(18,2)) compensatePrc
+		from s_m_sell_delivery a 
+		LEFT JOIN s_c_consumer_info b ON b.id = a.cons_id
+		where 1=1
+		<if test="smSellDelivery != null and smSellDelivery.orgNo != null and smSellDelivery.orgNo != ''">
+			and a.org_no = #{smSellDelivery.orgNo}
+		</if>
+		<if test="consName != null and consName != ''">
+			and b.cons_name LIKE concat("%",#{consName},"%")
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.consId != null and smSellDelivery.consId != ''">
+			and a.cons_id = #{smSellDelivery.consId}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.elecTypeCode != null and smSellDelivery.elecTypeCode != ''">
+			and a.elec_type_code = #{smSellDelivery.elecTypeCode}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.voltCode != null and smSellDelivery.voltCode != ''">
+			and a.volt_code = #{smSellDelivery.voltCode}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.ym != null and smSellDelivery.ym != ''">
+			and a.ym = replace(#{smSellDelivery.ym},'-',"")
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.agrePq != null and smSellDelivery.agrePq != ''">
+			and a.agre_pq = #{smSellDelivery.agrePq}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.bidPq != null and smSellDelivery.bidPq != ''">
+			and a.bid_pq = #{smSellDelivery.bidPq}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.deliveryPq != null and smSellDelivery.deliveryPq != ''">
+			and a.delivery_pq = #{smSellDelivery.deliveryPq}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.proxyPq != null and smSellDelivery.proxyPq != ''">
+			and a.proxy_pq = #{smSellDelivery.proxyPq}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.kwhPrc != null and smSellDelivery.kwhPrc != ''">
+			and a.kwh_prc = #{smSellDelivery.kwhPrc}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.plPrc != null and smSellDelivery.plPrc != ''">
+			and a.pl_prc = #{smSellDelivery.plPrc}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.agrePrc != null and smSellDelivery.agrePrc != ''">
+			and a.agre_prc = #{smSellDelivery.agrePrc}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.transPrc != null and smSellDelivery.transPrc != ''">
+			and a.trans_prc = #{smSellDelivery.transPrc}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.consProfit != null and smSellDelivery.consProfit != ''">
+			and a.cons_profit = #{smSellDelivery.consProfit}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.status != null and smSellDelivery.status != ''">
+			and a.status = #{smSellDelivery.status}
+		</if>
+		<if test="startYm != null and startYm != ''">
+			and a.ym &gt;=  replace(#{startYm},'-',"")
+		</if>
+		<if test="endYm != null and endYm != ''">
+			and a.ym &lt;= replace(#{endYm},'-',"")
+		</if>
+		order by a.cons_id,a.ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmSellDeliveryCountByParams" resultType="int">
+		select count(1)	from s_m_sell_delivery a 
+		LEFT JOIN s_c_consumer_info b ON b.id = a.cons_id
+		where 1=1
+		<if test="smSellDelivery != null and smSellDelivery.orgNo != null and smSellDelivery.orgNo != ''">
+			and a.org_no = #{smSellDelivery.orgNo}
+		</if>
+		<if test="consName != null and consName != ''">
+			and b.cons_name LIKE concat("%",#{consName},"%")
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.consId != null and smSellDelivery.consId != ''">
+			and a.cons_id = #{smSellDelivery.consId}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.elecTypeCode != null and smSellDelivery.elecTypeCode != ''">
+			and a.elec_type_code = #{smSellDelivery.elecTypeCode}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.voltCode != null and smSellDelivery.voltCode != ''">
+			and a.volt_code = #{smSellDelivery.voltCode}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.ym != null and smSellDelivery.ym != ''">
+			and a.ym = replace(#{smSellDelivery.ym},'-',"")
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.agrePq != null and smSellDelivery.agrePq != ''">
+			and a.agre_pq = #{smSellDelivery.agrePq}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.bidPq != null and smSellDelivery.bidPq != ''">
+			and a.bid_pq = #{smSellDelivery.bidPq}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.deliveryPq != null and smSellDelivery.deliveryPq != ''">
+			and a.delivery_pq = #{smSellDelivery.deliveryPq}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.proxyPq != null and smSellDelivery.proxyPq != ''">
+			and a.proxy_pq = #{smSellDelivery.proxyPq}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.kwhPrc != null and smSellDelivery.kwhPrc != ''">
+			and a.kwh_prc = #{smSellDelivery.kwhPrc}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.plPrc != null and smSellDelivery.plPrc != ''">
+			and a.pl_prc = #{smSellDelivery.plPrc}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.agrePrc != null and smSellDelivery.agrePrc != ''">
+			and a.agre_prc = #{smSellDelivery.agrePrc}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.transPrc != null and smSellDelivery.transPrc != ''">
+			and a.trans_prc = #{smSellDelivery.transPrc}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.consProfit != null and smSellDelivery.consProfit != ''">
+			and a.cons_profit = #{smSellDelivery.consProfit}
+		</if>
+		<if test="smSellDelivery != null and smSellDelivery.status != null and smSellDelivery.status != ''">
+			and a.status = #{smSellDelivery.status}
+		</if>
+		<if test="startYm != null and startYm != ''">
+			and a.ym &gt;=  replace(#{startYm},'-',"")
+		</if>
+		<if test="endYm != null and endYm != ''">
+			and a.ym &lt;= replace(#{endYm},'-',"")
+		</if>
+	</select>
+	
+	<select id="getCalcList"  resultType="com.hhwy.purchaseweb.delivery.smselldelivery.domain.SmSellDeliveryDetail">
+		SELECT 
+			a.ym ym,
+			c.id consId,
+			c.cons_name consName,
+			c.elec_type_code elecTypeCode,
+			c.volt_code voltCode,
+			d.kwh_prc kwhPrc,
+			d.pl_prc plPrc,
+			d.trans_prc transPrc,
+			d.kwh_plain_prc kwhPlainPrc,
+			d.kwh_peak_prc kwhPeakPrc,
+			d.kwh_valley_prc kwhValleyPrc,
+			d.cata_plain_prc cataPlainPrc,
+			d.cata_peak_prc cataPeakPrc,
+			d.cata_valley_prc cataValleyPrc,
+			
+			f.agre_prc agrePrc, 
+			(d.kwh_prc - d.pl_prc - f.agre_prc - d.trans_prc) dValue,
+			b.agre_pq agrePq,
+			(SELECT SUM(z.deal_pq) FROM ph_m_deal_info z WHERE z.cons_id = a.cons_id AND z.ym = a.ym GROUP BY z.cons_id) bidPq,
+			(SELECT SUM(x.proxy_pq) FROM ph_m_balance_info x WHERE x.cons_id = a.cons_id AND x.ym = a.ym GROUP BY x.cons_id) proxyPq,
+			(SELECT total_pq FROM ph_m_elec_list y WHERE metering_type = '05' and y.ym = a.ym AND y.cons_id = a.cons_id) deliveryPq,
+			ABS((SELECT SUM(x.proxy_pq) FROM ph_m_balance_info x WHERE x.cons_id = a.cons_id AND x.ym = a.ym GROUP BY x.cons_id) - 
+			(SELECT SUM(z.deal_pq) FROM ph_m_deal_info z WHERE z.cons_id = a.cons_id AND z.ym = a.ym GROUP BY z.cons_id)) deviationPq,
+			
+			CAST(g.punish_flag AS char) compPunishFlag,
+			g.lower_prc compLowerPrc,
+			g.lower_threshold compLowerThreshold,
+			CAST(h.upper_punish_type AS char) upperPunishType,
+			CAST(h.lower_punish_type AS char) lowerPunishType,
+			h.upper_threshold consUpperThreshold,
+			h.lower_threshold consLowerThreshold,
+			h.upper_type consUpperType,
+			h.upper_prc consUpperPrc,
+			h.upper_prop consUpperProp,
+			h.lower_type consLowerType,
+			h.lower_prc consLowerPrc,
+			h.lower_prop consLowerProp,
+		
+			IFNULL(a.iz_discount,100) izProp,
+
+ 			i.total_pq totalPq,
+			j.total_pq peakPq,
+			k.total_pq plainPq,
+			l.total_pq valleyPq,
+			i.kwh_prc elecKwhTotalPrc,
+			j.kwh_prc elecKwhPeakPrc,
+			k.kwh_prc elecKwhPlainPrc,
+			l.kwh_prc elecKwhValleyPrc,
+			IF(j.total_pq IS NOT NULL OR k.total_pq IS NOT NULL OR l.total_pq IS NOT NULL ,"02","01") timeFlag
+		
+		FROM ph_m_liquidation_dist a 
+		LEFT JOIN ph_m_agre_pq_examine b ON a.cons_id = b.cons_id AND a.ym = b.ym
+		LEFT JOIN s_c_consumer_info c ON c.id = a.cons_id
+		LEFT JOIN s_m_prc_info d ON d.elec_type_code = c.elec_type_code AND d.volt_code = c.volt_code
+		LEFT JOIN s_m_ppa e ON e.cons_id = a.cons_id AND DATE_FORMAT(e.effective_date,'%Y') = LEFT(a.ym, 4)
+		LEFT JOIN s_m_dist_mode f ON f.agre_id = e.id
+		LEFT JOIN s_m_agre_punish_comp g ON g.agre_id = e.id
+		LEFT JOIN s_m_agre_punish_cons h ON h.agre_id = e.id
+ 		LEFT JOIN ph_m_elec_list i ON i.ym = a.ym AND i.cons_id = a.cons_id AND i.metering_type = '01' AND i.read_type = '01'
+ 		LEFT JOIN ph_m_elec_list j ON j.ym = a.ym AND j.cons_id = a.cons_id AND j.metering_type = '04' AND j.read_type = '06'
+ 		LEFT JOIN ph_m_elec_list k ON k.ym = a.ym AND k.cons_id = a.cons_id AND k.read_type = '07'
+ 		LEFT JOIN ph_m_elec_list l ON l.ym = a.ym AND l.cons_id = a.cons_id AND l.read_type = '08'
+		WHERE 1 = 1
+		<if test="smSellDelivery != null and smSellDelivery.ym != null and smSellDelivery.ym != ''">
+			and a.ym = replace(#{smSellDelivery.ym},'-',"")
+		</if>
+		order by a.cons_id,a.ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<select id="getCalcListPage"  resultType="com.hhwy.purchaseweb.delivery.smselldelivery.domain.SmSellDeliveryDetail">
+		SELECT 
+			a.ym ym,
+			c.id consId,
+			c.cons_name consName,
+			c.elec_type_code elecTypeCode,
+			c.volt_code voltCode,
+			CONVERT(d.kwh_prc, DECIMAL(18,2)) kwhPrc,
+			CONVERT(d.pl_prc, DECIMAL(18,2)) plPrc,
+			CONVERT(d.trans_prc, DECIMAL(18,2)) transPrc,
+			CONVERT(d.kwh_plain_prc, DECIMAL(18,2)) kwhPlainPrc,
+			CONVERT(d.kwh_peak_prc, DECIMAL(18,2)) kwhPeakPrc,
+			CONVERT(d.kwh_valley_prc, DECIMAL(18,2)) kwhValleyPrc,
+			CONVERT(d.cata_plain_prc, DECIMAL(18,2)) cataPlainPrc,
+			CONVERT(d.cata_peak_prc, DECIMAL(18,2)) cataPeakPrc,
+			CONVERT(d.cata_valley_prc, DECIMAL(18,2)) cataValleyPrc,
+			
+			CONVERT(f.agre_prc, DECIMAL(18,2)) agrePrc, 
+			CONVERT((d.kwh_prc - d.pl_prc - f.agre_prc - d.trans_prc), DECIMAL(18,2)) dValue,
+			CONVERT(b.agre_pq, DECIMAL(18,2)) agrePq,
+			(SELECT CONVERT(SUM(z.deal_pq), DECIMAL(18,2)) FROM ph_m_deal_info z WHERE z.cons_id = a.cons_id AND z.ym = a.ym GROUP BY z.cons_id) bidPq,
+			(SELECT CONVERT(SUM(x.proxy_pq), DECIMAL(18,2)) FROM ph_m_balance_info x WHERE x.cons_id = a.cons_id AND x.ym = a.ym GROUP BY x.cons_id) proxyPq,
+			(SELECT CONVERT(total_pq, DECIMAL(18,2)) FROM ph_m_elec_list y WHERE metering_type = '05' and y.ym = a.ym AND y.cons_id = a.cons_id) deliveryPq,
+			CONVERT(ABS((SELECT SUM(x.proxy_pq) FROM ph_m_balance_info x WHERE x.cons_id = a.cons_id AND x.ym = a.ym GROUP BY x.cons_id) - 
+			(SELECT SUM(z.deal_pq) FROM ph_m_deal_info z WHERE z.cons_id = a.cons_id AND z.ym = a.ym GROUP BY z.cons_id)), DECIMAL(18,2)) deviationPq,
+			
+			CAST(g.punish_flag AS char) compPunishFlag,
+			CONVERT(g.lower_prc, DECIMAL(18,2)) compLowerPrc,
+			g.lower_threshold compLowerThreshold,
+			CAST(h.upper_punish_type AS char) upperPunishType,
+			CAST(h.lower_punish_type AS char) lowerPunishType,
+			h.upper_threshold consUpperThreshold,
+			h.lower_threshold consLowerThreshold,
+			h.upper_type consUpperType,
+			CONVERT(h.upper_prc, DECIMAL(18,2)) consUpperPrc,
+			CONVERT(h.upper_prop, DECIMAL(18,2)) consUpperProp,
+			h.lower_type consLowerType,
+			CONVERT(h.lower_prc, DECIMAL(18,2)) consLowerPrc,
+			CONVERT(h.lower_prop, DECIMAL(18,2)) consLowerProp,
+		
+			IFNULL(a.iz_discount,100) izProp,
+
+ 			CONVERT(i.total_pq, DECIMAL(18,2)) totalPq,
+			CONVERT(j.total_pq, DECIMAL(18,2)) peakPq,
+			CONVERT(k.total_pq, DECIMAL(18,2)) plainPq,
+			CONVERT(l.total_pq, DECIMAL(18,2)) valleyPq,
+			CONVERT(i.kwh_prc, DECIMAL(18,2)) elecKwhTotalPrc,
+			CONVERT(j.kwh_prc, DECIMAL(18,2)) elecKwhPeakPrc,
+			CONVERT(k.kwh_prc, DECIMAL(18,2)) elecKwhPlainPrc,
+			CONVERT(l.kwh_prc, DECIMAL(18,2)) elecKwhValleyPrc,
+			IF(j.total_pq IS NOT NULL OR k.total_pq IS NOT NULL OR l.total_pq IS NOT NULL ,"02","01") timeFlag
+		
+		FROM ph_m_liquidation_dist a 
+		LEFT JOIN ph_m_agre_pq_examine b ON a.cons_id = b.cons_id AND a.ym = b.ym
+		LEFT JOIN s_c_consumer_info c ON c.id = a.cons_id
+		LEFT JOIN s_m_prc_info d ON d.elec_type_code = c.elec_type_code AND d.volt_code = c.volt_code
+		LEFT JOIN s_m_ppa e ON e.cons_id = a.cons_id AND DATE_FORMAT(e.effective_date,'%Y') = LEFT(a.ym, 4)
+		LEFT JOIN s_m_dist_mode f ON f.agre_id = e.id
+		LEFT JOIN s_m_agre_punish_comp g ON g.agre_id = e.id
+		LEFT JOIN s_m_agre_punish_cons h ON h.agre_id = e.id
+ 		LEFT JOIN ph_m_elec_list i ON i.ym = a.ym AND i.cons_id = a.cons_id AND i.metering_type = '01' AND i.read_type = '01'
+ 		LEFT JOIN ph_m_elec_list j ON j.ym = a.ym AND j.cons_id = a.cons_id AND j.metering_type = '04' AND j.read_type = '06'
+ 		LEFT JOIN ph_m_elec_list k ON k.ym = a.ym AND k.cons_id = a.cons_id AND k.read_type = '07'
+ 		LEFT JOIN ph_m_elec_list l ON l.ym = a.ym AND l.cons_id = a.cons_id AND l.read_type = '08'
+		WHERE 1 = 1
+		<if test="smSellDelivery != null and smSellDelivery.ym != null and smSellDelivery.ym != ''">
+			and a.ym = replace(#{smSellDelivery.ym},'-',"")
+		</if>
+		order by a.cons_id,a.ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<select id="getCalcCount" resultType="int">
+		SELECT COUNT(1) FROM 
+		ph_m_liquidation_dist a 
+		WHERE 1 = 1 
+		<if test="smSellDelivery != null and smSellDelivery.ym != null and smSellDelivery.ym != ''">
+			and a.ym = replace(#{smSellDelivery.ym},'-',"")
+		</if>
+	</select>
+	<!--  3M28号加了phPlanAddConsFlag = '1'  因为购电计划制定业务修改 ‘1’为购电计划制定选择的用户 -->
+	<select id="getPlanList" resultType="com.hhwy.purchaseweb.delivery.smselldelivery.domain.CalcDetail">
+		select m.ID,CONCAT(SUBSTR(m.ym,1,4),'-',SUBSTR(m.ym,5,2)) ym,
+				 (SELECT COUNT(1) FROM ph_m_plan_cons_rela rela
+					WHERE rela.plan_id = m.id AND rela.phPlanAddConsFlag = '1') consNum,
+				 (SELECT SUM(report_pq) FROM ph_m_transactionl_report r
+					WHERE r.plan_id = m.id) reportPq,
+				 (SELECT SUM(deal_pq) FROM ph_m_deal_info d
+					WHERE d.plan_id = m.id) dealPq,
+				 (SELECT SUM(proxy_pq) FROM ph_m_balance_info r
+					WHERE r.plan_id = m.id) delivryPq,
+				IFNULL(x.`status`,'00') status
+		from ph_m_purchase_plan_month m 
+		LEFT JOIN (SELECT z.id, z.ym, z.status FROM s_m_sell_delivery z GROUP BY z.ym) x ON x.ym = m.ym
+		where 1=1
+		AND m.plan_status > '06'
+		<choose>
+	        <when test="startYm !=null and startYm != '' and endYm !=null and endYm != ''">
+	            and ym between replace(#{startYm},'-',"") and replace(#{endYm},'-',"")
+	        </when>
+	        <when test="startYm !=null and startYm != ''">
+	            and ym  &gt;= replace(#{startYm},'-',"")
+	        </when>
+	        <when test="endYm !=null and endYm != ''">
+	            and ym  &lt;=  replace(#{endYm},'-',"")
+	        </when>
+    	</choose>
+		<if test="status != null and status != ''">
+			AND IFNULL(x.`status`,'00') = #{status}
+		</if>
+		order by ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<select id="getPlanCount" resultType="int">
+		select 
+			count(1)
+		from ph_m_purchase_plan_month m 
+		LEFT JOIN (SELECT z.id, z.ym, z.status FROM s_m_sell_delivery z GROUP BY z.ym) x ON x.ym = m.ym
+		where 1=1
+		AND m.plan_status > '06'
+		<choose>
+	        <when test="startYm !=null and startYm != '' and endYm !=null and endYm != ''">
+	            and ym between replace(#{startYm},'-',"") and replace(#{endYm},'-',"")
+	        </when>
+	        <when test="startYm !=null and startYm != ''">
+	            and ym  &gt;= replace(#{startYm},'-',"")
+	        </when>
+	        <when test="endYm !=null and endYm != ''">
+	            and ym  &lt;=  replace(#{endYm},'-',"")
+	        </when>
+    	</choose>
+		<if test="status != null and status != ''">
+			AND IFNULL(x.`status`,'00') = #{status}
+		</if>
+	</select>
+	
+	<delete id="deleteByYm">
+		DELETE FROM s_m_sell_delivery WHERE ym = replace(#{ym},'-',"")
+	</delete>
+	
+	<update id="updateStatusByYm">
+		UPDATE s_m_sell_delivery SET `status` = '02' WHERE ym = replace(#{ym},'-',"")
+	</update>
+</mapper>

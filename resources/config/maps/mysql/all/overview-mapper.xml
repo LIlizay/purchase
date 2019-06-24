@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="overView.sql">
+	
+	<!-- 用户规模 用户分类 -->
+	<select id="getUserScale" resultType="com.hhwy.purchaseweb.archives.overview.domain.OverViewDetail">
+		SELECT
+			COUNT(1) total,
+			s.name name
+		FROM
+			s_c_consumer_info c LEFT JOIN s_p_code s 
+		ON s.code_type='sell_elecTypeCode' AND s.`value` = c.elec_type_code
+		WHERE c.cons_type = '01'
+		GROUP BY c.elec_type_code
+		ORDER BY s.value ASC
+	</select>
+
+	<!-- 年累计购电量 ： bidPq：集中竞价，02 lcPq：双边协商，03 listedPq：挂牌 -->
+	<select id="getPhMPpaAgrePq" resultType="com.hhwy.purchaseweb.archives.overview.domain.OverViewDetail">
+		select
+			round(sum(case when month.trade_mode = '01' then deal.deal_pq else 0 end),3) bidPq,
+			round(sum(case when month.trade_mode = '02' then deal.deal_pq else 0 end),3) lcPq,
+			round(sum(case when month.trade_mode = '03' then deal.deal_pq else 0 end),3) gpPq
+		from ph_m_deal_info deal
+			inner join ph_m_purchase_plan_month month on month.id = deal.plan_id
+		where left(deal.ym,4) = DATE_FORMAT(NOW(),'%Y')
+			and deal.subitem_flag = '0'
+	</select>
+	
+	<!-- 年累计购电量 ： 竞价 -->
+	<select id="getDealPq" resultType="com.hhwy.purchaseweb.archives.overview.domain.OverViewDetail">
+		SELECT
+			IFNULL(SUM(d.deal_pq),0) dealPq,
+			'竞价' dealPqName
+		FROM
+			ph_m_purchase_plan_month m
+		LEFT JOIN ph_m_deal_info d ON d.plan_id = m.id
+		WHERE
+			LEFT (m.ym, 4) = DATE_FORMAT(NOW(), '%Y')
+		GROUP BY
+			LEFT (m.ym, 4)
+	</select>
+	
+	<!-- 年累计售电量数据 -->
+	<select id="getSellPower" resultType="com.hhwy.purchaseweb.archives.overview.domain.OverViewDetail">
+		SELECT
+			IFNULL(SUM(delivery_pq),0) totalPq
+		FROM 
+			s_m_purchase_scheme
+		WHERE 
+			scheme_status = '1' AND LEFT(ym,4) = DATE_FORMAT(NOW(),'%Y')
+	</select>
+	
+	<!-- 月购电交易情况 -->
+	<select id="getPurchasePq" resultType="com.hhwy.purchaseweb.archives.overview.domain.OverViewDetail">
+		select
+			'用户委托电量' reportPqName,
+			IFNULL(e.pq,0) reportPq,
+			'竞价' monthDealPqName,
+			IFNULL(d.pq,0) monthDealPq,
+			'双边' monthGeneratorPqName,
+			IFNULL(g.pq,0) monthGeneratorPq,
+			'挂牌' hangPqName,
+			IFNULL(f.pq,0) hangPq,
+			'总购电量' purchasePqName,
+			IFNULL((p.pq),0) purchasePq
+		from(
+			(	select SUM(examine.agre_pq) pq , examine.ym
+			 	from
+					ph_m_agre_pq_examine examine
+					inner join ph_m_purchase_plan_month month on month.id = examine.plan_id
+				where examine.ym = DATE_FORMAT(date_add(NOW(), interval 1 month), '%Y%m')
+			)e
+			left join (
+				select SUM(deal.deal_pq) pq , deal.ym ym
+				from ph_m_deal_info deal 
+				left join ph_m_purchase_plan_month m on m.id = deal.plan_id 
+				where m.plan_status > '03' and m.trade_mode = '01'
+				and deal.ym = DATE_FORMAT(date_add(NOW(), interval 1 month), '%Y%m')
+			)d on e.ym = d.ym
+			left join (
+				select SUM(deal.deal_pq) pq, deal.ym ym
+				from ph_m_deal_info deal 
+				left join ph_m_purchase_plan_month m on m.id = deal.plan_id 
+				where m.plan_status > '03' and m.trade_mode = '02'
+				and deal.ym = DATE_FORMAT(date_add(NOW(), interval 1 month), '%Y%m')
+			)g on g.ym = e.ym
+			left join (
+				select SUM(deal.deal_pq) pq, deal.ym ym
+				from ph_m_deal_info deal 
+				left join ph_m_purchase_plan_month m on m.id = deal.plan_id 
+				where m.plan_status > '03' and m.trade_mode = '03'
+				and deal.ym = DATE_FORMAT(date_add(NOW(), interval 1 month), '%Y%m')
+			)f on f.ym = e.ym
+			left join(
+				select SUM(deal.deal_pq) pq , deal.ym ym
+				from ph_m_deal_info deal left join ph_m_purchase_plan_month m on m.id = deal.plan_id 
+				where m.plan_status > '03'
+				and deal.ym = DATE_FORMAT(date_add(NOW(), interval 1 month), '%Y%m')
+			)p on p.ym = e.ym
+		) 
+		
+	</select>
+	
+	<!-- 下月购电交易情况状态图  -->
+	<select id="getPurchasePqStatus" resultType="map">
+		select month.id id,
+			   month.ym ym,
+			   count(examine.cons_id) consNum,
+			   month.plan_status planStatus,
+			   month.trade_mode tradeMode
+		from ph_m_purchase_plan_month month
+			left join ph_m_agre_pq_examine examine on examine.plan_id = month.id
+		where month.ym = DATE_FORMAT(date_add(NOW(), interval 1 month), '%Y%m')
+			and examine.subitem_flag = '0'
+		order by month.create_time asc
+	</select>
+	
+	<!-- 售电利润  取本年12个月的数据  数据可能都为null需要前台或后台处理  -->
+	<select id="getPhProfit" resultType="map">
+		SELECT
+			ROUND(IFNULL(SUM(profit.company_pro),0),2) compProfit,
+			DATE_FORMAT(str_to_date(profit.ym,'%Y%m'),'%Y-%m') yearMonthPf,
+			'now'	year
+		FROM s_m_company_profit profit
+		LEFT JOIN s_m_purchase_scheme scheme on profit.scheme_id = scheme.id
+		WHERE 
+			profit.ym LIKE CONCAT(DATE_FORMAT(NOW(), '%Y'),'%') 
+			AND scheme.scheme_status = '1'
+		GROUP BY profit.ym
+		UNION
+		SELECT
+		ROUND(IFNULL(SUM(profit.company_pro), 0),2) compProfit,
+			DATE_FORMAT(str_to_date(profit.ym, '%Y%m'),'%Y-%m') yearMonthPf,
+			'last'	year
+		FROM
+			s_m_company_profit profit
+		LEFT JOIN 
+			s_m_purchase_scheme scheme ON profit.scheme_id = scheme.id
+		WHERE
+			profit.ym = CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1 YEAR), '%Y'),'12') 
+		AND scheme.scheme_status = '1'
+		GROUP BY
+			profit.ym
+		ORDER BY
+			yearMonthPf
+	</select>
+	
+	<!-- 交易电量统计 -->
+	<select id="getDealElecCount" resultType="map">
+		<foreach collection="ym" item="item" index="index" open="" close="" separator="UNION">
+			SELECT
+				CONCAT(LEFT(#{item},4),'-',RIGHT(#{item},2)) yearMonthPf,
+				'合同电量' reportPqName,
+				ROUND((SELECT SUM(CASE RIGHT(#{item},2) WHEN '01' THEN jan WHEN '02' THEN feb WHEN '03' THEN mar WHEN '04' THEN apr WHEN '05' THEN may WHEN '06' THEN jun 
+								WHEN '07' THEN jul WHEN '08' THEN aug WHEN '09' THEN sept WHEN '10' THEN oct WHEN '11' THEN nov WHEN '12' THEN dece END)
+				 		FROM (
+							SELECT s_m_ppa.* FROM s_m_ppa
+							INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+								fweb_ac_uoa.org_id = org_no
+								AND fweb_ac_uoa.user_id = #{loginUserId}
+							)
+						) ppa 
+				 		WHERE agre_status != '00' AND CONCAT(LEFT(#{item},4),'-',RIGHT(#{item},2)) &lt;= LEFT(expiry_date,7) 
+				 		AND CONCAT(LEFT(#{item},4),'-',RIGHT(#{item},2)) &gt;= LEFT(effective_date,7)),3) reportPq,
+				'购电量' purchasePqName,
+				ROUND((SELECT IFNULL(SUM(deal.deal_pq),0) 
+						FROM (
+							SELECT ph_m_deal_info.* FROM ph_m_deal_info
+							INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+								fweb_ac_uoa.org_id = org_no
+								AND fweb_ac_uoa.user_id = #{loginUserId}
+							)
+						) deal 
+						LEFT JOIN ph_m_purchase_plan_month month on month.id = deal.plan_id WHERE deal.ym = #{item} AND month.plan_status > '03'),3) purchasePq,
+				'结算电量' delivryPqName,
+				ROUND((SELECT IFNULL(SUM(scheme.delivery_pq),0) 
+						FROM (
+							SELECT s_m_purchase_scheme.* FROM s_m_purchase_scheme
+							INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+								fweb_ac_uoa.org_id = org_no
+								AND fweb_ac_uoa.user_id = #{loginUserId}
+							)
+						) scheme 
+						WHERE scheme.scheme_status = '1' AND scheme.ym = #{item}),3) delivryPq
+		</foreach>
+	</select>
+	
+	<!-- 用户合同电量排名 -->
+	<select id="getConsAgreRank" resultType="map">
+		SELECT round(SUM(s.proxy_pq),3) proxyPq,c.cons_name consName,SUBSTR(c.cons_name,1,8) shortName
+		FROM s_m_ppa s INNER JOIN s_c_consumer_info c
+		ON s.cons_id = c.id
+		WHERE s.agre_status !='00' AND DATE_FORMAT(NOW(),'%Y%m') &lt;= DATE_FORMAT(STR_TO_DATE(CONCAT(s.expiry_date,'-01'),'%Y-%m-%d'),'%Y%m')
+		GROUP BY s.cons_id
+		ORDER BY proxyPq DESC
+		LIMIT 0,10
+
+	</select>
+	
+	<!-- 电厂合同电量排名 -->
+	<select id="getElecAgreRank" resultType="map">
+		SELECT
+			deal.traderName elecName,
+			round(deal.dealPq,3) dealPq,
+			SUBSTR(deal.traderName,1,4) shortElecNameName
+		FROM
+			(
+				SELECT
+					elec.elec_name traderName,
+					SUM(d.deal_pq) dealPq
+				FROM
+					ph_m_deal_info d
+				LEFT JOIN ph_m_purchase_plan_month m ON d.plan_id = m.id
+				LEFT JOIN ph_c_elec_info elec on elec.id = d.producer_id
+				where d.subitem_flag = '0' and m.plan_status > '03' AND m.trade_variety != '03' AND d.producer_id IS not NULL AND d.producer_id !='' and d.ym LIKE CONCAT(DATE_FORMAT(NOW(),'%Y'),'%')
+				GROUP BY d.producer_id
+				UNION
+				SELECT
+					d.trader_name traderName,
+					SUM(d.deal_pq) dealPq
+				FROM
+					ph_m_deal_info d
+				LEFT JOIN ph_m_purchase_plan_month m ON d.plan_id = m.id
+				where d.subitem_flag = '0' and m.plan_status > '03' AND m.trade_variety = '03' AND d.trader_name IS not NULL and d.trader_name !='' and d.ym LIKE CONCAT(DATE_FORMAT(NOW(),'%Y'),'%')
+						and (d.attorn_type != '02' or d.attorn_type is NULL)
+				GROUP BY d.trader_name
+				UNION
+				SELECT
+					(CASE m.trade_mode WHEN '01' then '竞价' WHEN '02' then '双边协商' WHEN '03' then '挂牌' END) traderName,
+					SUM(d.deal_pq) dealPq
+				FROM
+					ph_m_deal_info d
+				LEFT JOIN ph_m_purchase_plan_month m ON d.plan_id = m.id
+				where d.subitem_flag = '0' and m.plan_status > '03' AND d.ym LIKE CONCAT(DATE_FORMAT(NOW(),'%Y'),'%')
+					and (d.trader_name IS NULL or d.trader_name = '') and (d.producer_id IS NULL or d.producer_id='')
+				GROUP BY m.trade_mode
+			) deal
+		ORDER BY deal.dealPq DESC
+		LIMIT 0,10
+	</select>
+	
+	<!-- 权限管理 -->
+	<select id="getUserResource" resultType="java.lang.String">
+<!-- 		SELECT -->
+<!-- 			DISTINCT res.`name` resourceName -->
+<!-- 		FROM -->
+<!-- 			ac_user_role role -->
+<!-- 		LEFT JOIN ac_role_resource r ON r.role_id = role.role_id -->
+<!-- 		LEFT JOIN ac_resource res ON res.id = r.resource_id -->
+<!-- 		WHERE -->
+<!-- 			role.user_id = #{userId} AND res.`name` in('用户档案','合同辅助设计','售电合同管理','购电合同管理','月度购电管理','月度收益结算','用户负荷预测','偏差预警信息','售电利润柱状图') -->
+		SELECT
+			DISTINCT res.url
+		FROM
+			ac_user_role role
+		LEFT JOIN ac_role_resource r ON r.role_id = role.role_id
+		LEFT JOIN ac_resource res ON res.id = r.resource_id
+		WHERE
+			role.user_id =#{userId} 
+		AND res.url in('view/cloud-purchase-web/archives/scconsumerinfo/list','view/cloud-purchase-web/crm/ssagrescheme/list',
+		'view/cloud-purchase-web/agreement/smppa/list','view/cloud-purchase-web/agreement/phmppa/list','view/cloud-purchase-web/bid/phmpurchaseplanflow/list'
+		,'view/cloud-purchase-web/settlement/list','view/cloud-purchase-web/crm/custelecquery/list','view/cloud-purchase-web/deviationcheck/deviationwarninginfo/list'
+		,'overViewSellProBar')
+	
+	</select>
+	<!-- 子页面 -->
+	<!-- 售电分月明细 -->
+	<select id="getSellMonLcBid" resultType="map">
+		SELECT
+			RIGHT(ym,2) ym,
+			IFNULL(SUM(delivery_pq),0) pq
+		FROM s_m_purchase_scheme
+		WHERE scheme_status = '1' AND LEFT(ym,4) = #{year}
+		GROUP BY ym
+	</select>
+		
+	<!-- 01年度 03月度 -->
+	<!-- 购电分月明细 -->
+	<select id="getPhMonLcBid" resultType="map">
+		select
+			deal.ym ym,
+			IFNULL(sum(case when deal.subitem_flag = '0' and month.trade_mode = '01' and month.trade_period = '02' then deal.deal_pq else 0 end),0) monthBidPq,
+			IFNULL(sum(case when deal.subitem_flag = '1' and month.trade_mode = '01' and month.trade_period = '01' then deal.deal_pq else 0 end),0) yearBidPq,
+			IFNULL(sum(case when deal.subitem_flag = '0' and month.trade_mode = '02' and month.trade_period = '02' then deal.deal_pq else 0 end),0) monthLcPq,
+			IFNULL(sum(case when deal.subitem_flag = '1' and month.trade_mode = '02' and month.trade_period = '01' then deal.deal_pq else 0 end),0) yearLcPq,
+			IFNULL(sum(case when deal.subitem_flag = '0' and month.trade_mode = '03' and month.trade_period = '02' then deal.deal_pq else 0 end),0) monthGpPq,
+			IFNULL(sum(case when deal.subitem_flag = '1' and month.trade_mode = '03' and month.trade_period = '01' then deal.deal_pq else 0 end),0) yearGpPq,
+			IFNULL(sum(deal.deal_pq),0) totalPq
+		from
+			ph_m_deal_info deal
+			left join ph_m_purchase_plan_month month on deal.plan_id = month.id
+		where left(deal.ym,4) = #{year} and month.plan_status > '03'
+		group by deal.ym
+		order by deal.ym
+	</select>
+	
+	<!-- 用户规模子页面 -->
+		<!-- 第一行是 合同用户'01' 二 意向用户数量 -->
+	<select id="getSumConsType" resultType="map">
+		SELECT COUNT(s.cons_type) consType, s.cons_type type
+		FROM s_c_consumer_info s
+		GROUP BY s.cons_type
+		ORDER BY s.cons_type 
+	</select>
+	
+	<!-- 发电企业 -->
+	<select id="getElecCom" resultType="java.lang.String">
+		SELECT COUNT(DISTINCT p.producer_id) sumElecCom
+		FROM ph_m_deal_info p
+		where p.producer_id IS NOT NULL and p.producer_id != ''
+	</select>
+		
+	<!-- 用户电压等级 -->
+	<select id="voltageClass" resultType="map">
+		SELECT COUNT(s.volt_code) voltCount,c.name voltName
+		FROM s_c_consumer_info s LEFT JOIN s_p_code c
+		ON s.volt_code = c.value AND c.code_type = 'sell_psVoltCode'
+		WHERE s.cons_type = '01'
+		GROUP BY s.volt_code
+		ORDER BY voltCount DESC
+	</select>
+	
+	<!-- 用户柱状图 每个月用户数量-->
+	<select id="getConsSum" resultType="map">
+			SELECT COUNT(one) one,COUNT(two) two,COUNT(three) three,COUNT(four) four,COUNT(five) five,COUNT(six) six,COUNT(seven) seven,COUNT(eight) eight,COUNT(nine) nine,COUNT(ten) ten,COUNT(eleven) eleven,COUNT(twelve) twelve
+		FROM 
+		(SELECT 
+		  CASE WHEN (CONCAT(#{year}, '01') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END one,
+		  CASE WHEN (CONCAT(#{year}, '02') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END two,
+		  CASE WHEN (CONCAT(#{year}, '03') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END three,
+		  CASE WHEN (CONCAT(#{year}, '04') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END four,
+		  CASE WHEN (CONCAT(#{year}, '05') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END five,
+		  CASE WHEN (CONCAT(#{year}, '06') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END six,
+		  CASE WHEN (CONCAT(#{year}, '07') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END seven,
+		  CASE WHEN (CONCAT(#{year}, '08') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END eight,
+		  CASE WHEN (CONCAT(#{year}, '09') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END nine,
+		  CASE WHEN (CONCAT(#{year}, '10') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END ten,
+		  CASE WHEN (CONCAT(#{year}, '11') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END eleven,
+		  CASE WHEN (CONCAT(#{year}, '12') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END twelve
+		FROM
+			s_m_ppa p
+		LEFT JOIN s_c_consumer_info s ON p.cons_id = s.id
+		WHERE s.cons_type = '01'
+		AND p.agre_status != '00') a
+	</select>
+	
+	<!-- 去年用户数量 11 12 月 -->
+	<select id="upYearConsSum" resultType="map">
+		SELECT COUNT(eleven) eleven,COUNT(twelve) twelve
+  FROM(
+		SELECT
+		CASE WHEN (CONCAT(#{lastYear}, '11') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END eleven,
+		CASE WHEN (CONCAT(#{lastYear}, '12') BETWEEN DATE_FORMAT(p.effective_date, '%Y%m') AND DATE_FORMAT(p.expiry_date, '%Y%m')) THEN s.id END twelve	
+		FROM 
+			s_m_ppa p
+		LEFT JOIN s_c_consumer_info s 
+		ON p.cons_id = s.id
+		WHERE s.cons_type='01'
+		and p.agre_status != '00'
+	) a
+	</select>
+	
+	<!-- 获取指定月份的偏差用户数 -->
+	<select id="getDeviationConsCountByYm" resultType="int">
+		SELECT
+			count(DISTINCT a.cons_id)
+		FROM
+			(SELECT 
+				view2.*
+			 from 
+			 	(SELECT
+					max(view1.ymd) ymd,
+					view1.cons_id
+				FROM
+					s_m_cons_power_view view1
+				WHERE
+					view1.ym = REPLACE (#{ym}, '-', '')
+					AND view1.actual_pq IS NOT NULL
+					AND view1.actual_pq != ''
+				GROUP BY view1.cons_id 
+				) aa
+				LEFT JOIN s_m_cons_power_view view2 ON aa.ymd = view2.ymd AND aa.cons_id = view2.cons_id
+			) a
+			inner join s_m_ppa smppa ON smppa.cons_id = a.cons_id  and smppa.agre_status!="00" 
+				and #{ym} &gt;= LEFT(smppa.effective_date ,7)
+				AND #{ym} &lt;= LEFT(smppa.expiry_date,7)
+			inner join 
+				(select view3.cons_id,
+					MAX(CASE view3.warn_prompt WHEN '01' THEN view3.min_prop ELSE 0 END ) uppper_prop,
+					MAX(CASE view3.warn_prompt WHEN '02' THEN view3.min_prop ELSE 0 END ) lower_prop
+				from 
+					(SELECT 
+						map.cons_id , info.warn_prompt,min(info.min_prop) min_prop 
+					from 
+						(select
+							view1.id cons_id, warn2.id warn_id 
+						FROM
+							(SELECT
+								cons.id id,
+								min(warn.rule_flag) ruleFlag
+							FROM
+								s_m_cons_early_warning warn
+							INNER JOIN s_c_consumer_info cons ON warn.rule_flag = '1' OR cons.id = warn.cons_id
+							GROUP BY cons.id)	view1
+						left JOIN s_m_cons_early_warning warn2 on view1.id=warn2.cons_id or (view1.ruleFlag='1' and warn2.cons_id is null)
+					) map
+				INNER JOIN s_m_cons_warning_info  info on map.warn_id=info.rule_id
+				GROUP BY map.cons_id,info.warn_prompt
+			) view3
+			GROUP BY view3.cons_id
+		) warnmap on a.cons_id = warnmap.cons_id
+		WHERE
+			 CONVERT((a.actual_pq - a.plan_pq) / a.plan_pq * 100, DECIMAL(18,2)) &gt; warnmap.uppper_prop
+				or CONVERT((a.plan_pq - a.actual_pq) / a.plan_pq * 100, DECIMAL(18,2)) &gt; warnmap.lower_prop
+	</select>
+	
+	<!-- 获取指定月份的总用电偏差率 -->
+	<select id="getDeviationRateByYm" resultType="float">
+		SELECT
+			CONVERT((SUM(view2.actual_pq) - SUM(view2.plan_pq)) / SUM(view2.plan_pq) * 100, DECIMAL(18,2))
+		from (
+				SELECT
+					max(view1.ymd) ymd,
+					view1.cons_id
+				FROM
+					s_m_cons_power_view view1
+				WHERE
+					view1.ym = REPLACE(#{ym}, '-', '')
+				AND view1.actual_pq IS NOT NULL
+				AND view1.actual_pq != ''
+				GROUP BY
+					view1.cons_id
+			) aa
+		LEFT JOIN s_m_cons_power_view view2 ON aa.ymd = view2.ymd
+		AND aa.cons_id = view2.cons_id
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

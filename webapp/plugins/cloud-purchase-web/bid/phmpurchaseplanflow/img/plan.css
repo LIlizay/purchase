@@ -1,0 +1,120 @@
+@CHARSET "UTF-8";
+.fontStyle{
+	width:144px;
+	display: block;
+    font-weight: bold;
+    font-size: 18px;
+    float: left;
+    margin-top: 6%;
+}
+.greenBlock{
+	float : left;
+	display : block;
+	width : 26%;
+	height : 60px;
+	background-color : #8fdecc;
+	color: white;
+	cursor: pointer;
+	text-align:left
+}
+.grayBlock{
+	float : left;
+	display : block;
+	width : 26%;
+	height : 60px;
+	background-color : #f3f3f4;
+	color : #bfbfbf;
+	text-align:left
+}
+.arrowGrayCons{
+	display : inline-block;
+	background-image : url(../img/arrow2.png);
+	height:100%;
+	background-repeat: no-repeat
+}
+.arrowCons{
+	display : inline-block;
+	background-image : url(../img/arrow.png);
+	height:100%;
+	background-repeat: no-repeat
+}
+.planCons{
+	display : block;
+	background-image : url(../img/plan011.png);
+	background-size: 62%;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background-repeat: no-repeat
+}
+.planGrayCons{
+	display : block;
+	background-image : url(../img/plan012.png);
+	background-size: 62%;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background-repeat: no-repeat
+}
+.examinCons{
+	display : block;
+	background-image : url(../img/examin021.png);
+	background-size: 62%;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background-repeat: no-repeat
+}
+.examinGrayCons{
+	display : block;
+	background-image : url(../img/examin022.png);
+	background-size: 62%;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background-repeat: no-repeat
+}
+.phmdealinfoCons{
+	display : block;
+	background-image : url(../img/phmdealinfo041.png);
+	background-size: 65%;
+    background-position-y: center;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background-repeat: no-repeat
+}
+.phmdealinfoGrayCons{
+	display : block;
+	background-image : url(../img/phmdealinfo042.png);
+	background-size: 65%;
+    background-position-y: center;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background-repeat: no-repeat
+}
+.transactionCons{
+	display : block;
+	background-image : url(../img/transaction031.png);
+	background-size: 62%;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background-repeat: no-repeat
+}
+.transactionGrayCons{
+	display : block;
+	background-image : url(../img/transaction032.png);
+	background-size: 62%;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    float: left;
+    background-repeat: no-repeat
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+			<div class="col-md-12">
+			    <div class="panel panel-default">
+					<div class="panel-heading"><span class="line-box"></span>用电信息查询</div>
+                        	<div class="panel-body">
+						<div class="col-md-a"><span class="text-2">年份</span></div>
+						<div class="col-md-2">
+							<div class="from-group">
+              						<input type="text" class="form-control selectDate" placeholder="yyyy/mm/dd" id="selectYear">
+              						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:86%;"><i class="fa icon-rili"></i></span> -->
+          						</div>
+						</div>
+						<div class="col-md-1">
+							<a href="javascript:void(0)" onclick="queryY()" class="btn btn-info btn-sm mt10">查询</a>
+						</div>
+					</div>
+					<div class="panel-body" style="padding-top:0px">
+                        		<div class="table-responsive">
+                        		<div style="height:350px">
+                        			<div class="bg-info grid-title">用电信息列表</div>
+                        			<div class="grid-table"><table id="listGrid" class="table table-bordered table-hover"></table></div>
+                        			
+                                  </div>
+                                   <div style="margin-top: 20px;">
+                                 	<div class="bg-info grid-title">历史用电信息<span class="text-muted pull-right small">单位：兆瓦时</span></div>
+                                 	<div id="historyEcharts" style="width:100%;height:300px"></div>
+                                 </div>
+                                 <div style="margin-top: 20px;">
+                                 	<div class="bg-info grid-title">用户用电信息<span class="text-muted pull-right small">单位：兆瓦时</span></div>
+                                 	<div id="consEcharts" style="width:100%;height:300px"></div>
+                                 </div>
+						</div>
+					</div>
+				</div>
+			</div>						
+		</div>
+		<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/echarts.js"></script>
+	<script src="assets/js/createEharts2.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    $(window).resize(throll(function(){
+    	if(myChart1){myChart1.resize();}
+    	if(myChart2){myChart2.resize();}
+    },100));
+    function throll(fn,delay){
+        var timer=null;
+        return function(){
+            clearTimeout(timer);
+            timer=setTimeout(fn,delay);
+        }
+    }
+    	var myChart1=null;
+    	var myChart2=null;
+    	
+    var org_id = $.getLoginUser().org_id;
+    var params = {
+   		year:"",
+   		consId:$.getLoginUser().consId,
+    };
+
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	var date = new Date();
+    	params.year = date.getFullYear();
+    	laydate.render({
+    		  elem: '#selectYear', //指定元素
+    		  type:"year",
+    		  value:params.year,
+    		  done:function(value, date, endDate){getYear(value)}
+    	});
+    	initList();
+    	//查询历史用电信息
+    	initInstory();
+    });
+
+    //查询历史用电信息
+    function initInstory(){
+    	var queryParams = {
+    		 serviceKey:"c_getHistoryElecCondition",
+    		 clientKey:"sellandpurchase",
+    		  params:{
+    		       "consId":params.consId,
+    		       "year":params.year,
+    		       "org_id":org_id,
+    		  }
+    	}
+    	$.ajax({
+    		url: groovyPath + "c_getHistoryElecCondition.do",
+    		type:"post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+    		success:function(data){
+    			if(!data.message){
+    				var result = data.value.datas;
+    				var nowtList = result.nowtList;
+    				var uptList = result.uptList;
+    				var upUpList = result.upUpList;
+    				var list=["","","","","","","","","","","",""];
+    				if(nowtList == null || nowtList.length < 12) nowtList=list;
+    				if(uptList == null || uptList.length < 12) uptList=list;
+    				if(upUpList == null || upUpList.length < 12) upUpList=list;
+    				var firstYear = result.twoAgo;
+    				var lastYear = result.oneAgo;
+    				var year = result.now;
+    				var xList=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    				myChart1 = $.initEcharts("historyEcharts","line","历史用电曲线图",[firstYear + "年",lastYear + "年",year + "年"],[upUpList,uptList,nowtList],xList);
+    			}else{
+    				MainFrameUtil.alert({title:"失败提示",body:"查询失败！"});
+    	      		return;
+    			}
+    		}
+    	})
+    }
+
+    //查询用电信息列表
+    function initList(){
+    	var queryParams = {
+    		serviceKey:"sw_getElecInfo",
+    		clientKey:"sellandpurchase",
+    		params:params
+    	}
+    	$("#listGrid").createtable({
+    		url:groovyPath + "sw_getElecInfo.do",
+    		method: 'POST',
+            queryParams:queryParams,
+    		rownumbers: true,
+    		fitColumns:true,
+    		column:[[
+    		     {field:'ym',title:'交易年月',width:60},
+    		     {field:'proxyPq',title:'月度合同电量<br/>（兆瓦时）',width:100 },
+    		     {field:'dealPq',title:'成交电量<br/>（兆瓦时）',width:100},
+    		     {field:'actualPq',title:'实际用电量<br/>（兆瓦时）',width:100},
+    		     {field:'deliveryPq',title:'结算电量<br/>（兆瓦时）',width:100},
+    		     {field:'deviationPq',title:'偏差电量<br/>（兆瓦时）',width:100},
+    		     {field:'deviationRate',title:'偏差率<br/>（%）',width:100}
+    		]],
+    		rowStyler:function(index,row){
+                /* return "height:35px;font-size:12px;"; */
+            },
+            onLoadBefore :function(data){
+            	var result=[];
+            	if(data && data.pqList && data.pqList.length > 1){
+            		result=data.pqList;
+            	}
+    			var xList=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    			myChart2 = $.initEcharts("consEcharts","line","用户用电情况",["月度合同电量","实际用电量"],[data.agrePqList,data.actualPqList],xList);
+    			return result;
+            }
+    	})
+    }
+
+    function queryY(){
+    	if(params.year){
+    		//查询历史用电信息
+    		initInstory();
+    		//查询用电信息
+    		var queryParams = {
+    			serviceKey:"sw_getElecInfo",
+    			clientKey:"sellandpurchase",
+    			params:params
+    		}
+    		$("table").createtable("load",queryParams);
+    	}else{
+    		MainFrameUtil.alert({title:"提示",body:"请选择查询年份！"});
+      		return;
+    	}
+    }
+
+    function getYear(value){
+    	params.year = value;
+    }
+    </script>
+	</body>
+</html>

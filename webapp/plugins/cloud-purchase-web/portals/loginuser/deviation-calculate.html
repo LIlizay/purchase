@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+		<div class="col-md-12">
+		    <div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>偏差考核费用试算</div>
+				<div class="panel-body">
+                       		<div class="table-responsive">
+                       			<table class="table table-bordered">
+                                     <tbody>
+                                         <thead>
+                                            <tr>
+                                              <th colspan="6" class="bg-info">试算数据</th>
+                                            </tr>
+                                         </thead>
+                                         <tr>
+                                             <td class="text-right w-4th"><span class="f-red">* </span>成交电量 :</td>
+                                             <td id="dealPq" class="w-10th">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">兆瓦时</span>
+                                     			</div>
+                                             </td>
+                                             <td class="text-right w-4th"><span class="f-red">* </span>结算电量 :</td>
+                                             <td id="balancePq" class="w-10th">
+                                             	<div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">兆瓦时</span>
+                                     			</div>
+                                             </td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">正偏差是否考核 :</td>
+                                             <td id=punishTypeUpperName>
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+											<td class="text-right upperPunishTypeFlag">考核阈值 :</td>
+                                             <td id="upperThreshold" class="upperPunishTypeFlag">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+											<td class="text-right no-upperPunishTypeFlag"></td>
+                                             <td class="no-upperPunishTypeFlag"></td>
+                                         </tr>
+                                         <tr class="upperPunishTypeFlag">
+                                         	 <td class="text-right">考核基准 :</td>
+                                             <td id="upperTypeName">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+											<td class="text-right upperTypeFlag">考核比例 :</td>
+                                             <td id="upperProp" class="upperTypeFlag">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+											<td class="text-right no-upperTypeFlag">考核协议价 :</td>
+                                             <td id="upperPrc" class="no-upperTypeFlag">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">负偏差是否考核 :</td>
+                                             <td id="punishTypeLowerName">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+											<td class="text-right lowerPunishTypeFlag">考核阈值 :</td>
+                                             <td id="lowerThreshold" class="lowerPunishTypeFlag">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+											<td class="text-right no-lowerPunishTypeFlag"></td>
+                                             <td class="no-lowerPunishTypeFlag"></td>
+                                         </tr>
+                                         <tr class="lowerPunishTypeFlag">
+                                         	 <td class="text-right">考核基准 :</td>
+                                             <td id="lowerTypeName">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+											<td class="text-right lowerTypeFlag">考核比例 :</td>
+                                             <td id="lowerProp" class="lowerTypeFlag">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+											<td class="text-right no-lowerTypeFlag">考核协议价 :</td>
+                                             <td id="upperPrc" class="no-lowerTypeFlag">
+                                             	<div class="form-group">
+                                         			<input disabled="disabled" type="text" class="form-control">
+                                     			</div>
+											</td>
+                                         </tr>
+                                         <tr>
+                                         	<td class="text-right"><span class="f-red">* </span>园区折扣比例 :</td>
+                                             <td id="industrialZoneProp">
+                                             <div class="input-group">
+                                         			<input type="number" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">%</span>
+                                     			</div>
+											</td>
+											<td class="text-right"></td>
+                                             <td></td>
+                                             <td class="text-right"></td>
+                                             <td style="text-align:center;margin:0px">
+                                             	<a href="javascript:void(0)" onclick="calculate()" class="btn btn-info" data-toggle="modal" data-target="#myModal">计算偏差考核费用</a>
+                                             </td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+                                 <table class="table table-bordered" style="margin-top: 15px;">
+                                     <tbody>
+                                         <thead>
+                                            <tr>
+                                              <th colspan="6" class="bg-info">计算结果</th>
+                                            </tr>
+                                         </thead>
+                                         <tr>
+                                             <td class="text-right w-4th">偏差类型 :</td>
+                                             <td id="deviationType" class="w-10th">
+                                             	<div class="form-group">
+                                         			<input type="text" disabled="disabled" class="form-control">
+                                     			</div>
+                                             </td>
+                                             <td class="text-right w-4th">偏差电量 :</td>
+                                             <td id="deviationPq" class="w-10th">
+                                             	<div class="input-group">
+                                         			<input type="text" disabled="disabled" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">兆瓦时</span>
+                                     			</div>
+                                             </td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">偏差率 :</td>
+                                             <td id="deviationProp">
+                                             	<div class="input-group">
+                                         			<input type="text" disabled="disabled" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">%</span>
+                                     			</div>
+                                             </td>
+                                             <td class="text-right">偏差考核电量 :</td>
+                                             <td id="checkPq">
+                                             	<div class="input-group">
+                                         			<input type="text" disabled="disabled" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">兆瓦时</span>
+                                     			</div>
+                                             </td>
+                                         </tr>
+                                         <tr>
+                                             <td class="text-right">偏差考核电费 :</td>
+                                             <td id="checkAmt">
+                                             	<div class="input-group">
+                                         			<input type="text" disabled="disabled" class="form-control">
+                                         			<span class="input-group-addon" style="font-size: 12px;font-weight: 300;">元</span>
+                                     			</div>
+									</td>
+                                             <td class="text-right">&nbsp;</td>
+                                             <td>&nbsp;</td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+					</div>
+				</div>
+			</div>
+		</div>						
+	</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script type="text/javascript">
+    var consId = $.getLoginUser().consId;;
+    var org_id = $.getLoginUser().org_id;;
+    var ruleData = null;
+    var devData = {
+     	lowerCheckPrc:"",
+         upperCheckPrc:"",
+         upperThreshold:"",
+         lowerThreshold:"",
+         upperProp:"",
+         lowerProp:"",
+         zoneFlag:"",
+    };
+    var dataOption={//非空验证规则
+    	dealPq:null,
+    	balancePq:null,
+    };
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	//初始化隐藏惩罚方式
+    	$(".lowerPunishTypeFlag").hide();
+    	$(".upperPunishTypeFlag").hide();
+    	//隐藏园区折扣比
+    	$("#industrialZoneProp").hide().prev().hide();
+    	initData();
+    });
+
+    function initData(){
+    	var queryParams={
+    		 serviceKey:"s_getDeviationAmtInit",
+    		 clientKey:"sellandpurchase",
+    		  params:{
+    	       "consId":consId,
+    	        "org_id":org_id,
+    		  }
+    	}
+    	$.ajax({
+    		url: groovyPath + "s_getDeviationAmtInit.do",
+    		type:"post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',  
+    		success:function(data){
+    			if(!data.message){
+    				ruleData = data.value.datas;
+    				if(ruleData){
+    					/* if(ruleData.zoneFlag == 1){//目前不需要园区比列
+    						//显示园区折扣比
+    						$("#industrialZoneProp").next().hide().next().hide();
+    						$("#industrialZoneProp").show().prev().show();
+    					} */
+    					for(var j in ruleData){
+    						if( $("#"+j) != null  && $("#"+j).length > 0 ){
+    							$("#"+j + " input").val(ruleData[j]);
+    						}
+    					}
+    					//设置正偏差
+    					if(ruleData.punishTypeUpper == 1){//正偏差惩罚
+    						$(".no-upperPunishTypeFlag").hide();
+    						$(".upperPunishTypeFlag").show();
+    						if(ruleData.upperType == "01"){//正偏差惩罚基准  人工录入
+    							$(".upperTypeFlag").hide();
+    							$(".no-upperTypeFlag").show();
+    						}else{
+    							$(".no-upperTypeFlag").hide();
+    							$(".upperTypeFlag").show();
+    						}
+    					}else{//不惩罚
+    						$(".upperPunishTypeFlag").hide();
+    						$(".no-upperPunishTypeFlag").show();
+    					}
+    					//设置负偏差
+    					if(ruleData.punishTypeLower == 1){//负偏差惩罚
+    						$(".no-lowerPunishTypeFlag").hide();
+    						$(".lowerPunishTypeFlag").show();
+    						if(ruleData.lowerType == "01"){//负偏差惩罚基准  人工录入
+    							$(".lowerTypeFlag").hide();
+    							$(".no-lowerTypeFlag").show();
+    						}else{
+    							$(".no-lowerTypeFlag").hide();
+    							$(".lowerTypeFlag").show();
+    						}
+    					}else{//不惩罚
+    						$(".lowerPunishTypeFlag").hide();
+    						$(".no-lowerPunishTypeFlag").show();
+    					}
+    				}
+    			}else{
+    				MainFrameUtil.alert({title:"失败提示",body:data.message});
+    				return;
+    			}
+    		}
+    		
+    	})
+    }
+
+    function calculate(){
+    	if(!ruleData){
+    		MainFrameUtil.alert({title:"提示",body:"该用户不是合同用户！"});
+			return;
+    	}
+    	var message = $.validateRequired(dataOption);
+    	if(typeof message == "string"){
+    		MainFrameUtil.alert({title:"提示",body:"请完善"+message+"信息！"});
+			return;
+    	}
+    	var balancePq = parseFloat($("#balancePq input").val()); //结算
+    	var dealPq = parseFloat($("#dealPq input").val()); //成交
+    	/* if(ruleData.zoneFlag == 1){
+    		var value = $("#industrialZoneProp input").val();
+    		if(!value){
+    			MainFrameUtil.alert({title:"提示",body:"请信息园区折扣比例信息！"});
+    			return;
+    		}
+    	} */
+    	var deviationPq = balancePq - dealPq; //偏差电量
+    	var deviationType = "无偏差"; //偏差类型
+    	var deviationProp = 0;//偏差率
+    	var checkPq = 0;//偏差考核电量
+    	var checkAmt = 0;//偏差考核电费
+    	if(deviationPq < 0){
+    		deviationType = "负偏差";
+    		if(ruleData.punishTypeLower == 1){
+    			deviationProp = (Math.abs(deviationPq) / dealPq * 100).toFixed(2);
+    			var lowerThreshold = Number(ruleData.lowerThreshold);
+    			var lowerCheckPrc = Number(ruleData.lowerCheckPrc);
+    			var rangePq = Math.abs(deviationPq) - (dealPq * (lowerThreshold / 100));
+    			if(rangePq > 0){
+    				/* if(ruleData.zoneFlag == 1){
+    					var industrialZoneProp = $("#industrialZoneProp input").val();
+    					rangePq = rangePq*Number(industrialZoneProp)/100;
+    				} */
+    				checkPq = rangePq;
+    				checkAmt = (Math.abs(rangePq) * lowerCheckPrc).toFixed(2);
+    			}
+    		}
+    	}else if(deviationPq > 0){
+    		deviationType = "正偏差";
+    		if(ruleData.punishTypeUpper == 1){
+    			deviationProp = (Math.abs(deviationPq) / dealPq * 100).toFixed(2);
+    			var upperCheckPrc = Number(ruleData.upperCheckPrc);
+    			var upperThreshold = ruleData.upperThreshold;
+    			var rangePq = Math.abs(deviationPq) - (dealPq * (upperThreshold / 100));
+    			if(rangePq > 0){
+    				/* if(ruleData.zoneFlag == 1){
+    					var industrialZoneProp = $("#industrialZoneProp input").val();
+    					rangePq = rangePq*Number(industrialZoneProp)/100;
+    				} */
+    				checkPq = rangePq;
+    				checkAmt = (Math.abs(rangePq) * upperCheckPrc).toFixed(2);
+    			}
+    		}
+    	}
+    	deviationPq = Math.abs(deviationPq.toFixed(2));
+    	checkPq = checkPq.toFixed(2);
+    	$("#deviationType input").val(deviationType);
+    	$("#deviationPq input").val(deviationPq);
+    	$("#deviationProp input").val(deviationProp);
+    	$("#checkPq input").val(checkPq);
+    	$("#checkAmt input").val(checkAmt);
+    }
+    </script>
+	</body>
+</html>

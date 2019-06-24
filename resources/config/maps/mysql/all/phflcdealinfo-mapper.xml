@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phfLcDealInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhfLcDealInfoListByParams" resultType="com.hhwy.purchase.domain.PhfLcDealInfo">  
+		select
+			ID id,
+			year year,
+			deal_pq dealPq,
+			deal_prc dealPrc,
+			org_no orgNo		
+		from ph_f_lc_deal_info where 1=1
+		<if test="phfLcDealInfo != null and phfLcDealInfo.year != null and phfLcDealInfo.year != ''">
+			and year = #{phfLcDealInfo.year}
+		</if>
+		<if test="phfLcDealInfo != null and phfLcDealInfo.dealPq != null and phfLcDealInfo.dealPq != ''">
+			and deal_pq = #{phfLcDealInfo.dealPq}
+		</if>
+		<if test="phfLcDealInfo != null and phfLcDealInfo.dealPrc != null and phfLcDealInfo.dealPrc != ''">
+			and deal_prc = #{phfLcDealInfo.dealPrc}
+		</if>
+		<if test="phfLcDealInfo != null and phfLcDealInfo.orgNo != null and phfLcDealInfo.orgNo != ''">
+			and org_no = #{phfLcDealInfo.orgNo}
+		</if>
+		order by year desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhfLcDealInfoCountByParams" resultType="int">
+		select count(1)	from ph_f_lc_deal_info where 1=1
+		<if test="phfLcDealInfo != null and phfLcDealInfo.year != null and phfLcDealInfo.year != ''">
+			and year = #{phfLcDealInfo.year}
+		</if>
+		<if test="phfLcDealInfo != null and phfLcDealInfo.dealPq != null and phfLcDealInfo.dealPq != ''">
+			and deal_pq = #{phfLcDealInfo.dealPq}
+		</if>
+		<if test="phfLcDealInfo != null and phfLcDealInfo.dealPrc != null and phfLcDealInfo.dealPrc != ''">
+			and deal_prc = #{phfLcDealInfo.dealPrc}
+		</if>
+		<if test="phfLcDealInfo != null and phfLcDealInfo.orgNo != null and phfLcDealInfo.orgNo != ''">
+			and org_no = #{phfLcDealInfo.orgNo}
+		</if>
+	</select>
+	
+	<!-- 获取近3年长协电价  -->
+	<select id="getPhfLcDealInfoByYear" resultType="com.hhwy.purchase.domain.PhfLcDealInfo">  
+		select
+			ID id,
+			year year,
+			deal_pq dealPq,
+			deal_prc dealPrc,
+			org_no orgNo		
+		from ph_f_lc_deal_info where year &lt; #{year}
+		order by year desc
+		limit 3
+	</select>
+</mapper>

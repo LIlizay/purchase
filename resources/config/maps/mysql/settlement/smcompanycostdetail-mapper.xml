@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smCompanyCostDetail.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getCostDetailListBySchemeId" resultType="com.hhwy.purchase.domain.SmCompanyCostDetail">
+		select
+			ID id,
+			scheme_id schemeId,
+			agre_name agreName,
+			month_pq monthPq,
+			month_prc monthPrc,
+			delivery_pq deliveryPq,
+			delivery_amt deliveryAmt,
+			sort sort,
+			org_no orgNo		
+		from s_m_company_cost_detail 
+		where scheme_id = #{string}
+		order by sort
+	</select>
+	
+	
+	
+	<!-- 根据年月获取当月所有年度双边交易电量电价信息
+		   福建、江苏结算处用到，用于初始化计算“批发市场购电支出明细”-->
+	<select id="getLcYearDealInfoListByYm" parameterType="String" resultType="com.hhwy.purchase.domain.SmCompanyCostDetail">
+		SELECT
+			concat('年度双边:',IF(elecInfo.elec_name is null, IF(deal.trader_name is null,'', concat('与',deal.trader_name)), concat('与',elecInfo.elec_name))
+					,LEFT(deal.ym,4),'年',right(deal.ym,2),'月双边协商交易') agreName,
+			if(attorn_type='02',0-deal.deal_pq,deal.deal_pq) monthPq,
+			deal.deal_prc monthPrc
+		FROM
+			ph_m_deal_info deal
+			INNER JOIN ph_m_purchase_plan_month plan on deal.ym=#{ym} and plan.id=deal.plan_id and plan.trade_mode='02'
+				and plan.plan_status='04' and plan.trade_period='01'
+			LEFT JOIN ph_c_elec_info elecInfo on elecInfo.id=deal.producer_id
+		ORDER BY deal.create_time
+	</select>
+	<!-- 根据年月获取当月所有月度双边交易电量电价信息
+		   福建、江苏结算处用到，用于初始化计算“批发市场购电支出明细”-->
+	<select id="getLcMonthDealInfoListByYm" parameterType="String" resultType="com.hhwy.purchase.domain.SmCompanyCostDetail">
+		SELECT
+			concat('月度双边:',IF(elecInfo.elec_name is null, IF(deal.trader_name is null,'', concat('与',deal.trader_name)), concat('与',elecInfo.elec_name))
+					,LEFT(deal.ym,4),'年',right(deal.ym,2),'月双边协商交易') agreName,
+			if(attorn_type='02',0-deal.deal_pq,deal.deal_pq) monthPq,
+			deal.deal_prc monthPrc
+		FROM
+			ph_m_deal_info deal
+			INNER JOIN ph_m_purchase_plan_month plan on deal.ym=#{ym} and plan.id=deal.plan_id and plan.trade_mode='02'
+				and plan.plan_status='04' and plan.trade_period='02'
+			LEFT JOIN ph_c_elec_info elecInfo on elecInfo.id=deal.producer_id
+		ORDER BY deal.create_time
+	</select>
+	
+	<!-- 根据年月 获取 所有当月的 购电成交分段中 年度竞价交易 的电量电价信息
+		   福建、江苏结算处用到，用于初始化计算“批发市场购电支出明细”-->
+	<select id="getBidYearDealInfoListByYm" parameterType="String" resultType="com.hhwy.purchase.domain.SmCompanyCostDetail">
+		SELECT
+			concat('年度竞价:',LEFT(deal.ym,4),'年',right(deal.ym,2),'月集中竞价交易',(@rowNum:=@rowNum+1)) agreName,
+			if(attorn_type='02',0-deal.deal_pq,deal.deal_pq) monthPq,
+			deal.deal_prc monthPrc
+		FROM
+			ph_m_deal_info deal
+		INNER JOIN ph_m_purchase_plan_month plan on deal.ym=#{ym} and plan.id=deal.plan_id and plan.trade_mode='01' 
+				and plan.plan_status='04' and plan.trade_period='01',
+		(Select (@rowNum :=0) ) b
+		ORDER BY deal.create_time
+	</select>
+	<!-- 根据年月 获取 所有当月的 购电成交分段中 月度竞价交易 的电量电价信息
+		  福建、 江苏结算处用到，用于初始化计算“批发市场购电支出明细”-->
+	<select id="getBidMonthDealInfoListByYm" parameterType="String" resultType="com.hhwy.purchase.domain.SmCompanyCostDetail">
+		SELECT
+			concat('月度竞价:',LEFT(deal.ym,4),'年',right(deal.ym,2),'月集中竞价交易',(@rowNum:=@rowNum+1)) agreName,
+			if(attorn_type='02',0-deal.deal_pq,deal.deal_pq) monthPq,
+			deal.deal_prc monthPrc
+		FROM
+			ph_m_deal_info deal
+		INNER JOIN ph_m_purchase_plan_month plan on deal.ym=#{ym} and plan.id=deal.plan_id and plan.trade_mode='01' 
+				and plan.plan_status='04' and plan.trade_period='02',
+		(Select (@rowNum :=0) ) b
+		ORDER BY deal.create_time
+	</select>
+	
+	<!-- 根据年月 获取 所有当月的 购电成交分段中 挂牌交易 的电量电价信息
+		   福建、江苏结算处用到，用于初始化计算“批发市场购电支出明细”-->
+	<select id="getListedYearDealInfoListByYm" parameterType="String" resultType="com.hhwy.purchase.domain.SmCompanyCostDetail">
+		SELECT
+			concat('年度挂牌:',LEFT(deal.ym,4),'年',right(deal.ym,2),'月挂牌交易',(@rowNum:=@rowNum+1)) agreName,
+			if(attorn_type='02',0-deal.deal_pq,deal.deal_pq) monthPq,
+			deal.deal_prc monthPrc
+		FROM
+			ph_m_deal_info deal
+		INNER JOIN ph_m_purchase_plan_month plan on deal.ym=#{ym} and plan.id=deal.plan_id and plan.trade_mode='03' 
+				and plan.plan_status='04' and plan.trade_period='01',
+		(Select (@rowNum :=0) ) b
+		ORDER BY deal.create_time
+	</select>
+	<!-- 根据年月 获取 所有当月的 购电成交分段中 挂牌交易 的电量电价信息
+		   福建、江苏结算处用到，用于初始化计算“批发市场购电支出明细”-->
+	<select id="getListedMonthDealInfoListByYm" parameterType="String" resultType="com.hhwy.purchase.domain.SmCompanyCostDetail">
+		SELECT
+			concat('月度挂牌:',LEFT(deal.ym,4),'年',right(deal.ym,2),'月挂牌交易',(@rowNum:=@rowNum+1)) agreName,
+			if(attorn_type='02',0-deal.deal_pq,deal.deal_pq) monthPq,
+			deal.deal_prc monthPrc
+		FROM
+			ph_m_deal_info deal
+		INNER JOIN ph_m_purchase_plan_month plan on deal.ym=#{ym} and plan.id=deal.plan_id and plan.trade_mode='03' 
+				and plan.plan_status='04' and plan.trade_period='02',
+		(Select (@rowNum :=0) ) b
+		ORDER BY deal.create_time
+	</select>
+	
+	
+	
+	<!-- 根据year、minMon、maxMon 来获取所有合同用户指定月份区间的总实际用电量 和 售电公司总购电量 -->
+	<select id="getDealAndActualPqByParams" resultType="map">
+      	select a.actualPq, d.dealPq
+		FROM
+			(SELECT 
+				sum(elec.practical_pq) actualPq
+			FROM s_c_cons_electricity elec
+			inner JOIN s_m_ppa ppa on elec.ym &gt;= #{minYm} and elec.ym &lt;= #{maxYm} AND ppa.cons_id=elec.cons_id 
+					and  ppa.agre_status!="00" 
+					and concat(left(elec.ym,4),"-",right(elec.ym,2)) &gt;= LEFT(ppa.effective_date ,7)
+					AND concat(left(elec.ym,4),"-",right(elec.ym,2)) &lt;= LEFT(ppa.expiry_date,7) ) a,
+			(SELECT
+					sum(if(attorn_type='02',0-deal.deal_pq,deal.deal_pq)) dealPq
+			FROM
+					ph_m_deal_info deal
+			where deal.ym &gt;= #{minYm} and deal.ym &lt;= #{maxYm}) d
+	</select>
+	
+	
+	<!-- 根据方案id删除方案下所有‘批发市场购电支出明细’ -->
+	<delete id="deleteSmCompanyCostDetailBySchemeId">
+	    DELETE FROM s_m_company_cost_detail where scheme_id IN
+	     <foreach item="schemeId" index="index"
+               collection="schemeIds" open="(" separator="," close=")">  
+                #{schemeId}
+         </foreach>
+	</delete>
+</mapper>

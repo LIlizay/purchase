@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="swHtmlInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSwHtmlInfoListByParams" resultType="com.hhwy.purchaseweb.swhtmlinfo.domain.SwHtmlInfoDetail">
+		select
+			info.ID id,
+			info.title title,
+			info.release_person releasePerson,
+			info.release_time releaseTime,
+			info.release_state releaseState,
+			info.content content,
+			info.company_id companyId,
+			info.org_no orgNo,
+			info.hot_status hotStatus,
+			info.htm_url htmUrl,
+			info.bg_image bgImage,
+			info.file_id fileId,
+			info.begin_time beginTime,
+			info.end_time endTime,
+			info.province_code provinceCode
+		from s_w_html_info info
+		where 1=1
+		<if test="swHtmlInfo != null and swHtmlInfo.title != null and swHtmlInfo.title != ''">
+			and info.title LIKE CONCAT('%',#{swHtmlInfo.title},'%') 
+		</if>
+		<if test="swHtmlInfo != null and swHtmlInfo.provinceCode != null and swHtmlInfo.provinceCode != ''">
+			and info.province_Code = #{swHtmlInfo.provinceCode}
+		</if>
+		<if test="swHtmlInfo != null and swHtmlInfo.releaseTime != null and swHtmlInfo.releaseTime != ''">
+			and info.release_time LIKE CONCAT('%',#{releaseTime},'%')
+		</if>
+		order by info.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSwHtmlInfoCountByParams" resultType="int">
+		select count(1)	from s_w_html_info where 1=1
+		<if test="swHtmlInfo != null and swHtmlInfo.title != null and swHtmlInfo.title != ''">
+			and title LIKE CONCAT('%',#{swHtmlInfo.title},'%') 
+		</if>
+		<if test="swHtmlInfo != null and swHtmlInfo.provinceCode != null and swHtmlInfo.provinceCode != ''">
+			and province_Code = #{swHtmlInfo.provinceCode}
+		</if>
+		<if test="swHtmlInfo != null and swHtmlInfo.releaseTime != null and swHtmlInfo.releaseTime != ''">
+			and release_time LIKE CONCAT('%',#{releaseTime},'%')
+		</if>
+	</select>
+	
+	<!-- 取消或发布网站信息维护列表信息 -->
+	<update id="cancelOrRelease">
+		UPDATE s_w_html_info
+		SET release_state = #{releaseState},release_time = #{releaseTime}
+		WHERE
+			id IN
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+ 				#{item}  
+ 		</foreach> 
+	</update>
+	
+	<!-- 设置热点 -->
+	<update id="createHot">
+		UPDATE s_w_html_info
+		SET hot_status = #{hotStatus}
+		WHERE
+			id IN
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+ 				#{item}  
+ 		</foreach> 
+	</update>
+	
+	
+	<!-- 根据栏目删除外网信息 -->
+	<delete id="deleteSwHtmlInfoByColumn">
+		<!-- DELETE FROM s_w_html_info WHERE first_column=#{firstColumn} -->
+	</delete>
+</mapper>

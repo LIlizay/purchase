@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smConsPowerView.sql">
+	<!-- 根据条件查询列表 -->
+	<!-- <select id="getSmConsPowerViewListByParams" resultType="com.hhwy.selling.domain.SmConsPowerView">
+		select
+			ID id,
+			plan_id planId,
+			cons_id consId,
+			ymd ymd,
+			week week,
+			plan_pq planPq,
+			actual_pq actualPq,
+			org_no orgNo,
+			ym ym,
+			day_plan_pq dayPlanPq,
+			day_actual_pq dayActualPq,
+			is_delete isDelete		
+		from s_m_cons_power_view where 1=1
+		<if test="smConsPowerView != null and smConsPowerView.planId != null and smConsPowerView.planId != ''">
+			and plan_id = #{smConsPowerView.planId}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.consId != null and smConsPowerView.consId != ''">
+			and cons_id = #{smConsPowerView.consId}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.ymd != null and smConsPowerView.ymd != ''">
+			and ymd = #{smConsPowerView.ymd}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.week != null and smConsPowerView.week != ''">
+			and week = #{smConsPowerView.week}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.planPq != null and smConsPowerView.planPq != ''">
+			and plan_pq = #{smConsPowerView.planPq}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.actualPq != null and smConsPowerView.actualPq != ''">
+			and actual_pq = #{smConsPowerView.actualPq}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.orgNo != null and smConsPowerView.orgNo != ''">
+			and org_no = #{smConsPowerView.orgNo}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.ym != null and smConsPowerView.ym != ''">
+			and ym = #{smConsPowerView.ym}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.dayPlanPq != null and smConsPowerView.dayPlanPq != ''">
+			and day_plan_pq = #{smConsPowerView.dayPlanPq}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.dayActualPq != null and smConsPowerView.dayActualPq != ''">
+			and day_actual_pq = #{smConsPowerView.dayActualPq}
+		</if>
+		<if test="smConsPowerView != null and smConsPowerView.isDelete != null and smConsPowerView.isDelete != ''">
+			and is_delete = #{smConsPowerView.isDelete}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select> -->
+	
+	<!-- 查询用户用电收集列表信息 -->
+	<select id="getSmConsPowerViewList" resultType="com.hhwy.purchaseweb.deviationcheck.smconspowerview.domain.SmConsPowerViewDetail">
+		SELECT
+			b.cons_name consName,
+			a.cons_id consId,
+			a.ym ym,
+			CONVERT(max(a.plan_pq) ,DECIMAL(18,2)) agrePq,
+			CONVERT(max(a.actual_pq) ,DECIMAL(18,2)) actualPq
+		FROM  s_m_cons_power_view a
+		inner JOIN s_c_consumer_info b ON a.cons_id = b.id and a.is_delete = '0'
+		<if test="ym != null and ym != ''">
+			AND a.ym = #{ym}
+		</if>
+		<if test="consName !=null and consName != ''">
+			AND b.cons_name LIKE CONCAT('%', #{consName}, '%')
+		</if>
+		GROUP BY a.cons_id,a.ym
+		ORDER BY a.ym DESC, b.cons_name,a.cons_id DESC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 用户用电收集列表数量 -->
+	<select id="getSmConsPowerViewListCount" resultType="int">
+		select count(distinct a.cons_id,a.ym)
+		from s_m_cons_power_view a 
+		inner JOIN s_c_consumer_info b ON a.cons_id = b.id and a.is_delete = '0'
+		<if test="ym != null and ym != ''">
+			AND a.ym = REPLACE(#{ym}, '-' ,'')
+		</if>
+		<if test="consName !=null and consName != ''">
+			AND b.cons_name LIKE CONCAT('%', #{consName}, '%')
+		</if>
+	</select>
+	
+	<!-- 查询新增选择列表 -->
+	<select id="getAgreConsList" resultType="com.hhwy.purchaseweb.deviationcheck.smconspowerview.domain.AgreConsInfoDetail">
+		SELECT 
+			a.id consId,
+			a.cons_name consName,
+			a.volt_code voltCode,
+			a.elec_type_code elecTypeCode,
+			a.electric_capacity electricCapacity,
+			IFNULL(sum(c.agre_pq), max(${column})) agrePq
+		FROM (
+				SELECT
+					info.*
+				FROM
+					s_c_consumer_info info
+				INNER JOIN s_m_ppa ppa ON info.id = ppa.cons_id
+				AND LEFT ( REPLACE (ppa.expiry_date, '-', ''), 6 ) &gt;= REPLACE (#{ym}, '-', '')
+				AND ppa.agre_status != '00'
+				GROUP BY info.id
+			) a
+		LEFT JOIN s_m_ppa b ON a.id = b.cons_id 
+			and left(REPLACE(b.expiry_date, '-' ,''),6) &gt;= REPLACE(#{ym}, '-' ,'') 
+			AND LEFT(REPLACE (b.effective_date, '-', ''), 6 ) &lt;= REPLACE (#{ym}, '-', '')
+			and b.agre_status!='00'
+		LEFT JOIN ph_m_agre_pq_examine c ON c.cons_id = a.id AND c.ym = REPLACE(#{ym}, '-' ,'')
+		group by a.id
+		ORDER BY a.cons_name
+		<if test="pagingFlag==true">
+			LIMIT #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<!-- 查询新增选择列表统计 -->
+	<select id="getAgreConsCount" resultType="int">
+		SELECT 
+			count(distinct a.id)
+		FROM s_c_consumer_info a
+		LEFT JOIN s_m_ppa b ON a.id = b.cons_id
+		WHERE 
+			left(REPLACE(b.expiry_date, '-' ,''),6) &gt;= REPLACE(#{ym}, '-' ,'')
+			and b.agre_status!='00'
+	</select>
+	<!-- 根据时间区间和consIds获取所有用户这个区间内的用电计划  -->
+	<select id="getPowerViewByDateAndConsIds" resultType="com.hhwy.selling.domain.SmConsPowerView">
+		select
+			ID id,
+			plan_id planId,
+			cons_id consId,
+			ymd ymd,
+			week week,
+			plan_pq planPq,
+			actual_pq actualPq,
+			day_plan_pq dayPlanPq,
+			day_actual_pq dayActualPq,
+			ym ym,
+			org_no orgNo,
+			is_delete isDelete
+		from s_m_cons_power_view
+		where  cons_id in 
+			<foreach collection="consIds" open="(" close=")" separator="," item="item">
+				#{item}
+			</foreach>
+			and ymd  &gt;= #{startDate}  and ymd  &lt;= #{endDate}
+	</select>
+	<!-- 新增计划电量 -->
+	<insert id="addPowerViewList">
+		INSERT INTO s_m_cons_power_view 
+			(`id`, `plan_id`, `cons_id`, `ymd`, `week`, `plan_pq`, `actual_pq`, `create_time`, 
+				`create_user`, `update_time`, `update_user`, `org_no`, `ym`, `day_plan_pq`, `day_actual_pq`, `is_delete`)
+		VALUES 
+			<foreach collection="addList" item="item" index="index" separator="," > 
+				(
+					#{item.id},
+					#{item.planId},
+					#{item.consId},
+					#{item.ymd},
+					#{item.week},
+					#{item.planPq},
+					#{item.actualPq},
+					now(),
+					#{loginUserId},
+					now(),
+					#{loginUserId},
+					#{orgNo},
+					#{item.ym},
+					#{item.dayPlanPq},
+					#{item.dayActualPq},
+					#{item.isDelete}
+				)
+		    </foreach> 		
+	</insert>
+	<!-- 更新计划电量 -->
+	<update id="updatePowerViewPlanData">
+		UPDATE s_m_cons_power_view SET 
+			<if test="isDelete != null and isDelete != ''">
+				is_delete=#{isDelete}, 
+			</if>
+			plan_pq = #{planPq}, 
+			day_plan_pq = #{dayPlanPq}, 
+			<if test="ym != null and ym != ''">
+				ym = #{ym},
+			</if>
+			update_time = now() 
+		WHERE id = #{id}
+	</update>
+	<!-- 根据抄表年月、用户名查询用电信息 -->
+	<select id="getSmConsPowerView" resultType="com.hhwy.purchaseweb.deviationcheck.smconspowerview.domain.SmConsPowerViewDetail">
+		SELECT
+			a.ymd ymd,
+			a.id id,
+			<!-- a.week week, -->
+			CONVERT(a.plan_pq, DECIMAL(18,3)) planPq,
+			CONVERT(a.actual_pq, DECIMAL(18,3)) actualPq,
+			CONVERT(a.day_plan_pq, DECIMAL(18,3)) dayPlanPq,
+			CONVERT(a.day_actual_pq, DECIMAL(18,3)) dayActualPq,
+			a.ym ym,
+			a.is_delete isDelete
+		FROM
+			s_m_cons_power_view a
+		WHERE
+			a.cons_id = #{consId} AND a.ym = #{ym}
+		ORDER BY a.ymd ASC
+
+	</select>
+	
+	<!-- 根据自然年月、用户名查询用电信息 -->
+	<select id="getSmConsPowerViewByNatureMonth" resultType="com.hhwy.purchaseweb.deviationcheck.smconspowerview.domain.SmConsPowerViewDetail">
+		SELECT
+			a.ymd ymd,
+			a.id id,
+			<!-- a.week week, -->
+			CONVERT(a.plan_pq, DECIMAL(18,3)) planPq,
+			CONVERT(a.actual_pq, DECIMAL(18,3)) actualPq,
+			CONVERT(a.day_plan_pq, DECIMAL(18,3)) dayPlanPq,
+			CONVERT(a.day_actual_pq, DECIMAL(18,3)) dayActualPq,
+			a.ym ym,
+			a.is_delete isDelete
+		FROM
+			s_m_cons_power_view a
+		WHERE
+			a.cons_id = #{consId} AND a.ymd like concat(#{ym},'%')
+		ORDER BY a.ymd ASC
+	</select>
+	<!-- 根据用户ym(年月：yyyy-MM)、elecTypeCode用电类别、voltCode电压等级  查询当月合同用户数量 -->
+	<select id="getSmConsPowerViewCountByMonth" resultType="long">
+		SELECT
+			count(distinct cons.id)
+		FROM
+			s_c_consumer_info cons
+		inner join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!='00' 
+			and #{ym} &gt;= LEFT(smppa.effective_date ,7)
+			AND #{ym} &lt;= LEFT(smppa.expiry_date,7)
+		WHERE 1 = 1
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			AND cons.elec_type_code = #{elecTypeCode}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			AND cons.volt_code = #{voltCode}
+		</if>
+	</select>
+	<!-- 根据用户ym(年月：yyyy-MM)、elecTypeCode用电类别、voltCode电压等级  查询当月合同用户用电情况 -->
+	<select id="getPowerViewDetailListByMonth" resultType="com.hhwy.purchaseweb.deviationcheck.smconspowerview.domain.SmConsPowerViewDetail">
+		SELECT
+			ROUND(max(view1.plan_pq),3)	planPq,
+			min(view1.ymd) minDate,
+			max(view1.ymd) maxDate,
+			ROUND(max(view1.actual_pq),3) actualPq,
+			(select ROUND(max(view2.plan_pq),3) from s_m_cons_power_view view2 
+			where 
+				view2.actual_pq=max(view1.actual_pq) 
+				and view2.cons_id = cons.id  
+				and view2.ym = replace(#{ym},'-','')
+				order by view2.ymd limit 0,1) planPqToday,
+			cons.id consId,
+			cons.cons_name consName,
+			cons.elec_type_code elecTypeCode,
+			cons.volt_code voltCode
+		FROM
+			s_c_consumer_info cons
+		inner join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!='00' 
+			and #{ym} &gt;= LEFT(smppa.effective_date ,7)
+			AND #{ym} &lt;= LEFT(smppa.expiry_date,7)
+		left join s_m_cons_power_view view1 on view1.cons_id = cons.id  AND view1.ym = replace(#{ym},'-','')
+		WHERE 1 = 1
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			AND cons.elec_type_code = #{elecTypeCode}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			AND cons.volt_code = #{voltCode}
+		</if>
+		group by cons.id 
+		ORDER BY cons.id desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<!-- 根据ym(年月：yyyy-MM)、elecTypeCode用电类别、voltCode电压等级  查询电表示数信息（ym 按照抄表例日来取）——by LiXinze -->
+	<select id="getForecastPqByParams" resultType="map">
+		SELECT 	p.consId id, 
+				p.pq pq, 
+				MIN(c.date) beginTime, 
+				MAX(c.date) endTime,
+				last.date lastDate,
+				DATE_FORMAT(p.startTime,'%Y-%m-%d') start , 
+				DATE_FORMAT(p.endTime,'%Y-%m-%d') end
+		FROM(	
+		 	SELECT count.meter_read_date date, cons.id consId
+			FROM s_c_mp_count count
+			INNER JOIN s_c_mp_info mp on count.mp_id = mp.id
+			INNER JOIN (
+				SELECT
+					s_c_consumer_info.*
+				FROM
+					s_c_consumer_info
+				INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+					fweb_ac_uoa.org_id = org_no
+					AND fweb_ac_uoa.user_id = #{loginUserId}
+				)
+			) cons ON mp.cons_id = cons.id) c
+		INNER JOIN(
+		 	SELECT cons.id consId, MAX(pview.actual_pq) pq, MAX(pview.ymd) endTime, MIN(pview.ymd) startTime
+			FROM s_m_cons_power_view pview
+			LEFT JOIN s_c_consumer_info cons on pview.cons_id = cons.id
+			WHERE pview.ym = REPLACE(#{ym},'-','') 
+			<if test="elecTypeCode != null and elecTypeCode != ''">
+				AND cons.elec_type_code = #{elecTypeCode}
+			</if>
+			<if test="voltCode != null and voltCode != ''">
+				AND cons.volt_code = #{voltCode}
+			</if>
+			GROUP BY pview.cons_id) p
+		ON c.consId = p.consId AND (DATE_FORMAT(c.date,'%Y%m%d') &gt;= p.startTime AND DATE_FORMAT(c.date,'%Y%m%d') &lt;= p.endTime)
+		LEFT JOIN(
+			SELECT c1.consId consId, MAX(c1.date) date
+			FROM(	
+			 	SELECT count.meter_read_date date, cons.id consId
+				FROM s_c_mp_count count
+				INNER JOIN s_c_mp_info mp on count.mp_id = mp.id
+				INNER JOIN s_c_consumer_info cons ON mp.cons_id = cons.id) c1
+			INNER JOIN(
+			 	SELECT cons.id consId, MAX(pview.ymd) endTime
+				FROM s_m_cons_power_view pview
+				LEFT JOIN s_c_consumer_info cons on pview.cons_id = cons.id
+				WHERE pview.ym = DATE_FORMAT(DATE_ADD(CONCAT(#{ym},'-01'),INTERVAL -1 MONTH),'%Y%m' )
+				GROUP BY pview.cons_id
+			) p1 ON c1.consId = p1.consId AND DATE_FORMAT(c1.date,'%Y%m%d') = p1.endTime 
+			GROUP BY c1.consId
+		) last ON c.consId = last.consId	
+		GROUP BY p.consId
+		HAVING p.pq != '' and p.pq is not null
+	</select>
+	<!-- 根据用户ym(年月：yyyy-MM)、elecTypeCode用电类别、voltCode电压等级  查询当月合同用户总的计划电量和总用电量 -->
+	<select id="getTotalPqDataByMonth" resultType="map">
+		select 
+			sum(tableview.planPq) planPqTotal,
+			sum(tableview.actualPq) actualPqTotal
+		from(
+			SELECT
+				max(view1.plan_pq)	planPq,
+				max(view1.actual_pq) actualPq
+			FROM
+				s_c_consumer_info cons
+			inner join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!='00'
+				and #{ym} &gt;= LEFT(smppa.effective_date ,7)
+				AND #{ym} &lt;= LEFT(smppa.expiry_date,7)
+			left join s_m_cons_power_view view1 on view1.cons_id = cons.id  AND view1.ym = replace(#{ym},'-','')
+			WHERE 1 = 1
+			<if test="elecTypeCode != null and elecTypeCode != ''">
+				AND cons.elec_type_code = #{elecTypeCode}
+			</if>
+			<if test="voltCode != null and voltCode != ''">
+				AND cons.volt_code = #{voltCode}
+			</if>
+			group by cons.id
+		) tableview
+	</select>
+	<!-- 根据用户ym(抄表年月：yyyy-MM)、elecTypeCode用电类别、voltCode电压等级  查询当月合同用户每天的用电情况 -->
+	<select id="getPowerViewDetailListForDayByMonth" resultType="com.hhwy.purchaseweb.deviationcheck.smconspowerview.domain.SmConsPowerViewDetail">
+		SELECT
+			sum(view1.day_plan_pq) dayPlanPq,
+			sum(view1.day_actual_pq) dayActualPq,
+			view1.ymd ymd
+		FROM
+			s_c_consumer_info cons
+		inner join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!='00' 
+			and #{ym} &gt;= LEFT(smppa.effective_date ,7)
+			AND #{ym} &lt;= LEFT(smppa.expiry_date,7)
+		left join s_m_cons_power_view view1 on view1.cons_id = cons.id
+			AND view1.ym = replace(#{ym},'-','') <!-- or (view1.ym is null and view1.ymd like concat(replace(#{ym},'-',''),'%')) )  -->
+		WHERE 1 = 1
+		and view1.ymd is not null
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			AND cons.elec_type_code = #{elecTypeCode}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			AND cons.volt_code = #{voltCode}
+		</if>
+		group by ymd
+		ORDER BY view1.ymd  
+	</select>
+	
+	<!-- 查询该用户当天消息,老版本遗留代码 -->
+	<select id="getSwMessageListByParams" resultType="map">
+		SELECT
+			id id,
+			message_status messageStatus,
+			plan_id planId
+		FROM
+			s_w_message
+		WHERE
+			cons_id = #{consId}
+		AND send_date = DATE_FORMAT(#{sendDate},'%Y-%m-%d')
+		AND title = #{title}
+		AND message_type = #{messageType}
+	</select>
+	<!-- 删除用户一个月的用户电量收集信息时 删除 当月的预警信息 -->
+	<delete id="deleteWarnInfoByYmAndConsIds">
+		<!-- DELETE FROM s_m_deviation_info WHERE cons_id = #{consId} 
+			and DATE_FORMAT(warning_date, '%Y%m%d') &gt;= DATE_FORMAT(#{startDate},'%Y%m%d') 
+			and DATE_FORMAT(warning_date, '%Y%m%d') &lt;= DATE_FORMAT(#{endDate},'%Y%m%d')  -->
+		DELETE info FROM 
+			(select cons_id, ymd from s_m_cons_power_view 
+			where ym=#{ym} and cons_id in <foreach collection="consIds" item="consId" open="(" close=")" separator=",">
+				#{consId}
+			</foreach>) power
+		INNER JOIN s_m_deviation_info info on 
+			power.cons_id = info.cons_id and DATE_FORMAT(info.warning_date, '%Y%m%d')=power.ymd
+	</delete>
+	<!-- 根据用户id 年月删除数据，只是删除其累计计划和日计划电量，并把其isDelete置为1,ym设置为null -->
+	<update id="deletePlanDataByYmAndConsIds">
+		UPDATE 
+			s_m_cons_power_view 
+		SET 
+			is_delete=1, day_plan_pq=null, plan_pq=null,ym=null  ,update_time = now()
+		WHERE cons_id in
+			<foreach collection="consIds" item="consId" open="(" close=")" separator=",">
+				#{consId}
+			</foreach>  AND ym = #{ym}
+	</update>
+	
+	
+	
+	
+	
+	
+	<!-- 根据consId和ymd获取最近一天的累计电量 -->
+	<select id="getLastActualPqByParams" resultType="java.math.BigDecimal">
+		select
+			actual_pq actualPq
+		from s_m_cons_power_view 
+		where cons_id = #{consId} and ymd &lt; #{ymd} and ym = #{ym} and actual_pq is not null
+		order by ymd desc limit 1
+	</select>
+	
+	<!-- 根据用户id和ymd列表查询列表 -->
+	<select id="getPowerViewListByYmds" resultType="com.hhwy.selling.domain.SmConsPowerView">
+		select
+			ID id,
+			plan_id planId,
+			cons_id consId,
+			ymd ymd,
+			week week,
+			plan_pq planPq,
+			actual_pq actualPq,
+			org_no orgNo,
+			ym ym,
+			day_plan_pq dayPlanPq,
+			day_actual_pq dayActualPq,
+			is_delete isDelete
+		from s_m_cons_power_view 
+		where cons_id = #{consId}
+			and ymd in
+			<foreach collection="ymds" open="(" close=")" separator="," item="ymd">
+				#{ymd}
+			</foreach>
+	</select>
+	<!-- 根据用户id和ymd列表查询列表 -->
+	<select id="getPowerViewListByYm" resultType="com.hhwy.selling.domain.SmConsPowerView">
+		select
+			ID id,
+			plan_id planId,
+			cons_id consId,
+			ymd ymd,
+			week week,
+			plan_pq planPq,
+			actual_pq actualPq,
+			org_no orgNo,
+			ym ym,
+			day_plan_pq dayPlanPq,
+			day_actual_pq dayActualPq,
+			is_delete isDelete
+		from s_m_cons_power_view 
+		where cons_id = #{consId}
+			and ym = #{ym}
+	</select>
+	<!-- 根据用户id和ymd列表查询列表 -->
+	<select id="getPowerViewStatusByYm" resultType="int">
+		select
+			count(id)
+		from s_m_cons_power_view 
+		where cons_id = #{consId} and ym = #{ym} and is_delete = '0'
+	</select>
+	<!-- 根据ym和最大最小时间区间删除用电计划 -->
+	<delete id="deletePowerViewByYmAndDateRange">
+		delete from s_m_cons_power_view
+		where  (cons_id = #{consId} and ym = #{ym} )
+		<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+			or (cons_id = #{consId} and ymd between #{startDate} and #{endDate})
+		</if>
+	</delete>
+	
+	<!-- 根据用户id数组删除所有用电计划 -->
+	<delete id="deletePowerViewByConsIds">
+		DELETE
+		FROM
+			s_m_cons_power_view
+		where cons_id IN 
+			<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+	 			#{item}  
+	 		</foreach>
+	</delete>
+	<!-- 根据id数组删除用电计划 -->
+	<delete id="deletePowerViewByIdList" parameterType="List">
+		DELETE
+		FROM
+			s_m_cons_power_view
+		where id IN 
+			<foreach item="item" collection="list" open="(" separator="," close=")">  
+	 			#{item}  
+	 		</foreach>
+	</delete>
+</mapper>

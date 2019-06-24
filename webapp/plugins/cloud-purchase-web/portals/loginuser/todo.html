@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>我的待办</div>
+				<div class="panel-body">
+					<ul class="articlelist">
+						
+					</ul>
+					<div class="col-sm-12 foot_paging">
+							<div class="col-sm-6">
+								<div class="dataTables_info paginationPage" style="margin-top:16px;"></div>
+							</div>
+							<div class="col-sm-6 text-right">
+								<div class="dataTables_paginate paging_simple_numbers" id="dataTables-example_paginate">
+									<ul class="pagination">
+										<li class="paginate_button previous disabled" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_previous"><a href="javascript:void(0)">上一页</a></li>
+										<li class="paginate_button active" aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">1</a></li><li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">2</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">3</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">4</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">5</a></li><li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">6</a></li>
+										<li class="paginate_button next" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_next"><a href="javascript:void(0)">下一页</a></li>
+									</ul>
+								</div>
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>						
+	</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script type="text/javascript">
+    var params = {
+    		ym:'',
+    		consId:$.getLoginUser().consId,
+    }
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	initDomCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    		initDomCss();
+    	});
+    	params.ym = $.initDate({index:"current",type:"ym"}).replace("-","");
+    	//设置分页信息
+    	pageUtil.bindClick({handler:function(option){initData(option)}},".pagination");
+    	//初始化列表数据
+    	var option = pageUtil.getPage(".pagination");
+    	//初始化列表数据
+    	initData(option);
+    })
+    
+     //计算页面高度
+    function initDomCss(){
+    	var iframe = $(window.parent.parent.document).find("iframe[src='todo.html']");
+    	var height = Number(iframe.css("height").replace("px",""));
+    	height = height-Number($(".panel-heading").css("height").replace("px",""))-1;
+    	height = height-77-1-40;
+    	$(".articlelist").css("height",height.toFixed("2")+"px").css("overflow","auto");
+    }
+
+    function initData(option){
+    	//清空数据
+    	$(".articlelist").empty();
+    	var queryParams = {
+    		 serviceKey:"w_getSwMessageList",
+    		 clientKey:"sellandpurchase",
+    		  params:{
+    		       "consId":params.consId,
+    		       "bgnDate":"",
+    		       "endDate":"",
+    		        "type":"todoType",
+    		        "index":option.nowIndex-1,
+    				"pageSize":option.pageSize,
+    		  }
+    	};
+    	$.ajax({
+    		url : groovyPath + "w_getSwMessageList.do",
+    		type : "post",
+    		data:$.toJSON(queryParams),
+            contentType:'application/json;charset=UTF-8',   
+    		success : function(data) {
+    			if(!data.message){
+    				var cont = data.value.datas;
+    				pageUtil.setpage({totalPage:data.value.totalPage},".pagination");
+    				if(cont != null && cont.length > 0){
+    					for(var i=0; i<cont.length; i++){
+    						var obj = cont[i];
+    						var html = "<li><a href='javascript:void(0)' onClick='clickToDoList(\""+ obj.msgId +"\")'><i class='fa icon-yousanjiao'></i>"+ obj.title 
+    						+ "</a><span class='pull-right text-muted small'>" + obj.sendDate + "</span></li>";
+    						$(".articlelist").append(html);
+    					}
+    				}
+    			}else{
+    				MainFrameUtil.alert({title: "失败提示",body:"查询失败！"});
+		      		return;
+    			}
+    		},
+    		error : function() {
+    			MainFrameUtil.alert({title: "网络失败提示",body:"请刷新页面重试！"});
+	      		return;
+    		}
+    	})
+    }
+
+    //点击查看消息
+    function clickToDoList(id){
+    	 MainFrameUtil.openDialog({
+   	 		id:"message_newsdetail",
+   			params:{id:id,type:"message"},
+   			herf:"message-newsdetail.html",
+   			maximizable:false,
+   			width:540,
+   			height:430,
+   			onClose:function(){
+				//查询我的待办信息
+				pageUtil.resetPage(".pagination");
+				var option = pageUtil.getPage(".pagination");
+				initData(option);
+			}
+   	  	  });
+    }
+    </script>
+	</body>
+</html>

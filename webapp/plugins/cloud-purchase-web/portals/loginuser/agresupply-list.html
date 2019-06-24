@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="logrow">
+			<div class="col-md-12">
+			    <div class="panel panel-default">
+					<div class="panel-body" style="padding-top: 0">
+                        		<div class="table-responsive">
+                        		<div class="bg-info grid-title">补充协议列表</div>
+                        		<div class="grid-table"><table id="listGrid" class="table table-bordered table-hover"></table></div>
+						</div>
+					</div>
+				</div>
+			</div>						
+		</div>
+		<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    var dataObject=null;
+  $(function(){
+	//计算表格高度
+	$.initTableCss("agresupply-list");
+	var id= MainFrameUtil.getParams("supply_list").id;
+  	//初始化列表数据
+  	initData(id);
+  })
+
+  function initData(id){
+  	var queryParams = {
+  		serviceKey:"s_smAgreSupList",
+  		clientKey:"sellandpurchase",
+  		params:{
+  			agreId:id,
+  		}
+  	};
+  	$("#listGrid").createtable({
+  		url:groovyPath + "s_smAgreSupList.do",
+  		method: 'POST',
+        queryParams:queryParams,
+  		width:"100%",
+  		rownumbers: true,
+  		fitColumns:true,
+  		column:[[
+  		     {field:'agreName',title:'协议名称',width:120,
+  		    	 formatter: function(value,row,index){
+  		    		 if(value){
+  		    			 return "<a href='javascript:void(0)' onclick=\"agreDetail('"+index+"')\">"+value+"</a>";
+  		    		 }
+  		    		 return "";
+  		    	 }
+  		     },
+  		   	{field:'sellParty',title:'售电方签订人',width:120},
+  		  	{field:'custParty',title:'客户签订人',width:100},
+  		     {field:'signDate',title:'签订日期',width:100},
+  		     {field:'effectiveDate',title:'开始时间',width:100},
+  		     {field:'expiryDate',title:'结束时间',width:100},
+  		     {field:'agreStatusName',title:'协议状态',width:80},
+  		]],
+  		onLoadSuccess:function(data){
+  			dataObject=data.data;
+  		}
+  	})
+  }
+  //查看详情信息
+  function agreDetail(index){
+	  var row = dataObject[index];
+	  MainFrameUtil.openDialog({
+	 		id:"agresupply_detail",
+			params:row,
+			herf:"agresupply-detail.html",
+			maximizable:false,
+			width:"80%",
+			height:480,
+	  	  });
+  }
+    </script>
+	</body>
+</html>

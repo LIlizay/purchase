@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smConsEarlyWarning.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmConsEarlyWarningListByParams" resultType="com.hhwy.purchaseweb.deviationcheck.conswarningrule.smconsearlywarning.domain.SmConsEarlyWarningDetail">
+		select
+			a.ID id,
+			a.cons_id consId,
+			b.cons_name consName,
+			a.name name,
+			a.rule_flag ruleFlag,
+			a.frequency frequency,
+			a.rule_explain ruleExplain,
+			a.org_no orgNo		
+		from s_m_cons_early_warning a
+		LEFT JOIN s_c_consumer_info b on a.cons_id = b.id
+		where 1=1
+		<if test="consName != null and consName != ''">
+			and b.cons_name LIKE CONCAT('%',#{consName},'%')
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.consId != null and smConsEarlyWarning.consId != ''">
+			and a.cons_id = #{smConsEarlyWarning.consId}
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.name != null and smConsEarlyWarning.name != ''">
+			and a.name LIKE CONCAT('%',#{smConsEarlyWarning.name},'%') 
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.ruleFlag != null and smConsEarlyWarning.ruleFlag != ''">
+			and a.rule_flag = #{smConsEarlyWarning.ruleFlag}
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.frequency != null and smConsEarlyWarning.frequency != ''">
+			and a.frequency = #{smConsEarlyWarning.frequency}
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.ruleExplain != null and smConsEarlyWarning.ruleExplain != ''">
+			and a.rule_explain = #{smConsEarlyWarning.ruleExplain}
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.orgNo != null and smConsEarlyWarning.orgNo != ''">
+			and a.org_no = #{smConsEarlyWarning.orgNo}
+		</if>
+		order by a.rule_flag desc, a.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmConsEarlyWarningCountByParams" resultType="int">
+		select count(1)	from s_m_cons_early_warning a
+		LEFT JOIN s_c_consumer_info b on a.cons_id = b.id
+		where 1=1
+		<if test="consName != null and consName != ''">
+			and b.cons_name LIKE CONCAT('%',#{consName},'%')
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.consId != null and smConsEarlyWarning.consId != ''">
+			and cons_id = #{smConsEarlyWarning.consId}
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.name != null and smConsEarlyWarning.name != ''">
+			and name LIKE CONCAT('%',#{smConsEarlyWarning.name},'%') 
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.ruleFlag != null and smConsEarlyWarning.ruleFlag != ''">
+			and a.rule_flag = #{smConsEarlyWarning.ruleFlag}
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.frequency != null and smConsEarlyWarning.frequency != ''">
+			and frequency = #{smConsEarlyWarning.frequency}
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.ruleExplain != null and smConsEarlyWarning.ruleExplain != ''">
+			and rule_explain = #{smConsEarlyWarning.ruleExplain}
+		</if>
+		<if test="smConsEarlyWarning != null and smConsEarlyWarning.orgNo != null and smConsEarlyWarning.orgNo != ''">
+			and org_no = #{smConsEarlyWarning.orgNo}
+		</if>
+	</select>
+	
+	<!-- 删除子级 -->
+	<delete id="deleteSmConsWarningInfo">
+		delete from s_m_cons_warning_info where rule_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+ 			#{item}  
+ 		</foreach> 
+	</delete>
+</mapper>

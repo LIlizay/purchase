@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>偏差预警信息详情</title>
+<link href="assets/css/bootstrap.css" rel="stylesheet" />
+   <link href="assets/css/font-awesome.css" rel="stylesheet" />
+   <link href="assets/css/custom-styles.css" rel="stylesheet" />
+</head>
+<body>
+	<div class="logrow">
+	<div class="col-md-12">
+	    <div class="panel panel-default">
+			<div class="panel-heading">
+				<span class="line-box"></span>偏差预警信息详情
+			</div>
+         	<div class="panel-body">
+         		<div class="table-responsive">
+                   <table class="table table-bordered table-hover">
+                       <thead>
+                           <tr>
+                               <th colspan="6" class="bg-info">用电偏差信息</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                           <tr>
+                             <td class="text-right w-1st">预警时间 :</td>
+                             <td id="warningDate" class="w-7th"></td>
+							<td class="text-right w-1st">预警类型 :</td>
+                             <td id="warningTypeName" class="w-7th"></td>
+                             <td class="text-right w-1st">预警级别 :</td>
+                             <td id="warningGradeName" class="w-8th"></td>
+                           </tr>
+                           <tr>
+							 <td class="text-right">计划累计用电量 :</td>
+                             <td id="planPq">兆瓦时</td>
+                             <td class="text-right">累计用电量 :</td>
+                             <td id="actualPq">兆瓦时</td>
+                             <td class="text-right">总偏差率 :</td>
+                             <td id="deviationProp">%</td>
+                           </tr>
+                           <tr>
+                           <td class="text-right">计划日用电量 :</td>
+                             <td id="everyPlanPq">兆瓦时</td>
+                               <td class="text-right">日用电量 :</td>
+                             <td id="everyActualPq">兆瓦时</td>
+							<td class="text-right">日偏差率 :</td>
+                             <td id="everyProp">%</td>
+                           </tr>
+                       </tbody>
+                   </table>
+                   <table class="table table-bordered table-hover">
+                       <thead>
+                           <tr>
+                               <th colspan="6" class="bg-info">合同电量信息</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                           <tr>
+                             <td class="text-right w-1st">月度合同电量 :</td>
+                             <td id="agrePq" class="w-7th">兆瓦时</td>
+							 <td class="text-right w-1st">剩余电量 :</td>
+                             <td id="surplusPq" class="w-7th">兆瓦时</td>
+                              <td class="text-right w-1st"></td>
+                             <td class="w-8th"></td>
+                           </tr>
+                       </tbody>
+                   </table>
+               </div>
+         	</div>
+		</div>
+	</div>						
+</div>
+<script src="assets/js/jquery-1.10.2.js"></script>
+ <script src="assets/js/bootstrap.min.js"></script>
+ <script src="assets/js/jquery.metisMenu.js"></script>
+  <script src="assets/js/base.js"></script>
+  <script src="assets/js/jquery.json-2.2.js"></script>
+<!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+ <script src="assets/js/morris/morris.js"></script> -->
+ <script src="assets/js/custom.js"></script>
+ <script src="assets/js/custom-scripts.js"></script>
+<script type="text/javascript">
+var params = {
+		id:"",
+}
+$(function(){
+	params.id = MainFrameUtil.getParams("devwarn_detail").id;
+	initData();
+});
+
+//初始化数据
+function initData(){
+	var queryParams = {
+		serviceKey:"c_getConsDeviationInfo",
+		clientKey:"sellandpurchase",
+		params:{
+			"deviationId":params.id,
+			"ym":"",
+			"consId":"",
+		}
+	}
+	$.ajax({
+		url : groovyPath + "c_getConsDeviationInfo.do",
+		type : "post",
+		data:$.toJSON(queryParams),
+        contentType:'application/json;charset=UTF-8', 
+		success : function(data) {
+			console.log("data: ", data);
+			if(data.value){
+				var cont = data.value.datas;
+				if(cont){
+					var surplusPq = Number(cont.surplusPq);
+					if(surplusPq < 0){
+						cont.surplusPq =0;
+					}
+					for(var obj in cont){
+						if($("#" + obj) != null && $("#" + obj).length > 0){
+							$("#" + obj).text(cont[obj]+$("#" + obj).text());
+						}
+					}
+				}
+				//修改已读状态
+				editaStatus();
+			}else{
+				MainFrameUtil.alert({title:"失败提示",body:"查询失败！"});
+				return;
+			}
+		},
+		error : function() {
+			MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+			return;
+		}
+	})
+}
+
+//修改已读状态
+function editaStatus(){
+	var queryParams = {
+		serviceKey:"c_updateWarnStatus",
+		clientKey:"sellandpurchase",
+		params:{
+			"deviationId":params.id,
+			isCons:"1"
+		}
+	};
+	$.ajax({
+		url : groovyPath + "c_updateWarnStatus.do",
+		type : "post",
+		data:$.toJSON(queryParams),
+        contentType:'application/json;charset=UTF-8', 
+		success : function(data) {}
+	})
+}
+</script>
+</body>
+</html>

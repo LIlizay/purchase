@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="swDbLog.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSwDbLogListByParams" resultType="com.hhwy.purchaseweb.sqllogfilter.domain.SwDbLogDetail">
+		SELECT
+			s.id id,
+			s.operator operator,
+			a.company_name companyName,
+			a.company_domain companyDomain,
+			a.company_database companyDatabase,
+			s.type type,
+			s.operate_time operateTime,
+			s.`sql` `sql`,
+			s.params params,
+			s.company_domain companyDomain1,
+			s.org_no orgNo
+		FROM
+			s_w_db_log s
+		INNER JOIN system_company_domain a ON s.company_domain = a.company_database
+		where 1=1
+		<if test="startTime != null and startTime != ''">
+			and s.operate_time &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and s.operate_time &lt;= #{endTime}
+		</if>
+		<if test="companyName != null and companyName != ''">
+			and a.company_name LIKE CONCAT('%', #{companyName}, '%')
+		</if>
+		ORDER BY s.operate_time DESC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSwDbLogCountByParams" resultType="int">
+		SELECT
+			count(1)
+		FROM
+			s_w_db_log s
+		INNER JOIN system_company_domain a ON s.company_domain = a.company_database
+		where 1=1
+		<if test="startTime != null and startTime != ''">
+			and s.operate_time &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and s.operate_time &lt;= #{endTime}
+		</if>
+		<if test="companyName != null and companyName != ''">
+			and a.company_name LIKE CONCAT('%', #{companyName}, '%')
+		</if>
+	</select>
+</mapper>

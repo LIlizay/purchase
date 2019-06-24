@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmHistoryReportPq.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmHistoryReportPqListByParams" resultType="com.hhwy.purchase.domain.PhmHistoryReportPq">  
+		select
+			ID id,
+			ym ym,
+			pq_prop pqProp,
+			pq_type pqType,
+			statistic_type statisticType,
+			org_no orgNo		
+		from ph_m_history_report_pq where 1=1
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.ym != null and phmHistoryReportPq.ym != ''">
+			and ym = #{phmHistoryReportPq.ym}
+		</if>
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.pqProp != null and phmHistoryReportPq.pqProp != ''">
+			and pq_prop = #{phmHistoryReportPq.pqProp}
+		</if>
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.pqType != null and phmHistoryReportPq.pqType != ''">
+			and pq_type = #{phmHistoryReportPq.pqType}
+		</if>
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.statisticType != null and phmHistoryReportPq.statisticType != ''">
+			and statistic_type = #{phmHistoryReportPq.statisticType}
+		</if>
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.orgNo != null and phmHistoryReportPq.orgNo != ''">
+			and org_no = #{phmHistoryReportPq.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmHistoryReportPqCountByParams" resultType="int">
+		select count(1)	from ph_m_history_report_pq where 1=1
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.ym != null and phmHistoryReportPq.ym != ''">
+			and ym = #{phmHistoryReportPq.ym}
+		</if>
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.pqProp != null and phmHistoryReportPq.pqProp != ''">
+			and pq_prop = #{phmHistoryReportPq.pqProp}
+		</if>
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.pqType != null and phmHistoryReportPq.pqType != ''">
+			and pq_type = #{phmHistoryReportPq.pqType}
+		</if>
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.statisticType != null and phmHistoryReportPq.statisticType != ''">
+			and statistic_type = #{phmHistoryReportPq.statisticType}
+		</if>
+		<if test="phmHistoryReportPq != null and phmHistoryReportPq.orgNo != null and phmHistoryReportPq.orgNo != ''">
+			and org_no = #{phmHistoryReportPq.orgNo}
+		</if>
+	</select>
+	
+	<select id="getPqHistory" resultType="com.hhwy.purchaseweb.statistical.phmhistoryreportpq.domain.PhmHistoryReportPqDetail">
+    	SELECT
+			ym,
+			reporting_interval pqType,
+			interval_prop pqProp,
+			'01' statisticType
+		FROM ph_f_elec_report
+		WHERE LEFT(ym,4) = #{ym}
+		UNION ALL
+		SELECT
+			ym,
+			reporting_interval pqType,
+			interval_prop pqProp,
+			'02' statisticType
+		FROM ph_f_purc_report
+		WHERE LEFT(ym,4) = #{ym}
+    </select>
+    
+    <select id="getPqHistoryByYear" resultType="com.hhwy.purchase.domain.PhmHistoryReportPq">
+    	SELECT
+			ym,
+			reporting_interval pqType,
+			interval_prop pqProp,
+			'01' statisticType
+			FROM ph_f_elec_report
+		WHERE ym LIKE concat(#{year},"%")
+		UNION ALL
+		SELECT
+			ym,
+			reporting_interval pqType,
+			interval_prop pqProp,
+			'02' statisticType
+		FROM ph_f_purc_report
+		WHERE ym LIKE concat(#{year},"%")
+    </select>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smDeviationEarlyWarning.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmDeviationEarlyWarningListByParams" resultType="com.hhwy.purchaseweb.deviationcheck.deviationwarningrule.smdeviationearlywarning.domain.SmDeviationEarlyWarningDetail">
+		select
+			ID id,
+			name name,
+			status status,
+			frequency frequency,
+			file_id fileId,
+			rule_explain ruleExplain,
+			org_no orgNo		
+		from s_m_deviation_early_warning where 1=1
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.name != null and smDeviationEarlyWarning.name != ''">
+			and name LIKE CONCAT('%',#{smDeviationEarlyWarning.name},'%')
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.status != null and smDeviationEarlyWarning.status != ''">
+			and status = #{smDeviationEarlyWarning.status}
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.frequency != null and smDeviationEarlyWarning.frequency != ''">
+			and frequency = #{smDeviationEarlyWarning.frequency}
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.fileId != null and smDeviationEarlyWarning.fileId != ''">
+			and file_id = #{smDeviationEarlyWarning.fileId}
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.ruleExplain != null and smDeviationEarlyWarning.ruleExplain != ''">
+			and rule_explain = #{smDeviationEarlyWarning.ruleExplain}
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.orgNo != null and smDeviationEarlyWarning.orgNo != ''">
+			and org_no = #{smDeviationEarlyWarning.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmDeviationEarlyWarningCountByParams" resultType="int">
+		select count(1)	from s_m_deviation_early_warning where 1=1
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.name != null and smDeviationEarlyWarning.name != ''">
+			and name LIKE CONCAT('%',#{smDeviationEarlyWarning.name},'%')
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.status != null and smDeviationEarlyWarning.status != ''">
+			and status = #{smDeviationEarlyWarning.status}
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.frequency != null and smDeviationEarlyWarning.frequency != ''">
+			and frequency = #{smDeviationEarlyWarning.frequency}
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.fileId != null and smDeviationEarlyWarning.fileId != ''">
+			and file_id = #{smDeviationEarlyWarning.fileId}
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.ruleExplain != null and smDeviationEarlyWarning.ruleExplain != ''">
+			and rule_explain = #{smDeviationEarlyWarning.ruleExplain}
+		</if>
+		<if test="smDeviationEarlyWarning != null and smDeviationEarlyWarning.orgNo != null and smDeviationEarlyWarning.orgNo != ''">
+			and org_no = #{smDeviationEarlyWarning.orgNo}
+		</if>
+	</select>
+	
+	<!-- 查询是否有生效的规则 -->
+	<select id="getCountByStatus" resultType="int">
+		SELECT 
+			COUNT(1) 	
+		FROM s_m_deviation_early_warning a
+		WHERE a.status = '02'
+	</select>
+	
+	<!-- 删除子级 -->
+	<delete id="deleteSmWarningInfo">
+		delete from s_m_warning_info where rule_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+ 			#{item}  
+ 		</foreach> 
+	</delete>
+	
+</mapper>

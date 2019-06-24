@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smAgreSup.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmAgreSupListByParams" resultType="com.hhwy.purchaseweb.contract.smagresup.domain.SmAgreSupDetail">
+		select
+			ID id,
+			ppa_id ppaId,
+			agre_no agreNo,
+			agre_name agreName,
+			sign_date signDate,
+			sell_party sellParty,
+			cust_party custParty,
+			agre_status agreStatus,
+			effective_date effectiveDate,
+			expiry_date expiryDate,
+			file_id fileId,
+			agre_content agreContent		
+		from s_m_agre_sup where 1=1
+		<if test="smAgreSup != null and smAgreSup.ppaId != null and smAgreSup.ppaId != ''">
+			and ppa_id = #{smAgreSup.ppaId}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.agreNo != null and smAgreSup.agreNo != ''">
+			and agre_no = #{smAgreSup.agreNo}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.agreName != null and smAgreSup.agreName != ''">
+			and agre_name = #{smAgreSup.agreName}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.signDate != null and smAgreSup.signDate != ''">
+			and sign_date = #{smAgreSup.signDate}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.sellParty != null and smAgreSup.sellParty != ''">
+			and sell_party = #{smAgreSup.sellParty}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.custParty != null and smAgreSup.custParty != ''">
+			and cust_party = #{smAgreSup.custParty}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.agreStatus != null and smAgreSup.agreStatus != ''">
+			and agre_status = #{smAgreSup.agreStatus}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.effectiveDate != null and smAgreSup.effectiveDate != ''">
+			and effective_date = #{smAgreSup.effectiveDate}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.expiryDate != null and smAgreSup.expiryDate != ''">
+			and expiry_date = #{smAgreSup.expiryDate}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.fileId != null and smAgreSup.fileId != ''">
+			and file_id = #{smAgreSup.fileId}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.agreContent != null and smAgreSup.agreContent != ''">
+			and agre_content = #{smAgreSup.agreContent}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmAgreSupCountByParams" resultType="int">
+		select count(1)	from s_m_agre_sup where 1=1
+		<if test="smAgreSup != null and smAgreSup.ppaId != null and smAgreSup.ppaId != ''">
+			and ppa_id = #{smAgreSup.ppaId}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.agreNo != null and smAgreSup.agreNo != ''">
+			and agre_no = #{smAgreSup.agreNo}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.agreName != null and smAgreSup.agreName != ''">
+			and agre_name = #{smAgreSup.agreName}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.signDate != null and smAgreSup.signDate != ''">
+			and sign_date = #{smAgreSup.signDate}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.sellParty != null and smAgreSup.sellParty != ''">
+			and sell_party = #{smAgreSup.sellParty}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.custParty != null and smAgreSup.custParty != ''">
+			and cust_party = #{smAgreSup.custParty}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.agreStatus != null and smAgreSup.agreStatus != ''">
+			and agre_status = #{smAgreSup.agreStatus}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.effectiveDate != null and smAgreSup.effectiveDate != ''">
+			and effective_date = #{smAgreSup.effectiveDate}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.expiryDate != null and smAgreSup.expiryDate != ''">
+			and expiry_date = #{smAgreSup.expiryDate}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.fileId != null and smAgreSup.fileId != ''">
+			and file_id = #{smAgreSup.fileId}
+		</if>
+		<if test="smAgreSup != null and smAgreSup.agreContent != null and smAgreSup.agreContent != ''">
+			and agre_content = #{smAgreSup.agreContent}
+		</if>
+	</select>
+	
+	<!-- 根据售电合同id数组删除数据 -->
+	<delete id="deleteSmAgreSup">
+		delete from s_m_agre_sup where ppa_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+		  	#{item}  
+		</foreach>
+	</delete>
+	
+	<!-- 根据补充协议id数组删除数据 -->
+	<delete id="deleteBySupId">
+		delete from s_m_agre_sup where id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+		  	#{item}  
+		</foreach>
+	</delete>
+</mapper>

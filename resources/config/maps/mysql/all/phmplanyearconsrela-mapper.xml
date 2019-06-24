@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmPlanYearConsRela.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmPlanYearConsRelaListByParams" resultType="com.hhwy.purchase.domain.PhmPlanYearConsRela">  
+		select
+			ID id,
+			cons_id consId,
+			plan_id planId,
+			org_no orgNo		
+		from ph_m_plan_year_cons_rela where 1=1
+		<if test="phmPlanYearConsRela != null and phmPlanYearConsRela.consId != null and phmPlanYearConsRela.consId != ''">
+			and cons_id = #{phmPlanYearConsRela.consId}
+		</if>
+		<if test="phmPlanYearConsRela != null and phmPlanYearConsRela.planId != null and phmPlanYearConsRela.planId != ''">
+			and plan_id = #{phmPlanYearConsRela.planId}
+		</if>
+		<if test="phmPlanYearConsRela != null and phmPlanYearConsRela.orgNo != null and phmPlanYearConsRela.orgNo != ''">
+			and org_no = #{phmPlanYearConsRela.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmPlanYearConsRelaCountByParams" resultType="int">
+		select count(1)	from ph_m_plan_year_cons_rela where 1=1
+		<if test="phmPlanYearConsRela != null and phmPlanYearConsRela.consId != null and phmPlanYearConsRela.consId != ''">
+			and cons_id = #{phmPlanYearConsRela.consId}
+		</if>
+		<if test="phmPlanYearConsRela != null and phmPlanYearConsRela.planId != null and phmPlanYearConsRela.planId != ''">
+			and plan_id = #{phmPlanYearConsRela.planId}
+		</if>
+		<if test="phmPlanYearConsRela != null and phmPlanYearConsRela.orgNo != null and phmPlanYearConsRela.orgNo != ''">
+			and org_no = #{phmPlanYearConsRela.orgNo}
+		</if>
+	</select>
+	<delete id="deleteRelaByPlanId">
+		delete from ph_m_plan_year_cons_rela where plan_id=#{planId}
+	</delete>
+</mapper>

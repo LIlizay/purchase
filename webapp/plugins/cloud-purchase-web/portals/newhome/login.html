@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>登录</title>
+<link href="assets/css/login.css" rel="stylesheet">
+<script src="assets/js/jquery-1.11.0.min.js"/></script>
+<script src="assets/js/jquery.json-2.2.js"/></script>
+<script src="assets/js/sha1.js"/></script>
+<script src="assets/js/base.js"></script>
+</head>
+
+<body >
+	<div class="signinpanel" style="height:365px">                          
+		<form method="post" action="">
+			<h3 class="nomargin"><span class="text-f">用户登录</span><a onClick="closeDialog()" href="javascript:void(0)" class="closebox"></a></h3>
+			<div class="loginbox">
+				<input autocomplete="off" id="loginName" type="text" class="form-control uname" value="请输入用户名" onfocus="if(this.value==defaultValue) {this.value='';this.type='text'}" onblur="if(!value) {value=defaultValue; this.type='text';}"/>
+				<input autocomplete="off" id="password" type="text"  class="form-control pword" value="请输入密码" onfocus="if(this.value==defaultValue) {this.value='';this.type='password'}" onblur="if(!value) {value=defaultValue; this.type='text';}"/>
+				<input autocomplete="off" id="verificateNo" type="text"  class="form-control code" value="请输入验证码" onfocus="if(this.value==defaultValue) {this.value='';this.type='text'}" onblur="if(!value) {value=defaultValue; this.type='text';}"/>
+				<div class="codebox" onselectstart="return false"></div>
+				<div class="text-aa"><a onClick="getVerificateNo()" href="javascript:void(0)" class="bb">看不清，换一个</a></div>
+				<!-- <div class="button-holder">
+					<input type="radio" id="radio-1-1" name="radio-1-set" class="regular-radio" checked /><label for="radio-1-1"></label><span style="margin-right: 20px;">网站登录</span>
+					<input disabled="disabled" type="radio" id="radio-1-2" name="radio-1-set" class="regular-radio" /><label for="radio-1-2"></label><span>平台登录</span>
+				</div> -->
+				<button type="button" style="cursor:pointer;" onClick="checkDialog(this,'')" class="btn">登录</button>
+				<!-- <div class="register-btnbox">没有账号，<a href="javascript:void(0)" class="btn-register">立即注册</a></div> -->
+			</div>
+		</form>
+	</div>
+	<script type="text/javascript">
+		var params = {
+			loginName:"",
+			password:"",
+			type:"info",
+		}
+		
+		$(function(){
+			
+			//设置验证码
+			getVerificateNo();
+			
+			//禁用回车事件
+			$("body").keydown( function(e) {
+			    var key = window.event?e.keyCode:e.which;
+			    if(key == "13"){
+			        return false;
+			    }
+			});
+		});
+		
+		function checkDialog(me,url){
+				//获取表单数据
+				var loginName = $("#loginName").val();
+				var password = $("#password").val();
+				if(!loginName || loginName == "请输入用户名"){
+					var msg = "请输入用户名称！";
+					dialogPrompt.openDialog("message-prompt.html?title=提示&content=" + msg);
+					return;
+				}
+				if(!password || password == "请输入密码"){
+					var msg = "请输入密码！";
+					dialogPrompt.openDialog("message-prompt.html?title=提示&content=" + msg);
+					return;
+				}else{
+					password = b64_sha1(password)+ "=";
+				}
+				//验证验证码
+				var text = $(".codebox").text();
+				var verificateNo = $("#verificateNo").val();
+				var text = text.toLocaleLowerCase();
+				var verificateNo = verificateNo.toLocaleLowerCase();
+				if(!verificateNo || verificateNo == "请输入验证码"){
+					var msg = "请输入验证码！";
+					dialogPrompt.openDialog("message-prompt.html?title=提示&content=" + msg);
+					return;
+				}else if(verificateNo != text){
+					var msg = "验证码不正确！";
+					dialogPrompt.openDialog("message-prompt.html?title=提示&content=" + msg);
+					getVerificateNo();
+					return;
+				}
+				params.loginName = loginName;
+				params.password = password;
+				//登录
+				var queryParams = {
+					 serviceKey:"c_loginConsId",
+					 clientKey:"sellandpurchase",
+					  params:params
+				}
+				$.ajax({
+				url : groovyPath + "c_loginConsId.do",
+				type : "post",
+				async: false,
+				data:$.toJSON(queryParams),
+		        contentType:'application/json;charset=UTF-8',  
+				success : function(data) {
+					if(!data.message){//成功
+						var obj = data.value.datas;
+						if(obj.userId){//注册用户
+							var cont = obj.userId;
+							var consName = obj.loginName;
+							var userName = obj.consName;
+							var org_id = obj.org_id;
+							url += "?consId="+cont + "&loginName=" + consName + "&userName=" + userName + "&org_id=" + org_id;
+							url = staticUrl + url;
+						}else{//工作人员
+							url = loginUser + "view/business-mainframe-web/modules/login-sd/login";
+						}
+						window.open(url,"view_window");
+						closeDialog();
+					}else{
+						dialogPrompt.openDialog("message-prompt.html?title=提示&content=" + data.message);
+					}
+				}
+			})
+		}
+		
+		//关闭弹框
+		function closeDialog(){
+			dialogAA.closeDialog();
+		}
+		
+		//注册
+		function clickRegister(){
+			dialogAA.openDialog("register.html");
+		}
+		
+		//生成验证码
+		function getVerificateNo(){
+			var cont = "";
+			var list= [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+			var index1 = 0;
+			var index2 = 0;
+			var index3 = 0;
+			var index4 = 0;
+			//随机生成
+			var math1 = Math.random();
+			var math2 = Math.random();
+			var math3 = Math.random();
+			var math4 = Math.random();
+			index1 = 0 + Math.round(math1*61);
+			index2 = 0 + Math.round(math2*61);
+			index3 = 0 + Math.round(math3*61);
+			index4 = 0 + Math.round(math4*61);
+			cont = list[index1] + "" + list[index2] + "" + list[index3] + "" + list[index4];
+			$(".codebox").text(cont);
+		}
+		
+	</script>
+</body>
+</html>

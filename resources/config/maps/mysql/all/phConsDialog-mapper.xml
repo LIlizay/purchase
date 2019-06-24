@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phConsDialog.sql">
+	<!-- 用户信息查询（用户选择组件） -->
+	<select id="getConsDialogListByParams" resultType="com.hhwy.purchaseweb.archives.consdialog.domain.ConsDialogDetail">
+		SELECT
+			distinct 
+			cons.id id,
+			cons.id consId,
+			f.`name` orgName,
+			cons.cons_no consNo,
+			cons.electric_capacity electricCapacity, 
+			cons.cons_name consName,
+			cons.cons_type consType,
+			cons.elec_type_code elecTypeCode,
+			cons.org_id orgId,
+			cons.volt_code voltCode,
+			cons.registered_address address,
+			cons.sell_person sellPerson,
+			cont.id contId,
+			cont.cont_name contName,
+			cont.phone contPhone,
+			<if test="smppaYm != null and smppaYm != ''">
+			(CASE RIGHT(#{smppaYm},2) WHEN '01' THEN jan  WHEN '02' THEN feb WHEN '03' then mar when '04' then apr
+			 					 when '05' then may when '06' then jun when '07' then jul when '08' then aug
+			 					 when '09' then sept when '10' then oct when '11' then nov when '12' then dece ELSE 0 END) ppaPq,
+			</if>
+			<if test="smppaYY != null and smppaYY != ''">
+			smppa.proxy_pq ppaPq,
+			</if>
+			prc.kwh_prc kwhPrc,
+			prc.trans_prc transPrc,
+			prc.pl_prc plPrc,
+		 	parent_id parentId,
+		    cons_path consPath
+		FROM
+			s_c_consumer_info cons
+		LEFT JOIN s_c_contacts_info cont ON cont.cons_id = cons.id
+		LEFT JOIN s_c_org_info f ON f.id = cons.org_id
+		LEFT JOIN s_m_prc_info prc ON prc.volt_code = cons.volt_code
+		AND prc.elec_type_code = cons.elec_type_code AND prc.province_id = #{provinceCode}
+		<if test="smppaYm != null and smppaYm != ''">
+			inner join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!="00" 
+				and concat(left(#{smppaYm},4),"-",right(#{smppaYm},2)) &gt;= LEFT(smppa.effective_date ,7)
+				AND concat(left(#{smppaYm},4),"-",right(#{smppaYm},2)) &lt;= LEFT(smppa.expiry_date,7)
+		</if>
+		<if test="smppaYY != null and smppaYY != ''">
+			inner join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!="00" 
+				and #{smppaYY} &gt;= LEFT(smppa.effective_date ,4)
+				AND #{smppaYY} &lt;= LEFT(smppa.expiry_date,4)
+		</if>
+		WHERE 1 = 1
+		<if test="consType != null and consType != ''">
+			AND cons.cons_type =#{consType}
+		</if>
+		<if test="consName != null and consName != ''">
+			AND cons.cons_name like concat('%',#{consName},'%')
+		</if>
+		<if test="consIds != null and consIds.size() > 0">
+			AND cons.id not in
+			<foreach collection="consIds" item="item" index="index" open="(" close=")" separator=","> 
+				#{item}
+	    	</foreach> 
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND cons.org_id = #{orgId}
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			AND cons.elec_type_code = #{elecTypeCode}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			AND cons.volt_code = #{voltCode}
+		</if>
+		<if test="provinceCode != null and provinceCode != ''">
+			AND cons.province_code = #{provinceCode}
+		</if>
+		<if test="cityCode != null and cityCode != ''">
+			AND cons.city_code = #{cityCode}
+		</if>
+		<if test="countyCode != null and countyCode != ''">
+			AND cons.county_code = #{countyCode}
+		</if>
+		ORDER BY cons.id desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 用户信息查询（用户选择组件） -->
+	<select id="getConsDialogCountByParams" resultType="int">
+		SELECT count(distinct cons.id) FROM s_c_consumer_info cons
+		LEFT JOIN s_c_contacts_info cont ON cont.cons_id = cons.id
+		LEFT JOIN s_m_prc_info prc ON prc.volt_code = cons.volt_code
+		AND prc.elec_type_code = cons.elec_type_code AND prc.province_id = #{provinceCode}
+		<if test="smppaYm != null and smppaYm != ''">
+			inner join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!="00" 
+				and concat(left(#{smppaYm},4),"-",right(#{smppaYm},2)) &gt;= LEFT(smppa.effective_date ,7)
+				AND concat(left(#{smppaYm},4),"-",right(#{smppaYm},2)) &lt;= LEFT(smppa.expiry_date,7)
+		</if>
+		<if test="smppaYY != null and smppaYY != ''">
+			inner join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!="00" 
+				and #{smppaYY} &gt;= LEFT(smppa.effective_date ,4)
+				AND #{smppaYY} &lt;= LEFT(smppa.expiry_date,4)
+		</if>
+		WHERE 1 = 1
+		<if test="consType != null and consType != ''">
+			AND cons.cons_type =#{consType}
+		</if>
+		<if test="consName != null and consName != ''">
+			AND cons.cons_name like concat('%',#{consName},'%')
+		</if>
+		<if test="consIds != null and consIds.size() > 0">
+			AND cons.id not in
+			<foreach collection="consIds" item="item" index="index" open="(" close=")" separator=","> 
+				#{item}
+	    	</foreach> 
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND cons.org_id = #{orgId}
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			AND cons.elec_type_code = #{elecTypeCode}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			AND cons.volt_code = #{voltCode}
+		</if>
+		<if test="provinceCode != null and provinceCode != ''">
+			AND cons.province_code = #{provinceCode}
+		</if>
+		<if test="cityCode != null and cityCode != ''">
+			AND cons.city_code = #{cityCode}
+		</if>
+		<if test="countyCode != null and countyCode != ''">
+			AND cons.county_code = #{countyCode}
+		</if>
+	</select>
+	
+	<!-- 用户信息查询（用户选择组件回显） -->
+	<select id="getConsDialogById" resultType="com.hhwy.purchaseweb.archives.consdialog.domain.ConsDialogDetail">
+		SELECT
+			cons.id,
+			cons.electric_capacity electricCapacity,
+			cons.id consId,
+			cons.cons_name consName,
+			cons.elec_type_code elecTypeCode,
+			cons.volt_code voltCode,
+			cons.org_id orgId,
+			cont.cont_name contName,
+			cont.phone contPhone,
+			prc.kwh_prc kwhPrc,
+			prc.trans_prc transPrc,
+			prc.pl_prc plPrc,
+		 	cons.cons_type consType
+		FROM
+			s_c_consumer_info cons
+		LEFT JOIN s_c_contacts_info cont ON cont.cons_id = cons.id
+		LEFT JOIN s_m_prc_info prc ON prc.volt_code = cons.volt_code
+		AND prc.elec_type_code = cons.elec_type_code 
+		AND province_id = (SELECT value from system_config conf WHERE conf.key = 'cloudselling.province')
+		WHERE cons.id = #{id}
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getScOrgInfoCountByParams" resultType="int">
+		select count(1)	from s_c_org_info
+		<where>
+			<if test="name != null and name != ''">
+				name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="provinceCode != null and provinceCode != ''">
+				and province_code = #{provinceCode}
+			</if>
+			<if test="cityCode != null and cityCode != ''">
+				and city_code = #{cityCode}
+			</if>
+			<if test="countyCode != null and countyCode != ''">
+				and county_code = #{countyCode}
+			</if>
+			<if test="vatName != null and vatName != ''">
+				and vat_name = #{vatName}
+			</if>
+			<if test="vatNo != null and vatNo != ''">
+				and vat_no = #{vatNo}
+			</if>
+			<if test="bankName != null and bankName != ''">
+				and bank_name = #{bankName}
+			</if>
+			<if test="vatAcct != null and vatAcct != ''">
+				and vat_acct = #{vatAcct}
+			</if>
+			<if test="regAddr != null and regAddr != ''">
+				and reg_addr = #{regAddr}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据条件查询列表 -->
+	<select id="getOrgInfoDetailListByParams" resultType="com.hhwy.purchaseweb.archives.scorginfo.domain.ScOrgInfoDetail">
+		select
+			ID id,
+			name name,
+			province_code provinceCode,
+			city_code cityCode,
+			county_code countyCode,
+			vat_name vatName,
+			vat_no vatNo,
+			bank_name bankName,
+			vat_acct vatAcct,
+			reg_addr regAddr		
+		from s_c_org_info
+		<where>
+			<if test="name != null and name != ''">
+				name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="provinceCode != null and provinceCode != ''">
+				and province_code = #{provinceCode}
+			</if>
+			<if test="cityCode != null and cityCode != ''">
+				and city_code = #{cityCode}
+			</if>
+			<if test="countyCode != null and countyCode != ''">
+				and county_code = #{countyCode}
+			</if>
+			<if test="vatName != null and vatName != ''">
+				and vat_name = #{vatName}
+			</if>
+			<if test="vatNo != null and vatNo != ''">
+				and vat_no = #{vatNo}
+			</if>
+			<if test="bankName != null and bankName != ''">
+				and bank_name = #{bankName}
+			</if>
+			<if test="vatAcct != null and vatAcct != ''">
+				and vat_acct = #{vatAcct}
+			</if>
+			<if test="regAddr != null and regAddr != ''">
+				and reg_addr = #{regAddr}
+			</if>
+		</where>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 用户信息查询（用户选择组件）  提供RPC使用 changedBy 李欣泽-->
+	<select id="getConsDialogListForAPI" resultType="com.hhwy.purchaseweb.archives.dialogapi.ConsDetail">
+		SELECT
+			cons.id,
+			cons.cons_no consNo,
+			cons.electric_capacity electricCapacity,
+			cons.cons_name consName,
+			cons.elec_type_code elecTypeCode,
+			cons.volt_code voltCode,
+			cons.org_id orgId,
+			cons.volt_code voltCode,
+			cons.registered_address address,
+			cons.industry_type industryType,
+			cons.province_code provinceCode,
+			cons.city_code cityCode,
+			cons.county_code countyCode,
+			cons.elec_addr elecAddr,
+			cons.lode_attr_code lodeAttrCode,
+			cont.cont_name contName,
+			cont.phone contPhone,
+			prc.kwh_prc kwhPrc,
+			prc.trans_prc transPrc,
+			prc.pl_prc plPrc,
+		 	cons.cons_type consType,
+		 	parent_id parentId,
+		    cons_path consPath
+		FROM
+			s_c_consumer_info cons
+		LEFT JOIN s_c_contacts_info cont ON cont.cons_id = cons.id
+		LEFT JOIN s_m_prc_info prc ON prc.volt_code = cons.volt_code
+		AND prc.elec_type_code = cons.elec_type_code AND prc.province_id = #{provinceCode}
+		WHERE 1 = 1
+		<if test="consType != null and consType != ''">
+			AND cons.cons_type =#{consType}
+		</if>
+		<if test="consName != null and consName != ''">
+			AND cons.cons_name like concat('%',#{consName},'%')
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND cons.org_id = #{orgId}
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			AND cons.elec_type_code = #{elecTypeCode}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			AND cons.volt_code = #{voltCode}
+		</if>
+		<if test="provinceCode != null and provinceCode != ''">
+			AND cons.province_code = #{provinceCode}
+		</if>
+		<if test="cityCode != null and cityCode != ''">
+			AND cons.city_code = #{cityCode}
+		</if>
+		<if test="countyCode != null and countyCode != ''">
+			AND cons.county_code = #{countyCode}
+		</if>
+		ORDER BY cons.id asc
+		<if test="paging==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	
+	<!-- 用户信息查询（监控平台->用户电量 页面的选择用户组件弹出框） -->
+	<select id="getConsListForMonitorByParams" resultType="com.hhwy.purchaseweb.archives.consdialog.domain.ConsDialogDetail">
+		SELECT
+			distinct 
+			cons.id id,
+			cons.id consId,
+			f.`name` orgName,
+			cons.cons_name consName,
+			cons.cons_type consType,
+			cons.elec_type_code elecTypeCode,
+			cons.org_id orgId,
+			cons.volt_code voltCode,
+			cont.cont_name contName,
+			cont.phone contPhone
+		FROM
+			s_c_consumer_info cons
+		LEFT JOIN s_c_contacts_info cont ON cont.cons_id = cons.id
+		LEFT JOIN s_c_org_info f ON f.id = cons.org_id
+		left join em_s_user_real rela on rela.s_user_id = cons.id and rela.em_user_id is not null
+		<if test="smppaYm != null and smppaYm != ''">
+			left join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!="00" 
+				AND concat(left(#{smppaYm},4),"-",right(#{smppaYm},2)) &lt;= LEFT(smppa.expiry_date,7)
+		</if>
+		WHERE (rela.id is not null or 1 = 1
+			<if test="smppaYm != null and smppaYm != ''">
+				and smppa.id is not null
+			</if>)
+		<if test="consName != null and consName != ''">
+			AND cons.cons_name like concat('%',#{consName},'%')
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			AND cons.elec_type_code = #{elecTypeCode}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			AND cons.volt_code = #{voltCode}
+		</if>
+		ORDER BY cons.cons_name desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 用户数量查询（监控平台->用户电量 页面的选择用户组件弹出框） -->
+	<select id="getConsCountForMonitorByParams" resultType="int">
+		SELECT
+			count(distinct cons.id)
+		FROM
+			s_c_consumer_info cons
+		LEFT JOIN s_c_contacts_info cont ON cont.cons_id = cons.id
+		LEFT JOIN s_c_org_info f ON f.id = cons.org_id
+		left join em_s_user_real rela on rela.s_user_id = cons.id and rela.em_user_id is not null
+		<if test="smppaYm != null and smppaYm != ''">
+			left join s_m_ppa smppa ON smppa.cons_id = cons.id and smppa.agre_status!="00" 
+				AND concat(left(#{smppaYm},4),"-",right(#{smppaYm},2)) &lt;= LEFT(smppa.expiry_date,7)
+		</if>
+		WHERE (rela.id is not null or 1 = 1
+			<if test="smppaYm != null and smppaYm != ''">
+				and smppa.id is not null
+			</if>)
+		<if test="consName != null and consName != ''">
+			AND cons.cons_name like concat('%',#{consName},'%')
+		</if>
+		<if test="elecTypeCode != null and elecTypeCode != ''">
+			AND cons.elec_type_code = #{elecTypeCode}
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			AND cons.volt_code = #{voltCode}
+		</if>
+	</select>
+	
+</mapper>

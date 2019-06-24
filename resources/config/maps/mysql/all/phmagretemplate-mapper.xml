@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmAgreTemplate.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmAgreTemplateListByParams" resultType="com.hhwy.purchaseweb.agreement.phmagretemplate.domain.PhmAgreTemplateDetail">  
+		select
+			ID id,
+			template_ver templateVer,
+			template_name templateName,
+			template_type templateType,
+			remarks remarks,
+			file_id fileId,
+			template_status agreStatus,
+			<!-- create_date createDate, -->
+			org_no orgNo		
+		from ph_m_agre_template where 1=1
+		<if test="phmAgreTemplate != null and phmAgreTemplate.templateVer != null and phmAgreTemplate.templateVer != ''">
+			and template_ver LIKE concat("%",#{phmAgreTemplate.templateVer},"%")
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.templateName != null and phmAgreTemplate.templateName != ''">
+			and template_name LIKE concat("%",#{phmAgreTemplate.templateName},"%")
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.templateType != null and phmAgreTemplate.templateType != ''">
+			and template_type = #{phmAgreTemplate.templateType}
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.remarks != null and phmAgreTemplate.remarks != ''">
+			and remarks = #{phmAgreTemplate.remarks}
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.fileId != null and phmAgreTemplate.fileId != ''">
+			and file_id = #{phmAgreTemplate.fileId}
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.templateStatus != null and phmAgreTemplate.templateStatus != ''">
+			and template_status = #{phmAgreTemplate.templateStatus}
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.orgNo != null and phmAgreTemplate.orgNo != ''">
+			and org_no = #{phmAgreTemplate.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmAgreTemplateCountByParams" resultType="int">
+		select count(1)	from ph_m_agre_template where 1=1
+		<if test="phmAgreTemplate != null and phmAgreTemplate.templateVer != null and phmAgreTemplate.templateVer != ''">
+			and template_ver LIKE concat("%",#{phmAgreTemplate.templateVer},"%")
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.templateName != null and phmAgreTemplate.templateName != ''">
+			and template_name LIKE concat("%",#{phmAgreTemplate.templateName},"%")
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.templateType != null and phmAgreTemplate.templateType != ''">
+			and template_type = #{phmAgreTemplate.templateType}
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.remarks != null and phmAgreTemplate.remarks != ''">
+			and remarks = #{phmAgreTemplate.remarks}
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.fileId != null and phmAgreTemplate.fileId != ''">
+			and file_id = #{phmAgreTemplate.fileId}
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.templateStatus != null and phmAgreTemplate.templateStatus != ''">
+			and template_status = #{phmAgreTemplate.templateStatus}
+		</if>
+		<if test="phmAgreTemplate != null and phmAgreTemplate.orgNo != null and phmAgreTemplate.orgNo != ''">
+			and org_no = #{phmAgreTemplate.orgNo}
+		</if>
+	</select>
+	<select id="getSequence" resultType="string">
+		SELECT MAX(SUBSTR(template_ver,7,2))+1 FROM ph_m_agre_template
+		WHERE template_ver LIKE concat(#{ym},"%")
+	</select>
+</mapper>

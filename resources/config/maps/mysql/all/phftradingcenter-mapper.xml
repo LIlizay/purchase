@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phfTradingCenter.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhfTradingCenterListByParams" resultType="com.hhwy.purchase.domain.PhfTradingCenter">
+		select
+			ID id,
+			ym ym,
+			supply_demand_ratio supplyDemandRatio,
+			total_deal_pq totalDealPq,
+			avg_deal_prc avgDealPrc,
+			elec_num elecNum,
+			elec_deal_num elecDealNum,
+			elec_undeal_num elecUndealNum,
+			elec_lower_prc elecLowerPrc,
+			elec_upper_prc elecUpperPrc,
+			elec_max_prc elecMaxPrc,
+			elec_report_pq elecReportPq,
+			comp_num compNum,
+			comp_deal_num compDealNum,
+			comp_undeal_num compUndealNum,
+			comp_deal_avg_prc compDealAvgPrc,
+			cons_num consNum,
+			cons_deal_num consDealNum,
+			cons_undeal_num consUndealNum,
+			cons_deal_avg_prc consDealAvgPrc,
+			purc_upper_prc purcUpperPrc,
+			purc_lower_prc purcLowerPrc,
+			purc_min_prc purcMinPrc,
+			purc_report_pq purcReportPq,
+			purc_num purcNum,
+			org_no orgNo		
+		from ph_f_trading_center where 1=1
+		<if test="phfTradingCenter != null and phfTradingCenter.ym != null and phfTradingCenter.ym != ''">
+			and ym = #{phfTradingCenter.ym}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.supplyDemandRatio != null and phfTradingCenter.supplyDemandRatio != ''">
+			and supply_demand_ratio = #{phfTradingCenter.supplyDemandRatio}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.totalDealPq != null and phfTradingCenter.totalDealPq != ''">
+			and total_deal_pq = #{phfTradingCenter.totalDealPq}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.avgDealPrc != null and phfTradingCenter.avgDealPrc != ''">
+			and avg_deal_prc = #{phfTradingCenter.avgDealPrc}
+		</if> 
+		<if test="phfTradingCenter != null and phfTradingCenter.elecNum != null and phfTradingCenter.elecNum != ''">
+			and elec_num = #{phfTradingCenter.elecNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecDealNum != null and phfTradingCenter.elecDealNum != ''">
+			and elec_deal_num = #{phfTradingCenter.elecDealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecUndealNum != null and phfTradingCenter.elecUndealNum != ''">
+			and elec_undeal_num = #{phfTradingCenter.elecUndealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecLowerPrc != null and phfTradingCenter.elecLowerPrc != ''">
+			and elec_lower_prc = #{phfTradingCenter.elecLowerPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecUpperPrc != null and phfTradingCenter.elecUpperPrc != ''">
+			and elec_upper_prc = #{phfTradingCenter.elecUpperPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecMaxPrc != null and phfTradingCenter.elecMaxPrc != ''">
+			and elec_max_prc = #{phfTradingCenter.elecMaxPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecReportPq != null and phfTradingCenter.elecReportPq != ''">
+			and elec_report_pq = #{phfTradingCenter.elecReportPq}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.compNum != null and phfTradingCenter.compNum != ''">
+			and comp_num = #{phfTradingCenter.compNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.compDealNum != null and phfTradingCenter.compDealNum != ''">
+			and comp_deal_num = #{phfTradingCenter.compDealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.compUndealNum != null and phfTradingCenter.compUndealNum != ''">
+			and comp_undeal_num = #{phfTradingCenter.compUndealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.compDealAvgPrc != null and phfTradingCenter.compDealAvgPrc != ''">
+			and comp_deal_avg_prc = #{phfTradingCenter.compDealAvgPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.consNum != null and phfTradingCenter.consNum != ''">
+			and cons_num = #{phfTradingCenter.consNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.consDealNum != null and phfTradingCenter.consDealNum != ''">
+			and cons_deal_num = #{phfTradingCenter.consDealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.consUndealNum != null and phfTradingCenter.consUndealNum != ''">
+			and cons_undeal_num = #{phfTradingCenter.consUndealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.consDealAvgPrc != null and phfTradingCenter.consDealAvgPrc != ''">
+			and cons_deal_avg_prc = #{phfTradingCenter.consDealAvgPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcUpperPrc != null and phfTradingCenter.purcUpperPrc != ''">
+			and purc_upper_prc = #{phfTradingCenter.purcUpperPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcLowerPrc != null and phfTradingCenter.purcLowerPrc != ''">
+			and purc_lower_prc = #{phfTradingCenter.purcLowerPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcMinPrc != null and phfTradingCenter.purcMinPrc != ''">
+			and purc_min_prc = #{phfTradingCenter.purcMinPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcReportPq != null and phfTradingCenter.purcReportPq != ''">
+			and purc_report_pq = #{phfTradingCenter.purcReportPq}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcNum != null and phfTradingCenter.purcNum != ''">
+			and purc_num = #{phfTradingCenter.purcNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.orgNo != null and phfTradingCenter.orgNo != ''">
+			and org_no = #{phfTradingCenter.orgNo}
+		</if>
+		<if test="startTime != null and startTime!= ''">
+			and ym &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime!= ''">
+			and ym &lt;= #{endTime}
+		</if>
+		order by ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhfTradingCenterCountByParams" resultType="int">
+		select count(1)	from ph_f_trading_center where 1=1
+		<if test="phfTradingCenter != null and phfTradingCenter.ym != null and phfTradingCenter.ym != ''">
+			and ym = #{phfTradingCenter.ym}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.supplyDemandRatio != null and phfTradingCenter.supplyDemandRatio != ''">
+			and supply_demand_ratio = #{phfTradingCenter.supplyDemandRatio}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.totalDealPq != null and phfTradingCenter.totalDealPq != ''">
+			and total_deal_pq = #{phfTradingCenter.totalDealPq}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.avgDealPrc != null and phfTradingCenter.avgDealPrc != ''">
+			and avg_deal_prc = #{phfTradingCenter.avgDealPrc}
+		</if> 
+		<if test="phfTradingCenter != null and phfTradingCenter.elecNum != null and phfTradingCenter.elecNum != ''">
+			and elec_num = #{phfTradingCenter.elecNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecDealNum != null and phfTradingCenter.elecDealNum != ''">
+			and elec_deal_num = #{phfTradingCenter.elecDealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecUndealNum != null and phfTradingCenter.elecUndealNum != ''">
+			and elec_undeal_num = #{phfTradingCenter.elecUndealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecLowerPrc != null and phfTradingCenter.elecLowerPrc != ''">
+			and elec_lower_prc = #{phfTradingCenter.elecLowerPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecUpperPrc != null and phfTradingCenter.elecUpperPrc != ''">
+			and elec_upper_prc = #{phfTradingCenter.elecUpperPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecMaxPrc != null and phfTradingCenter.elecMaxPrc != ''">
+			and elec_max_prc = #{phfTradingCenter.elecMaxPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.elecReportPq != null and phfTradingCenter.elecReportPq != ''">
+			and elec_report_pq = #{phfTradingCenter.elecReportPq}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.compNum != null and phfTradingCenter.compNum != ''">
+			and comp_num = #{phfTradingCenter.compNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.compDealNum != null and phfTradingCenter.compDealNum != ''">
+			and comp_deal_num = #{phfTradingCenter.compDealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.compUndealNum != null and phfTradingCenter.compUndealNum != ''">
+			and comp_undeal_num = #{phfTradingCenter.compUndealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.compDealAvgPrc != null and phfTradingCenter.compDealAvgPrc != ''">
+			and comp_deal_avg_prc = #{phfTradingCenter.compDealAvgPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.consNum != null and phfTradingCenter.consNum != ''">
+			and cons_num = #{phfTradingCenter.consNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.consDealNum != null and phfTradingCenter.consDealNum != ''">
+			and cons_deal_num = #{phfTradingCenter.consDealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.consUndealNum != null and phfTradingCenter.consUndealNum != ''">
+			and cons_undeal_num = #{phfTradingCenter.consUndealNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.consDealAvgPrc != null and phfTradingCenter.consDealAvgPrc != ''">
+			and cons_deal_avg_prc = #{phfTradingCenter.consDealAvgPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcUpperPrc != null and phfTradingCenter.purcUpperPrc != ''">
+			and purc_upper_prc = #{phfTradingCenter.purcUpperPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcLowerPrc != null and phfTradingCenter.purcLowerPrc != ''">
+			and purc_lower_prc = #{phfTradingCenter.purcLowerPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcMinPrc != null and phfTradingCenter.purcMinPrc != ''">
+			and purc_min_prc = #{phfTradingCenter.purcMinPrc}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcReportPq != null and phfTradingCenter.purcReportPq != ''">
+			and purc_report_pq = #{phfTradingCenter.purcReportPq}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.purcNum != null and phfTradingCenter.purcNum != ''">
+			and purc_num = #{phfTradingCenter.purcNum}
+		</if>
+		<if test="phfTradingCenter != null and phfTradingCenter.orgNo != null and phfTradingCenter.orgNo != ''">
+			and org_no = #{phfTradingCenter.orgNo}
+		</if>
+		<if test="startTime != null and startTime!= ''">
+			and ym &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime!= ''">
+			and ym &lt;= #{endTime}
+		</if>
+	</select>
+</mapper>

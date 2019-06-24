@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phfPurcReport.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhfPurcReportListByParams" resultType="com.hhwy.purchase.domain.PhfPurcReport">
+		select
+			ID id,
+			ym ym,
+			center_id centerId,
+			reporting_interval reportingInterval,
+			interval_prop intervalProp,
+			org_no orgNo		
+		from ph_f_purc_report where 1=1
+		<if test="phfPurcReport != null and phfPurcReport.ym != null and phfPurcReport.ym != ''">
+			and ym = #{phfPurcReport.ym}
+		</if>
+		<if test="phfPurcReport != null and phfPurcReport.centerId != null and phfPurcReport.centerId != ''">
+			and center_id = #{phfPurcReport.centerId}
+		</if>
+		<if test="phfPurcReport != null and phfPurcReport.reportingInterval != null and phfPurcReport.reportingInterval != ''">
+			and reporting_interval = #{phfPurcReport.reportingInterval}
+		</if>
+		<if test="phfPurcReport != null and phfPurcReport.intervalProp != null and phfPurcReport.intervalProp != ''">
+			and interval_prop = #{phfPurcReport.intervalProp}
+		</if>
+		<if test="phfPurcReport != null and phfPurcReport.orgNo != null and phfPurcReport.orgNo != ''">
+			and org_no = #{phfPurcReport.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhfPurcReportCountByParams" resultType="int">
+		select count(1)	from ph_f_purc_report where 1=1
+		<if test="phfPurcReport != null and phfPurcReport.ym != null and phfPurcReport.ym != ''">
+			and ym = #{phfPurcReport.ym}
+		</if>
+		<if test="phfPurcReport != null and phfPurcReport.centerId != null and phfPurcReport.centerId != ''">
+			and center_id = #{phfPurcReport.centerId}
+		</if>
+		<if test="phfPurcReport != null and phfPurcReport.reportingInterval != null and phfPurcReport.reportingInterval != ''">
+			and reporting_interval = #{phfPurcReport.reportingInterval}
+		</if>
+		<if test="phfPurcReport != null and phfPurcReport.intervalProp != null and phfPurcReport.intervalProp != ''">
+			and interval_prop = #{phfPurcReport.intervalProp}
+		</if>
+		<if test="phfPurcReport != null and phfPurcReport.orgNo != null and phfPurcReport.orgNo != ''">
+			and org_no = #{phfPurcReport.orgNo}
+		</if>
+	</select>
+	
+	<delete id="deleteInfo">
+	    DELETE FROM ph_f_purc_report WHERE center_id=#{id}; 
+	</delete>
+</mapper>

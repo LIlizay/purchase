@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmBusinessConsRela.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmBusinessConsRelaListByParams" resultType="com.hhwy.purchase.domain.PhmBusinessConsRela">  
+		select
+			ID id,
+			cons_id consId,
+			plan_id planId,
+			load_prediction_pq loadPredictionPq,
+			forecast_agre_pq forecastAgrePq,
+			forecast_agre_prc forecastAgrePrc,
+			org_no orgNo		
+		from ph_m_business_cons_rela where 1=1
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.consId != null and phmBusinessConsRela.consId != ''">
+			and cons_id = #{phmBusinessConsRela.consId}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.planId != null and phmBusinessConsRela.planId != ''">
+			and plan_id = #{phmBusinessConsRela.planId}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.loadPredictionPq != null and phmBusinessConsRela.loadPredictionPq != ''">
+			and load_prediction_pq = #{phmBusinessConsRela.loadPredictionPq}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.forecastAgrePq != null and phmBusinessConsRela.forecastAgrePq != ''">
+			and forecast_agre_pq = #{phmBusinessConsRela.forecastAgrePq}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.forecastAgrePrc != null and phmBusinessConsRela.forecastAgrePrc != ''">
+			and forecast_agre_prc = #{phmBusinessConsRela.forecastAgrePrc}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.orgNo != null and phmBusinessConsRela.orgNo != ''">
+			and org_no = #{phmBusinessConsRela.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmBusinessConsRelaCountByParams" resultType="int">
+		select count(1)	from ph_m_business_cons_rela where 1=1
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.consId != null and phmBusinessConsRela.consId != ''">
+			and cons_id = #{phmBusinessConsRela.consId}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.planId != null and phmBusinessConsRela.planId != ''">
+			and plan_id = #{phmBusinessConsRela.planId}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.loadPredictionPq != null and phmBusinessConsRela.loadPredictionPq != ''">
+			and load_prediction_pq = #{phmBusinessConsRela.loadPredictionPq}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.forecastAgrePq != null and phmBusinessConsRela.forecastAgrePq != ''">
+			and forecast_agre_pq = #{phmBusinessConsRela.forecastAgrePq}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.forecastAgrePrc != null and phmBusinessConsRela.forecastAgrePrc != ''">
+			and forecast_agre_prc = #{phmBusinessConsRela.forecastAgrePrc}
+		</if>
+		<if test="phmBusinessConsRela != null and phmBusinessConsRela.orgNo != null and phmBusinessConsRela.orgNo != ''">
+			and org_no = #{phmBusinessConsRela.orgNo}
+		</if>
+	</select>
+	
+	<select id="getPlanConsDetail" resultType="com.hhwy.purchaseweb.plan.phmpurchaseplanyear.domain.ConsInfoDetail">
+		SELECT
+			b.id id, 
+			b.cons_name consName,
+			b.volt_code voltCode,
+			a.proxy_pq proxyPq,
+			c.agre_prc agrePrc,
+			e.forecast_agre_pq forecastAgrePq,
+			e.forecast_agre_prc forecastAgrePrc,
+			d.cont_name contName,
+			d.phone phone,
+			b.elec_addr elecAddr
+		FROM ph_m_business_cons_rela e 
+		LEFT JOIN s_c_consumer_info b ON b.id = e.cons_id
+		LEFT JOIN s_c_contacts_info d ON d.cons_id = b.id
+		LEFT JOIN ph_m_business_plan f ON f.id = e.plan_id
+		LEFT JOIN s_m_ppa a ON a.cons_id = b.id AND YEAR(a.effective_date) = f.year
+		LEFT JOIN s_m_dist_mode c ON c.agre_id = a.id 
+		WHERE e.plan_id = #{planId}
+		ORDER BY e.cons_id
+	</select>
+	
+	<select id="getConsInfo" resultType="com.hhwy.purchaseweb.plan.phmpurchaseplanyear.domain.ConsInfoDetail">
+		SELECT
+			b.id id, 
+			b.cons_name consName,
+			b.volt_code voltCode,
+			a.proxy_pq proxyPq,
+			c.agre_prc agrePrc,
+			d.cont_name contName,
+			d.phone phone,
+			b.elec_addr elecAddr
+		FROM s_c_consumer_info b 
+		LEFT JOIN s_c_contacts_info d ON d.cons_id = b.id
+		LEFT JOIN s_m_ppa a ON a.cons_id = b.id
+		LEFT JOIN s_m_dist_mode c ON c.agre_id = a.id 
+		WHERE b.id in 
+		  <foreach collection="array" index="index" item="tag" open="(" separator="," close=")">
+		   		#{tag}
+		  </foreach>
+	</select>
+	
+	<select id="getPurchasingPowerList" resultType="com.hhwy.purchaseweb.plan.phmbusinessconsrela.domain.PurchasingPowerDetail">
+		SELECT 
+			a.id id,
+			a.cons_id consId,
+			a.plan_id planId,
+			b.cons_name consName,
+			b.cons_type consType,
+			b.volt_code voltCode,
+			b.elec_type_code elecTypeCode,
+			(SELECT proxy_pq FROM s_m_ppa WHERE cons_id = b.id AND NOW()&gt;= effective_date AND NOW()&lt;= expiry_date) proxyPq,
+			a.load_prediction_pq loadPredictionPq,
+			a.forecast_agre_pq forecastAgrePq,
+			a.forecast_agre_prc forecastAgrePrc,
+			(SELECT SUM(peak_pq+valley_pq+plain_pq) FROM s_c_cons_electricity WHERE cons_id = b.id AND ym LIKE CONCAT(#{year}-3,"%") ) actPq1,
+			(SELECT SUM(peak_pq+valley_pq+plain_pq) FROM s_c_cons_electricity WHERE cons_id = b.id AND ym LIKE CONCAT(#{year}-2,"%") ) actPq2,
+			(SELECT SUM(peak_pq+valley_pq+plain_pq) FROM s_c_cons_electricity WHERE cons_id = b.id AND ym LIKE CONCAT(#{year}-1,"%") ) actPq3,
+			(SELECT e.agre_prc FROM s_m_ppa d LEFT JOIN s_m_dist_mode e ON e.agre_id = d.id WHERE cons_id = b.id AND d.effective_date LIKE CONCAT(#{year}-3,"%") AND d.expiry_date LIKE CONCAT(#{year}-3,"%")) hisAgrePrc1,
+			(SELECT e.agre_prc FROM s_m_ppa d LEFT JOIN s_m_dist_mode e ON e.agre_id = d.id WHERE cons_id = b.id AND d.effective_date LIKE CONCAT(#{year}-2,"%") AND d.expiry_date LIKE CONCAT(#{year}-2,"%")) hisAgrePrc2,
+			(SELECT e.agre_prc FROM s_m_ppa d LEFT JOIN s_m_dist_mode e ON e.agre_id = d.id WHERE cons_id = b.id AND d.effective_date LIKE CONCAT(#{year}-1,"%") AND d.expiry_date LIKE CONCAT(#{year}-1,"%")) hisAgrePrc3,
+			c.cont_name contName,
+			c.phone phone
+		FROM ph_m_business_cons_rela a
+		LEFT JOIN s_c_consumer_info b ON b.id = a.cons_id
+		LEFT JOIN s_c_contacts_info c ON c.cons_id = b.id
+		WHERE a.plan_id = #{phmBusinessConsRela.planId}
+		order by a.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<select id="check" resultType="int">
+	SELECT 
+		COUNT(1)
+	FROM ph_m_business_cons_rela
+	WHERE plan_id = #{id} AND
+	(forecast_agre_pq IS NULL OR forecast_agre_prc IS NULL)
+	</select>
+</mapper>

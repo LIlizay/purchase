@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bigData.sql">
+	<!-- 版本预测数据同步sql开始 -->	
+	
+
+	<!-- 查询用户历史电量 -->
+	<select id="getHistoryElecListByParams" resultType="com.hhwy.purchaseweb.bigdata.domain.TpowerScale">
+		SELECT 
+			cons_id consNo,
+			(ifnull(over_peak_pq,0) + ifnull(peak_pq,0) + ifnull(double_pq,0) + ifnull(valley_pq,0) + ifnull(plain_pq,0)) tPq,
+			(ifnull(over_peak_pq,-1) + ifnull(peak_pq,-1) + ifnull(double_pq,-1) + ifnull(valley_pq,-1) + ifnull(plain_pq,-1)) tDeclarePq,
+			ym rcvblYm 
+		FROM s_c_cons_electricity
+	 	WHERE 
+			LEFT(ym,4) = #{year} and cons_id = #{consNo}
+   	</select>
+	<!-- 查询用户申报电量 -->
+	
+<!-- 根据用户id列表查询大数据用户信息 -->
+<select id="getListByConsIds" resultType="com.hhwy.purchaseweb.bigdata.domain.TpowerPriceUser">
+	select
+		ID id,
+		delete_flag deleteFlag,
+		version version,
+		cons_no consNo,
+		cons_name consName,
+		trade_code tradeCode,
+		trade_name tradeName,
+		elec_type_code elecTypeCode,
+		elec_type_name elecTypeName,
+		region region,
+		region_code regionCode		
+	from t_power_price_user 
+	where cons_no in 
+	<foreach collection="list" item="item" index="index" separator="," open="(" close=")"> 
+		#{item}
+    </foreach> 
+</select>
+<!-- 用户档案同步  -->
+<update id="updateConsInfo" parameterType="java.util.List">
+	<foreach collection="list" item="item" index="index" separator=";" >
+		update t_power_price_user set 
+			cons_name = #{item.consName},
+			trade_code = #{item.tradeCode},
+			trade_name = #{item.tradeName},
+			elec_type_code = #{item.elecTypeCode},
+			elec_type_name = #{item.elecTypeName},
+			region_code = #{item.regionCode},
+			region = #{item.region} 
+		where cons_no = #{item.consNo} 
+	</foreach>
+</update>
+	
+<!-- 用户档案同步  -->
+<insert id="saveConsInfoList" parameterType="java.util.List">
+	INSERT INTO t_power_price_user (
+		cons_no,
+		cons_name,
+		trade_code,
+		trade_name,
+		elec_type_code,
+		elec_type_name,
+		region_code,
+		region
+	)
+	VALUES 
+    <foreach collection="list" item="item" index="index" separator="," > 
+		(
+			#{item.consNo},
+			#{item.consName},
+			#{item.tradeCode},
+			#{item.tradeName},
+			#{item.elecTypeCode},
+			#{item.elecTypeName},
+			#{item.regionCode},
+			#{item.region}
+		)
+    </foreach> 
+</insert>
+	
+<!-- 根据consNo和rcvblYm（用电年月）查询列表 -->
+<select id="getTpowerScaleListByParams" resultType="com.hhwy.purchaseweb.bigdata.domain.TpowerScale">
+	select
+		ID id,
+		delete_flag deleteFlag,
+		version version,
+		rcvbl_ym rcvblYm,
+		cons_no consNo,
+		t_pq tPq,
+		t_declare_pq tDeclarePq,
+		cons_produce_plan consProducePlan		
+	from t_power_scale 
+	where 
+	<foreach collection="list" item="item" index="index" separator=" or "> 
+		( rcvbl_ym = #{item.rcvblYm} and cons_no = #{item.consNo} )
+    </foreach> 
+</select>
+
+<!-- 历史电量数据同步 -->
+<update id="updatePowerScale" parameterType="java.util.List">
+	<foreach collection="list" item="item" index="index" separator=";" >
+		update t_power_scale set t_pq = #{item.tPq} 
+		where cons_no = #{item.consNo} and rcvbl_ym = #{item.rcvblYm}
+	</foreach>
+</update>
+	
+<!-- 历史电量数据同步 -->
+<insert id="savePowerScale" parameterType="java.util.List">
+	INSERT INTO t_power_scale (
+		rcvbl_ym,
+		cons_no,
+		t_pq
+	)
+	VALUES 
+    <foreach collection="list" item="item" index="index" separator="," >
+		(
+			#{item.rcvblYm},
+			#{item.consNo},
+			#{item.tPq}
+		)
+    </foreach>
+</insert>
+	
+<!-- 申报电量数据同步 -->
+<update id="updateDeclare" parameterType="java.util.List">
+	<foreach collection="list" item="item" index="index" separator=";" >
+		update t_power_scale set t_declare_pq = #{item.tDeclarePq} 
+		where cons_no = #{item.consNo} and rcvbl_ym = #{item.rcvblYm}
+	</foreach>
+</update>
+	
+<!-- 申报电量数据同步 -->
+<insert id="saveDeclare" parameterType="java.util.List">
+	INSERT INTO t_power_scale (
+		rcvbl_ym,
+		cons_no,
+		t_declare_pq
+	)
+	VALUES 
+    <foreach collection="list" item="item" index="index" separator="," >
+		(
+			#{item.rcvblYm},
+			#{item.consNo},
+			#{item.tDeclarePq}
+		)
+    </foreach>
+</insert>
+	
+<!-- 用户产能数据同步 -->
+<update id="updateProduce" parameterType="java.util.List">
+	<foreach collection="list" item="item" index="index" separator=";" >
+		update t_power_scale set cons_produce_plan = #{item.consProducePlan} 
+		where cons_no = #{item.consNo} and rcvbl_ym = #{item.rcvblYm}
+	</foreach>
+</update>
+	
+<!-- 用户产能数据同步 -->
+<insert id="saveProduce" parameterType="java.util.List">
+	INSERT INTO t_power_scale (
+		rcvbl_ym,
+		cons_no,
+		cons_produce_plan
+	)
+	VALUES 
+    <foreach collection="list" item="item" index="index" separator="," >
+		(
+			#{item.rcvblYm},
+			#{item.consNo},
+			#{item.consProducePlan}
+		)
+    </foreach>
+</insert>
+<!-- 删除用户产能数据 -->
+<update id="deleteProduceData" parameterType="map">
+	update t_power_scale set cons_produce_plan = null
+	where cons_no = #{consId} and LEFT(rcvbl_ym,4) = #{year}
+</update>
+
+
+	<!-- 版本预测数据同步sql结束 -->
+	
+	<!-- 加了r.phPlanAddConsFlag = '1'  因为购电计划制定业务修改 ‘1’为购电计划制定选择的用户 -->
+	<select id="getPlanCons" resultType="java.util.Map">
+		SELECT
+			m.ym,
+			r.cons_id consId
+		FROM
+			ph_m_purchase_plan_month m
+		LEFT JOIN ph_m_plan_cons_rela r ON r.plan_id = m.id
+		WHERE
+			m.ym = #{ym}
+		AND r.phPlanAddConsFlag = '1'
+	</select>
+
+	<!-- 交易中心交易数据 -->
+	<select id="getAllDealInfo" resultType="java.util.Map">
+		SELECT
+			c.ym,
+			c.total_deal_pq dealSumScale,
+			c.avg_deal_prc averageValue,
+			c.elec_lower_prc supportCompanyMinValue,
+			c.elec_max_prc supportCompanyDealMaxValue,
+			c.elec_report_pq supportCompanySumDeclareScale,
+			c.purc_upper_prc companyMaxValue,
+			c.purc_min_prc companyDealMinValue,
+			c.purc_report_pq companySumDecalreScale
+		FROM
+			ph_f_trading_center c
+		WHERE c.ym = #{lastYm}
+	</select>
+	<insert id="saveAllDealInfo" parameterType="java.util.List">
+    	INSERT INTO t_price_all_deal_info ( 
+			ym,
+			average_value,
+			deal_sum_scale,
+			company_max_value,
+			company_deal_min_value,
+			company_sum_decalre_scale,
+			support_company_min_value,
+			support_company_deal_max_value,
+			support_company_sum_declare_scale
+		)
+		VALUES 
+	    <foreach collection="list" item="item" index="index" separator="," > 
+			(
+				#{item.ym},
+				#{item.averageValue},
+				#{item.dealSumScale},
+				#{item.companyMaxValue},
+				#{item.companyDealMinValue},
+				#{item.companySumDecalreScale},
+				#{item.supportCompanyMinValue},
+				#{item.supportCompanyDealMaxValue},
+				#{item.supportCompanySumDeclareScale}
+			)
+	    </foreach> 
+	</insert>
+
+	<!-- 售电公司交易数据 -->
+	<select id="getCompanyDealInfo" resultType="java.util.Map">
+		SELECT
+			r.ym,'jinneng' companyNo,
+			IFNULL(
+				CAST(
+					SUM(r.report_pq) AS DECIMAL (12, 2)
+				),0) reportPq,
+		IF (
+			SUM(r.report_pq) IS NULL,0,
+			CAST(
+				SUM(r.report_pq * r.report_prc) / SUM(r.report_pq) AS DECIMAL (12, 2)
+			)
+		) reportPrc,
+			IFNULL(
+				CAST(
+					SUM(d.deal_pq) AS DECIMAL (12, 2)
+				),0) dealPq,
+		IF (
+			SUM(d.deal_pq) IS NULL,0,
+			CAST(
+				SUM(d.deal_pq * d.deal_prc) / SUM(d.deal_pq) AS DECIMAL (12, 2)
+			)
+		) dealPrc
+		FROM
+			ph_m_transactionl_report r
+		LEFT JOIN ph_m_deal_info d ON d.ym = r.ym AND d.cons_id = r.cons_id 
+		WHERE
+			r.ym = #{lastYm}
+	</select>
+	<insert id="saveCompanyDealInfo" parameterType="java.util.List">
+	    INSERT INTO t_price_company_deal_info ( 
+			ym,
+			company_cons_no,
+			company_declare_scale,
+			company_declare_value,
+			deal_power_scale,
+			deal_power_value
+		)
+		VALUES 
+	    <foreach collection="list" item="item" index="index" separator="," > 
+			(
+				#{item.ym},
+				#{item.companyNo},
+				#{item.reportPq},
+				#{item.reportPrc},
+				#{item.dealPq},
+				#{item.dealPrc}
+			)
+	    </foreach> 
+	</insert>
+
+	<!-- 发电企业报价 -->
+	<select id="getSupportValueSection" resultType="java.util.Map">
+		SELECT
+			r.ym,
+			r.reporting_interval propName,
+			r.interval_prop valueRradio
+		FROM
+			ph_f_elec_report r
+		WHERE r.ym = #{lastYm}
+	</select>
+	<insert id="saveSupportValueSection" parameterType="java.util.List">
+	    INSERT INTO t_price_support_value_section ( 
+			ym,
+			max_value,
+			min_value,
+			value_radio
+		)
+		VALUES 
+	    <foreach collection="list" item="item" index="index" separator="," > 
+			(
+				#{item.ym},
+				#{item.maxValue},
+				#{item.minValue},
+				#{item.valueRradio}
+			)
+	    </foreach> 
+	</insert>
+
+	<!-- 售电公司报价 -->
+	<select id="getValueSection" resultType="java.util.Map">
+		SELECT
+			r.ym,
+			r.reporting_interval propName,
+			r.interval_prop valueRradio
+		FROM
+			ph_f_purc_report r
+		WHERE r.ym = #{lastYm}
+	</select>
+	<insert id="saveValueSection" parameterType="java.util.List">
+	    INSERT INTO t_price_value_section (
+			ym,
+			max_value,
+			min_value,
+			value_radio
+		)
+		VALUES 
+	    <foreach collection="list" item="item" index="index" separator="," > 
+			(
+				#{item.ym},
+				#{item.maxValue},
+				#{item.minValue},
+				#{item.valueRradio}
+			)
+	    </foreach> 
+	</insert>
+	
+	<!-- 电量结果查询 -->
+	<select id="getPowerResult" resultType="java.util.Map">
+		SELECT
+			ym,
+			real_power,
+			predict_power,
+			search_flag,
+			cons_no
+		FROM
+			t_power_result
+		WHERE
+			ym = #{ym}
+			and search_flag = 2
+	    <if test="consId!=null and consId!=''">
+	    	and cons_no=#{consId};
+	    </if>
+	</select>
+	<insert id="savePowerResult" parameterType="java.util.List">
+	    INSERT INTO t_power_result (ym,search_flag,cons_no)
+		VALUES 
+	    <foreach collection="list" item="item" index="index" separator="," > 
+			(#{item.ym},0,#{item.consId})
+	    </foreach> 
+	</insert>
+	
+	<!-- 电价结果查询 -->
+	<select id="getPrcResult" resultType="java.util.Map">
+		SELECT
+			ym,
+			real_price,
+			predict_low,
+			predict_medial_fir,
+			predict_medial_sec,
+			predict_high,
+			search_flag,
+			cons_no
+		FROM
+			t_price_result
+		WHERE
+			ym = #{ym}
+			and search_flag = 2
+	    <if test="consId!=null and consId!=''">
+	    	and cons_no=#{consId};
+	    </if>
+	</select>
+	<insert id="savePrcResult" parameterType="java.util.List">
+	    INSERT INTO t_price_result (ym,search_flag,cons_no)
+		VALUES 
+	    <foreach collection="list" item="item" index="index" separator="," > 
+			(#{item.ym},0,#{item.consId})
+	    </foreach> 
+	</insert>
+	
+	<!-- 数据清理 -->
+	<!-- 清理预测电价数据 -->
+	<delete id="deletePrcResult">
+	    delete from t_price_result where ym=#{ym} 
+	    <if test="consId!=null and consId!=''">
+	    	and cons_no=#{consId};
+	    </if>
+	</delete>
+	<!-- 清理预测电量数据 -->
+	<delete id="deletePqResult">
+	    delete from t_power_result where ym=#{ym}
+	    <if test="consId!=null and consId!=''">
+	    	and cons_no=#{consId};
+	    </if>
+	</delete>
+	<!-- 清理用户历史用电信息数据 -->
+	<delete id="deletePowerScale">
+	    delete from t_power_scale where rcvbl_ym=#{lastYm}
+	    <if test="consId!=null and consId!=''">
+	    	and cons_no=#{consId};
+	    </if>
+	</delete>
+	<!-- 清理用户信息数据 -->
+	<delete id="deleteConsInfo">
+	    delete from t_power_price_user where 1=1
+	    <if test="consId!=null and consId!=''">
+	    	and cons_no=#{consId};
+	    </if>
+	</delete>
+	<!-- 清理交易中心交易数据 -->
+	<delete id="deleteCenterDealInfo">
+	    delete from t_price_all_deal_info where ym=#{lastYm};
+	</delete>
+	<!-- 清理售电公司交易数据 -->
+	<delete id="deleteCompDealInfo">
+	    delete from t_price_company_deal_info where ym=#{lastYm};
+	</delete>
+	<!-- 清理发电企业报价 -->
+	<delete id="deleteElecPrc">
+	    delete from t_price_support_value_section where ym=#{lastYm};
+	</delete>
+	<!-- 清理售电公司报价 -->
+	<delete id="deleteCompPrc">
+	    delete from t_price_value_section where ym=#{lastYm};
+	</delete>
+
+	<!-- 电厂信息 -->
+	<select id="getElecInfo" resultType="java.util.Map">
+
+	</select>
+	<insert id="saveElecInfo">
+	
+	</insert>
+
+	<!-- 工况信息 -->
+	<select id="getWorkCondition" resultType="java.util.Map">
+		
+	</select>
+	<insert id="saveHoliday" parameterType="java.util.List">
+	
+	</insert>
+	<insert id="saveHumidity" parameterType="java.util.List">
+	
+	</insert>
+	<insert id="saveTemperature" parameterType="java.util.List">
+	
+	</insert>
+</mapper>

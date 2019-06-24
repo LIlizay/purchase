@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smRuleConfigure.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmRuleConfigureListByParams" resultType="com.hhwy.purchase.domain.SmRuleConfigure">
+		select
+			ID id,
+			province_id provinceId,
+			rule_name ruleName,
+			rule_status ruleStatus,
+			priority_flag priorityFlag,
+			bid_priority_flag bidPriorityFlag,
+			lc_priority_flag lcPriorityFlag,
+			upper_check_flag upperCheckFlag,
+			upper_pq_prop upperPqProp,
+			upper_prc_type upperPrcType,
+			upper_prc upperPrc,
+			upper_prc_prop upperPrcProp,
+			upper_check_prc_type upperCheckPrcType,
+			upper_check_prc upperCheckPrc,
+			upper_check_prc_prop upperCheckPrcProp,
+			lower_check_flag lowerCheckFlag,
+			split_check_flag splitCheckFlag,
+			lower_pq_prop lowerPqProp,
+			lower_check_prc_type lowerCheckPrcType,
+			lower_check_prc lowerCheckPrc,
+			lower_check_prc_prop lowerCheckPrcProp,
+			lower_check_lc_flag lowerCheckLcFlag,
+			lower_check_lc_pq_prop lowerCheckLcPqProp,
+			lower_check_lc_prc_type lowerCheckLcPrcType,
+			lower_check_lc_prc lowerCheckLcPrc,
+			lower_check_lc_prc_prop lowerCheckLcPrcProp,
+			lower_check_bid_flag lowerCheckBidFlag,
+			lower_check_bid_pq_prop lowerCheckBidPqProp,
+			lower_check_bid_prc_type lowerCheckBidPrcType,
+			lower_check_bid_prc lowerCheckBidPrc,
+			lower_check_bid_prc_prop lowerCheckBidPrcProp,
+			decl_seg declSeg,
+			min_report_unit minReportUnit,
+			sell_decl_unit sellDeclUnit,
+			quot_mode quotMode,
+			min_quot_unit minQuotUnit,
+			buy_decl_unit buyDeclUnit,
+			bid_rule_algo_id bidRuleAlgoId,
+			bid_algo_expln bidAlgoExpln,
+			void_rule_algo_id voidRuleAlgoId,
+			void_algo_expln voidAlgoExpln,
+			company_id companyId,
+			org_no orgNo		
+		from s_m_rule_configure where 1=1
+		<if test="smRuleConfigure != null and smRuleConfigure.provinceId != null and smRuleConfigure.provinceId != ''">
+			and province_id = #{smRuleConfigure.provinceId}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.ruleName != null and smRuleConfigure.ruleName != ''">
+			and rule_name = #{smRuleConfigure.ruleName}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.ruleStatus != null and smRuleConfigure.ruleStatus != ''">
+			and rule_status = #{smRuleConfigure.ruleStatus}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.priorityFlag != null and smRuleConfigure.priorityFlag != ''">
+			and priority_flag = #{smRuleConfigure.priorityFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.bidPriorityFlag != null and smRuleConfigure.bidPriorityFlag != ''">
+			and bid_priority_flag = #{smRuleConfigure.bidPriorityFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lcPriorityFlag != null and smRuleConfigure.lcPriorityFlag != ''">
+			and lc_priority_flag = #{smRuleConfigure.lcPriorityFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperCheckFlag != null and smRuleConfigure.upperCheckFlag != ''">
+			and upper_check_flag = #{smRuleConfigure.upperCheckFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperPqProp != null and smRuleConfigure.upperPqProp != ''">
+			and upper_pq_prop = #{smRuleConfigure.upperPqProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperPrcType != null and smRuleConfigure.upperPrcType != ''">
+			and upper_prc_type = #{smRuleConfigure.upperPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperPrc != null and smRuleConfigure.upperPrc != ''">
+			and upper_prc = #{smRuleConfigure.upperPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperPrcProp != null and smRuleConfigure.upperPrcProp != ''">
+			and upper_prc_prop = #{smRuleConfigure.upperPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperCheckPrcType != null and smRuleConfigure.upperCheckPrcType != ''">
+			and upper_check_prc_type = #{smRuleConfigure.upperCheckPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperCheckPrc != null and smRuleConfigure.upperCheckPrc != ''">
+			and upper_check_prc = #{smRuleConfigure.upperCheckPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperCheckPrcProp != null and smRuleConfigure.upperCheckPrcProp != ''">
+			and upper_check_prc_prop = #{smRuleConfigure.upperCheckPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckFlag != null and smRuleConfigure.lowerCheckFlag != ''">
+			and lower_check_flag = #{smRuleConfigure.lowerCheckFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.splitCheckFlag != null and smRuleConfigure.splitCheckFlag != ''">
+			and split_check_flag = #{smRuleConfigure.splitCheckFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerPqProp != null and smRuleConfigure.lowerPqProp != ''">
+			and lower_pq_prop = #{smRuleConfigure.lowerPqProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckPrcType != null and smRuleConfigure.lowerCheckPrcType != ''">
+			and lower_check_prc_type = #{smRuleConfigure.lowerCheckPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckPrc != null and smRuleConfigure.lowerCheckPrc != ''">
+			and lower_check_prc = #{smRuleConfigure.lowerCheckPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckPrcProp != null and smRuleConfigure.lowerCheckPrcProp != ''">
+			and lower_check_prc_prop = #{smRuleConfigure.lowerCheckPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcFlag != null and smRuleConfigure.lowerCheckLcFlag != ''">
+			and lower_check_lc_flag = #{smRuleConfigure.lowerCheckLcFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcPqProp != null and smRuleConfigure.lowerCheckLcPqProp != ''">
+			and lower_check_lc_pq_prop = #{smRuleConfigure.lowerCheckLcPqProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcPrcType != null and smRuleConfigure.lowerCheckLcPrcType != ''">
+			and lower_check_lc_prc_type = #{smRuleConfigure.lowerCheckLcPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcPrc != null and smRuleConfigure.lowerCheckLcPrc != ''">
+			and lower_check_lc_prc = #{smRuleConfigure.lowerCheckLcPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcPrcProp != null and smRuleConfigure.lowerCheckLcPrcProp != ''">
+			and lower_check_lc_prc_prop = #{smRuleConfigure.lowerCheckLcPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidFlag != null and smRuleConfigure.lowerCheckBidFlag != ''">
+			and lower_check_bid_flag = #{smRuleConfigure.lowerCheckBidFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidPqProp != null and smRuleConfigure.lowerCheckBidPqProp != ''">
+			and lower_check_bid_pq_prop = #{smRuleConfigure.lowerCheckBidPqProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidPrcType != null and smRuleConfigure.lowerCheckBidPrcType != ''">
+			and lower_check_bid_prc_type = #{smRuleConfigure.lowerCheckBidPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidPrc != null and smRuleConfigure.lowerCheckBidPrc != ''">
+			and lower_check_bid_prc = #{smRuleConfigure.lowerCheckBidPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidPrcProp != null and smRuleConfigure.lowerCheckBidPrcProp != ''">
+			and lower_check_bid_prc_prop = #{smRuleConfigure.lowerCheckBidPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.declSeg != null and smRuleConfigure.declSeg != ''">
+			and decl_seg = #{smRuleConfigure.declSeg}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.minReportUnit != null and smRuleConfigure.minReportUnit != ''">
+			and min_report_unit = #{smRuleConfigure.minReportUnit}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.sellDeclUnit != null and smRuleConfigure.sellDeclUnit != ''">
+			and sell_decl_unit = #{smRuleConfigure.sellDeclUnit}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.quotMode != null and smRuleConfigure.quotMode != ''">
+			and quot_mode = #{smRuleConfigure.quotMode}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.minQuotUnit != null and smRuleConfigure.minQuotUnit != ''">
+			and min_quot_unit = #{smRuleConfigure.minQuotUnit}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.buyDeclUnit != null and smRuleConfigure.buyDeclUnit != ''">
+			and buy_decl_unit = #{smRuleConfigure.buyDeclUnit}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.bidRuleAlgoId != null and smRuleConfigure.bidRuleAlgoId != ''">
+			and bid_rule_algo_id = #{smRuleConfigure.bidRuleAlgoId}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.bidAlgoExpln != null and smRuleConfigure.bidAlgoExpln != ''">
+			and bid_algo_expln = #{smRuleConfigure.bidAlgoExpln}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.voidRuleAlgoId != null and smRuleConfigure.voidRuleAlgoId != ''">
+			and void_rule_algo_id = #{smRuleConfigure.voidRuleAlgoId}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.voidAlgoExpln != null and smRuleConfigure.voidAlgoExpln != ''">
+			and void_algo_expln = #{smRuleConfigure.voidAlgoExpln}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.companyId != null and smRuleConfigure.companyId != ''">
+			and company_id = #{smRuleConfigure.companyId}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.orgNo != null and smRuleConfigure.orgNo != ''">
+			and org_no = #{smRuleConfigure.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmRuleConfigureCountByParams" resultType="int">
+		select count(1)	from s_m_rule_configure where 1=1
+		<if test="smRuleConfigure != null and smRuleConfigure.provinceId != null and smRuleConfigure.provinceId != ''">
+			and province_id = #{smRuleConfigure.provinceId}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.ruleName != null and smRuleConfigure.ruleName != ''">
+			and rule_name = #{smRuleConfigure.ruleName}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.ruleStatus != null and smRuleConfigure.ruleStatus != ''">
+			and rule_status = #{smRuleConfigure.ruleStatus}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.priorityFlag != null and smRuleConfigure.priorityFlag != ''">
+			and priority_flag = #{smRuleConfigure.priorityFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.bidPriorityFlag != null and smRuleConfigure.bidPriorityFlag != ''">
+			and bid_priority_flag = #{smRuleConfigure.bidPriorityFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lcPriorityFlag != null and smRuleConfigure.lcPriorityFlag != ''">
+			and lc_priority_flag = #{smRuleConfigure.lcPriorityFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperCheckFlag != null and smRuleConfigure.upperCheckFlag != ''">
+			and upper_check_flag = #{smRuleConfigure.upperCheckFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperPqProp != null and smRuleConfigure.upperPqProp != ''">
+			and upper_pq_prop = #{smRuleConfigure.upperPqProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperPrcType != null and smRuleConfigure.upperPrcType != ''">
+			and upper_prc_type = #{smRuleConfigure.upperPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperPrc != null and smRuleConfigure.upperPrc != ''">
+			and upper_prc = #{smRuleConfigure.upperPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperPrcProp != null and smRuleConfigure.upperPrcProp != ''">
+			and upper_prc_prop = #{smRuleConfigure.upperPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperCheckPrcType != null and smRuleConfigure.upperCheckPrcType != ''">
+			and upper_check_prc_type = #{smRuleConfigure.upperCheckPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperCheckPrc != null and smRuleConfigure.upperCheckPrc != ''">
+			and upper_check_prc = #{smRuleConfigure.upperCheckPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.upperCheckPrcProp != null and smRuleConfigure.upperCheckPrcProp != ''">
+			and upper_check_prc_prop = #{smRuleConfigure.upperCheckPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckFlag != null and smRuleConfigure.lowerCheckFlag != ''">
+			and lower_check_flag = #{smRuleConfigure.lowerCheckFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.splitCheckFlag != null and smRuleConfigure.splitCheckFlag != ''">
+			and split_check_flag = #{smRuleConfigure.splitCheckFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerPqProp != null and smRuleConfigure.lowerPqProp != ''">
+			and lower_pq_prop = #{smRuleConfigure.lowerPqProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckPrcType != null and smRuleConfigure.lowerCheckPrcType != ''">
+			and lower_check_prc_type = #{smRuleConfigure.lowerCheckPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckPrc != null and smRuleConfigure.lowerCheckPrc != ''">
+			and lower_check_prc = #{smRuleConfigure.lowerCheckPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckPrcProp != null and smRuleConfigure.lowerCheckPrcProp != ''">
+			and lower_check_prc_prop = #{smRuleConfigure.lowerCheckPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcFlag != null and smRuleConfigure.lowerCheckLcFlag != ''">
+			and lower_check_lc_flag = #{smRuleConfigure.lowerCheckLcFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcPqProp != null and smRuleConfigure.lowerCheckLcPqProp != ''">
+			and lower_check_lc_pq_prop = #{smRuleConfigure.lowerCheckLcPqProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcPrcType != null and smRuleConfigure.lowerCheckLcPrcType != ''">
+			and lower_check_lc_prc_type = #{smRuleConfigure.lowerCheckLcPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcPrc != null and smRuleConfigure.lowerCheckLcPrc != ''">
+			and lower_check_lc_prc = #{smRuleConfigure.lowerCheckLcPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckLcPrcProp != null and smRuleConfigure.lowerCheckLcPrcProp != ''">
+			and lower_check_lc_prc_prop = #{smRuleConfigure.lowerCheckLcPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidFlag != null and smRuleConfigure.lowerCheckBidFlag != ''">
+			and lower_check_bid_flag = #{smRuleConfigure.lowerCheckBidFlag}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidPqProp != null and smRuleConfigure.lowerCheckBidPqProp != ''">
+			and lower_check_bid_pq_prop = #{smRuleConfigure.lowerCheckBidPqProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidPrcType != null and smRuleConfigure.lowerCheckBidPrcType != ''">
+			and lower_check_bid_prc_type = #{smRuleConfigure.lowerCheckBidPrcType}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidPrc != null and smRuleConfigure.lowerCheckBidPrc != ''">
+			and lower_check_bid_prc = #{smRuleConfigure.lowerCheckBidPrc}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.lowerCheckBidPrcProp != null and smRuleConfigure.lowerCheckBidPrcProp != ''">
+			and lower_check_bid_prc_prop = #{smRuleConfigure.lowerCheckBidPrcProp}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.declSeg != null and smRuleConfigure.declSeg != ''">
+			and decl_seg = #{smRuleConfigure.declSeg}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.minReportUnit != null and smRuleConfigure.minReportUnit != ''">
+			and min_report_unit = #{smRuleConfigure.minReportUnit}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.sellDeclUnit != null and smRuleConfigure.sellDeclUnit != ''">
+			and sell_decl_unit = #{smRuleConfigure.sellDeclUnit}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.quotMode != null and smRuleConfigure.quotMode != ''">
+			and quot_mode = #{smRuleConfigure.quotMode}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.minQuotUnit != null and smRuleConfigure.minQuotUnit != ''">
+			and min_quot_unit = #{smRuleConfigure.minQuotUnit}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.buyDeclUnit != null and smRuleConfigure.buyDeclUnit != ''">
+			and buy_decl_unit = #{smRuleConfigure.buyDeclUnit}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.bidRuleAlgoId != null and smRuleConfigure.bidRuleAlgoId != ''">
+			and bid_rule_algo_id = #{smRuleConfigure.bidRuleAlgoId}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.bidAlgoExpln != null and smRuleConfigure.bidAlgoExpln != ''">
+			and bid_algo_expln = #{smRuleConfigure.bidAlgoExpln}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.voidRuleAlgoId != null and smRuleConfigure.voidRuleAlgoId != ''">
+			and void_rule_algo_id = #{smRuleConfigure.voidRuleAlgoId}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.voidAlgoExpln != null and smRuleConfigure.voidAlgoExpln != ''">
+			and void_algo_expln = #{smRuleConfigure.voidAlgoExpln}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.companyId != null and smRuleConfigure.companyId != ''">
+			and company_id = #{smRuleConfigure.companyId}
+		</if>
+		<if test="smRuleConfigure != null and smRuleConfigure.orgNo != null and smRuleConfigure.orgNo != ''">
+			and org_no = #{smRuleConfigure.orgNo}
+		</if>
+	</select>
+		<!-- 树规则节点查询(省) -->
+    <select id="getProTree" resultType="map">
+    	select 
+		a.item_name text,
+		a.item_code provinceId,
+		'province' nodeType,
+		'closed' state
+		 FROM t_dictitem a
+		WHERE a.dict_code='provinceCode'
+    </select>
+	<!-- 树规则节点查询(规则) -->
+    <select id="getVersion" resultType="map">
+    	SELECT
+		a.id id,
+		a.rule_name text,
+		a.province_id provinceId,
+		'rule' nodeType,
+		rule_status ruleStatus,
+		'open' state
+		FROM s_m_rule_configure a
+		WHERE a.province_id = #{provinceId}
+		ORDER BY a.create_time
+    </select>
+</mapper>

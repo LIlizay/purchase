@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sellingSwMessage.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSellingSwMessageListByParams" resultType="com.hhwy.purchaseweb.login.swmessage.domain.SellingSwMessageDetail">
+		select
+			ID id,
+			title title,
+			content content,
+			send_person sendPerson,
+			receive_person receivePerson,
+			send_date sendDate,
+			message_status messageStatus,
+			cons_id consId,
+			company_id companyId,
+			org_no orgNo,
+			plan_id planId,
+			message_type messageType		
+		from s_w_message where message_type = "s_w_message"
+		<if test="sellingSwMessage != null and sellingSwMessage.title != null and sellingSwMessage.title != ''">
+			and title LIKE CONCAT('%',#{sellingSwMessage.title},'%')
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.content != null and sellingSwMessage.content != ''">
+			and content = #{sellingSwMessage.content}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.sendPerson != null and sellingSwMessage.sendPerson != ''">
+			and send_person = #{sellingSwMessage.sendPerson}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.receivePerson != null and sellingSwMessage.receivePerson != ''">
+			and receive_person = #{sellingSwMessage.receivePerson}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.sendDate != null and sellingSwMessage.sendDate != ''">
+			and send_date = #{sellingSwMessage.sendDate}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.messageStatus != null and sellingSwMessage.messageStatus != ''">
+			and message_status = #{sellingSwMessage.messageStatus}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.consId != null and sellingSwMessage.consId != ''">
+			and cons_id = #{sellingSwMessage.consId}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.companyId != null and sellingSwMessage.companyId != ''">
+			and company_id = #{sellingSwMessage.companyId}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.orgNo != null and sellingSwMessage.orgNo != ''">
+			and org_no = #{sellingSwMessage.orgNo}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.planId != null and sellingSwMessage.planId != ''">
+			and plan_id = #{sellingSwMessage.planId}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSellingSwMessageCountByParams" resultType="int">
+		select count(1)	from s_w_message where message_type = "s_w_message"
+		<if test="sellingSwMessage != null and sellingSwMessage.title != null and sellingSwMessage.title != ''">
+			and title LIKE CONCAT('%',#{sellingSwMessage.title},'%')
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.content != null and sellingSwMessage.content != ''">
+			and content = #{sellingSwMessage.content}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.sendPerson != null and sellingSwMessage.sendPerson != ''">
+			and send_person = #{sellingSwMessage.sendPerson}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.receivePerson != null and sellingSwMessage.receivePerson != ''">
+			and receive_person = #{sellingSwMessage.receivePerson}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.sendDate != null and sellingSwMessage.sendDate != ''">
+			and send_date = #{sellingSwMessage.sendDate}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.messageStatus != null and sellingSwMessage.messageStatus != ''">
+			and message_status = #{sellingSwMessage.messageStatus}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.consId != null and sellingSwMessage.consId != ''">
+			and cons_id = #{sellingSwMessage.consId}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.companyId != null and sellingSwMessage.companyId != ''">
+			and company_id = #{sellingSwMessage.companyId}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.orgNo != null and sellingSwMessage.orgNo != ''">
+			and org_no = #{sellingSwMessage.orgNo}
+		</if>
+		<if test="sellingSwMessage != null and sellingSwMessage.planId != null and sellingSwMessage.planId != ''">
+			and plan_id = #{sellingSwMessage.planId}
+		</if>
+	</select>
+</mapper>

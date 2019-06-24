@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.collect">
+
+	<!-- 获取总量表关联用户数据，用来显示柱状图x坐标数据及柱状图各分层电量数据 -->
+	<select id="getBusinessDataByUserName" resultType="com.hhwy.purchaseweb.monitor.domain.Usermanager">
+		SELECT 
+			c.id AS id,
+			DATE_FORMAT(c.data_date, '%Y-%m-%d') AS dataDate,
+			c.device AS device,
+			c.total_electric_quantity AS totalElectricQuantity,
+			c.timeinterval_01 AS timeinterval01,
+			c.timeinterval_02 AS timeinterval02,
+			c.timeinterval_03 AS timeinterval03,
+			c.timeinterval_04 AS timeinterval04,
+			c.timeinterval_05 AS timeinterval05
+		FROM (select * from s_c_consumer_info where id = #{consId}) cons
+		left join em_s_user_real rela on cons.id = rela.s_user_id
+		left join em_device device on device.user = rela.em_user_id
+		left join em_business_data_collect c on c.device = device.id
+		WHERE 1 = 1
+		<if test="dataDate != null and dataDate != ''">
+			AND DATE_FORMAT(c.data_date, '%Y-%m') = #{dataDate}
+		</if>
+		<if test="areaCode != null and areaCode != ''">
+			AND u.area_code = #{areaCode}
+		</if>
+		ORDER BY c.data_date
+	</select>
+	
+	<!-- 用于导出数据 -->
+	<select id="getExportData" resultType="map">
+		SELECT 
+			DATE_FORMAT(c.data_date, '%Y-%m-%d') AS dataDate,
+			c.device AS device,
+			c.total_electric_quantity AS totalElectricQuantity,
+			c.timeinterval_01 AS timeinterval01,
+			c.timeinterval_02 AS timeinterval02,
+			c.timeinterval_03 AS timeinterval03,
+			c.timeinterval_04 AS timeinterval04,
+			c.timeinterval_05 AS timeinterval05
+		FROM s_c_consumer_info cons
+		left join em_s_user_real rela on cons.id = rela.s_user_id
+		left join em_device device on device.user = rela.em_user_id
+		left join em_business_data_collect c on c.device = device.id
+		WHERE 1 = 1
+		<if test="dataDate != null and dataDate != ''">
+			AND DATE_FORMAT(c.data_date, '%Y-%m') = #{dataDate}
+		</if>
+		<if test="clientCode != null and clientCode != ''">
+			AND cons.id = #{clientCode}
+		</if>
+		ORDER BY c.data_date
+	</select>
+</mapper>

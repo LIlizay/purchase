@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scOrgInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getOrgInfoDetailListByParams" resultType="com.hhwy.purchaseweb.archives.scorginfo.domain.ScOrgInfoDetail">
+		select
+			ID id,
+			name name,
+			province_code provinceCode,
+			city_code cityCode,
+			county_code countyCode,
+			vat_name vatName,
+			vat_no vatNo,
+			bank_name bankName,
+			vat_acct vatAcct,
+			reg_addr regAddr		
+		from s_c_org_info
+		<where>
+			<if test="scOrgInfo != null and scOrgInfo.name != null and scOrgInfo.name != ''">
+				name like CONCAT(CONCAT('%', #{scOrgInfo.name}), '%')
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.provinceCode != null and scOrgInfo.provinceCode != ''">
+				and province_code = #{scOrgInfo.provinceCode}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.cityCode != null and scOrgInfo.cityCode != ''">
+				and city_code = #{scOrgInfo.cityCode}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.countyCode != null and scOrgInfo.countyCode != ''">
+				and county_code = #{scOrgInfo.countyCode}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.vatName != null and scOrgInfo.vatName != ''">
+				and vat_name = #{scOrgInfo.vatName}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.vatNo != null and scOrgInfo.vatNo != ''">
+				and vat_no = #{scOrgInfo.vatNo}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.bankName != null and scOrgInfo.bankName != ''">
+				and bank_name = #{scOrgInfo.bankName}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.vatAcct != null and scOrgInfo.vatAcct != ''">
+				and vat_acct = #{scOrgInfo.vatAcct}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.regAddr != null and scOrgInfo.regAddr != ''">
+				and reg_addr = #{scOrgInfo.regAddr}
+			</if>
+		</where>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getScOrgInfoCountByParams" resultType="int">
+		select count(1)	from s_c_org_info
+		<where>
+			<if test="scOrgInfo != null and scOrgInfo.name != null and scOrgInfo.name != ''">
+				name like CONCAT(CONCAT('%', #{scOrgInfo.name}), '%')
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.provinceCode != null and scOrgInfo.provinceCode != ''">
+				and province_code = #{scOrgInfo.provinceCode}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.cityCode != null and scOrgInfo.cityCode != ''">
+				and city_code = #{scOrgInfo.cityCode}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.countyCode != null and scOrgInfo.countyCode != ''">
+				and county_code = #{scOrgInfo.countyCode}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.vatName != null and scOrgInfo.vatName != ''">
+				and vat_name = #{scOrgInfo.vatName}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.vatNo != null and scOrgInfo.vatNo != ''">
+				and vat_no = #{scOrgInfo.vatNo}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.bankName != null and scOrgInfo.bankName != ''">
+				and bank_name = #{scOrgInfo.bankName}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.vatAcct != null and scOrgInfo.vatAcct != ''">
+				and vat_acct = #{scOrgInfo.vatAcct}
+			</if>
+			<if test="scOrgInfo != null and scOrgInfo.regAddr != null and scOrgInfo.regAddr != ''">
+				and reg_addr = #{scOrgInfo.regAddr}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 供电公司重复性校验 -->
+	<select id="checkOrgList" resultType="string">
+		SELECT 
+			id
+		FROM
+		s_c_org_info WHERE
+		name = #{name}
+		<if test="provinceCode != null and provinceCode != ''">
+			AND province_code = #{provinceCode}
+		</if>
+		<if test="cityCode != null and cityCode != ''">
+			AND city_code = #{cityCode}
+		</if>
+		<if test="countyCode != null and countyCode != ''">
+			AND county_code = #{countyCode}
+		</if>
+		<if test="id != null and id != ''">
+			AND id != #{id}
+		</if>
+	</select>
+	
+	<select id="getSelectOrgList" resultType="com.hhwy.selling.domain.ScOrgInfo">
+		select id,
+			name name,
+			province_code provinceCode,
+			city_code cityCode,
+			county_code countyCode,
+			vat_name vatName,
+			vat_no vatNo,
+			bank_name bankName,
+			vat_acct vatAcct,
+			reg_addr regAddr 
+		from s_c_org_info
+	</select>
+	
+	<!-- 根据供电公司名称获取供电公司id，     用户信息导入时用到 -->
+	<select id="getOrgInfoListByNames" resultType="com.hhwy.purchaseweb.archives.scorginfo.domain.ScOrgInfoDetail">
+		select
+			max(ID) id,
+			name name
+		from s_c_org_info
+		<where>
+			<foreach collection="list" item="item" index="index" open="" close="" separator=" or "> 
+				name = #{item}
+	    	</foreach> 
+		</where>
+		group by name
+	</select>
+</mapper>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+			<div class="col-md-12">
+			    <div class="panel panel-default">
+					<div class="panel-heading"><span class="line-box"></span>合同查询</div>
+                        	<div class="panel-body">
+						<div class="col-sm-4">
+                   				<div class="col-sm-3 control-label">年份</div>
+                   				<div class="form-group col-sm-8">
+              						<input type="text" class="form-control selectDate" placeholder="yyyy" id="selectYear">
+              						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:88%;"><i class="fa icon-rili"></i></span> -->
+          						</div>
+                    			</div>
+                     			<div class="col-sm-4">
+                     				<div class="col-sm-3 control-label">合同编号</div>
+                     				<div class="form-group col-sm-8">
+                                      <input class="form-control" id="selectAgreNo" onChange="initParams('agreNo',value)" placeholder="Enter text">
+                                  </div>
+						</div>
+                     			<div class="col-sm-4">
+                     				<div class="col-sm-3 control-label">合同类型</div>
+                     				<div class="form-group col-sm-8">
+              						<select class="form-control" id="selectAgreType" onChange="initParams('agreType',value)">
+              							
+              						</select>
+          						</div>
+						</div>
+						<div class="col-sm-4">
+                   				<div class="col-sm-3 control-label">合同状态</div>
+                     				<div class="form-group col-sm-8">
+                     				<select class="form-control" id="selectAgreStatus" onChange="initParams('agreStatus',value)">
+										<option value=''>---请选择---</option>
+										<option value="01">未执行</option>
+										<option value="02">执行中</option>
+										<option value="03">已完成</option>
+									</select>
+          						</div>
+                    			</div>
+                    			<div class="col-sm-4">
+                   				<div class="col-sm-3 control-label">合同开始日期</div>
+                   				<div class="form-group col-sm-8">
+              						<input type="text" class="form-control selectDate" placeholder="yyyy/mm/dd" id="bgnDate">
+              						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:88%;"><i class="fa icon-rili"></i></span> -->
+          						</div>
+                    			</div>
+                    			<div class="col-sm-4">
+                   				<div class="col-sm-3 control-label">合同开结束日期</div>
+                   				<div class="form-group col-sm-8">
+              						<input type="text" class="form-control selectDate" placeholder="yyyy/mm/dd" id="endDate">
+              						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:88%;"><i class="fa icon-rili"></i></span> -->
+          						</div>
+                    			</div>
+                    			<div class="col-md-12 text-right" style="border-top:1px dashed #ccc; padding-top: 10px;">
+							<a href="javascript:void(0)" onClick="searchData()" class="btn btn-info btn-sm" style="margin-right:15px;">查询</a>
+							<a href="javascript:void(0)" onClick="reset()" class="btn btn-default btn-sm">重置</a>
+						</div>
+					</div>
+					<div class="panel-body" style="padding-top: 0">
+                        		<div class="table-responsive">
+                        		<div class="bg-info grid-title">合同列表</div>
+                        		<div class="grid-table"><table id="listGrid" class="table table-bordered table-hover"></table></div>
+                        		
+                                  
+						</div>
+					</div>
+				</div>
+			</div>						
+		</div>
+		<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    laydate.render({
+  	  elem: '#bgnDate', //指定元素
+  	  done:function(value, date, endDate){initParams('effectiveDate',value)}
+  });
+  laydate.render({
+  	  elem: '#endDate', //指定元素
+  	  done:function(value, date, endDate){initParams('expiryDate',value)}
+  });
+  var params = {
+  	year:null,
+  	consId:$.getLoginUser().consId,
+  	agreNo:"",
+  	agreType:null,
+  	agreStatus:null,
+  	effectiveDate:null,
+  	expiryDate:null,
+  };
+  $(function(){
+	//设置页面的高度
+	$.initpageCss();
+	//计算表格高度
+	$.initTableCss();
+	$(window).resize(function(){
+		$.initpageCss();
+	});
+  	//初始化列表数据
+  	initData();
+  	laydate.render({
+  		 elem:'#selectYear', //指定元素
+  		 type:"year",
+  		 done:function(value, date, endDate){initParams('year',value)}
+  	});
+  	initCode("selectAgreType");
+  })
+
+  function initData(){
+  	var queryParams = {
+  		serviceKey:"sw_getAgreList",
+  		clientKey:"sellandpurchase",
+  		params:params
+  	};
+  	$("#listGrid").createtable({
+  		url:groovyPath + "sw_getAgreList.do",
+  		method: 'POST',
+        queryParams:queryParams,
+  		width:"100%",
+  		rownumbers: true,
+  		fitColumns:true,
+  		column:[[
+  		      {field:'agreNo',title:'合同编号',width:100},
+  		     {field:'agreName',title:'合同名称',width:120,
+  		    	 formatter: function(value,row,index){
+  		    		 if(value){
+  		    			 return "<a href='javascript:void(0)' onclick=\"agreDetail('"+row.id+"')\">"+value+"</a>";
+  		    		 }
+  		    		 return "";
+  		    	 }
+  		     },
+  		   	{field:'consName',title:'用户名称',width:120},
+  		  	{field:'elecTypeCodeName',title:'用电类别',width:100},
+  		     {field:'agreTypeName',title:'合同类型',width:100},
+  		     {field:'proxyPq',title:'合同电量<br/>（兆瓦时）',width:100},
+  		     {field:'effectiveDate',title:'合同开始日期',width:100},
+  		     {field:'expiryDate',title:'合同结束日期',width:100},
+  		     {field:'agreStatusName',title:'合同状态',width:80},
+  		   {field:'supplyNum',title:'补充协议数量',width:80,
+  		    	formatter: function(value,row,index){
+ 		    		 if(value){
+ 		    			 return "<a href='javascript:void(0)' onclick=\"supDetail('"+row.id+"')\">"+value+"</a>";
+ 		    		 }
+ 		    		 return "0";
+ 		    	 } 	 
+  		   },
+  		]],
+  	})
+  }
+  //查询
+  function searchData(){
+  	var queryParams = {
+  			serviceKey:"sw_getAgreList",
+  			clientKey:"sellandpurchase",
+  			params:params
+  		};
+  	$("#listGrid").createtable("load",queryParams);
+  }
+  //重置
+  function reset(){
+  	params = {year:null,consId:params.consId,agreNo:null,agreType:null,agreStatus:null,effectiveDate:null,expiryDate:null,};
+  	$("input").val("");
+  	$("select option").each(function(){
+  		$(this).attr("selected",false);
+  	});
+  }
+  
+  //查看详情信息
+  function agreDetail(id){
+	  MainFrameUtil.openDialog({
+	 		id:"agre_detail",
+			params:{id:id},
+			herf:"agreement-detail.html",
+			maximizable:false,
+			width:"80%",
+			height:620,
+	  	  });
+  }
+  
+  //查看补充协议信息
+  function supDetail(id){
+	  MainFrameUtil.openDialog({
+	 		id:"supply_list",
+			params:{id:id},
+			herf:"agresupply-list.html",
+			maximizable:false,
+			width:"80%",
+			height:620,
+	  	  });
+  }
+
+  //赋值查询参数
+  function initParams(type,value){
+  	if(type == "year"){
+  		params[type] = value.split("-")[0];
+  	}else{
+  		params[type] = value;
+  	}
+  }
+  //获取码表信息
+  function initCode(type){
+  	var url = "";
+  	var queryParams = null;
+  	if(type == "selectAgreType"){
+  		queryParams = {
+  			serviceKey:"c_getCodeList",
+  			clientKey:"sellandpurchase",
+  			params:{
+  				codeType : ["sell_sellElecContractType"],
+  				countyCode : "",
+  			} 
+  		}
+  		
+  		url = groovyPath + "c_getCodeList.do";
+  	}
+  	$.ajax({
+  		url:url,
+  		type : "post",
+  		data:$.toJSON(queryParams),
+          contentType:'application/json;charset=UTF-8',  
+  		success:function(data){
+  			console.log(data);
+  			if(type == "selectAgreType"){
+  				cont = data.value.datas.sell_sellElecContractType;
+  				var html = "<option value=''>---请选择---</option>";
+  				for(var i=0; i<cont.length; i++){
+  					var row = cont[i];
+  					html += "<option value='" + row.value + "'>" + row.name + "</option>";
+  				}
+  				$("#" + type).append(html);
+  			}
+  		}
+  	});
+  }
+    </script>
+	</body>
+</html>

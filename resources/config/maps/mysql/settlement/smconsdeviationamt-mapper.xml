@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smConsDeviationAmt.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmConsDeviationAmtListByParams" resultType="com.hhwy.purchase.domain.SmConsDeviationAmt">
+		select
+			ID id,
+			cons_id consId,
+			scheme_id schemeId,
+			punish_type punishType,
+			lower_threshold lowerThreshold,
+			lower_prc lowerPrc,
+			lower_dev_amt lowerDevAmt,
+			upper_threshold1 upperThreshold1,
+			upper_prc1 upperPrc1,
+			upper_dev_amt1 upperDevAmt1,
+			upper_threshold2 upperThreshold2,
+			upper_prc2 upperPrc2,
+			upper_dev_amt2 upperDevAmt2,
+			org_no orgNo		
+		from s_m_cons_deviation_amt where 1=1
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.consId != null and smConsDeviationAmt.consId != ''">
+			and cons_id = #{smConsDeviationAmt.consId}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.schemeId != null and smConsDeviationAmt.schemeId != ''">
+			and scheme_id = #{smConsDeviationAmt.schemeId}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.punishType != null and smConsDeviationAmt.punishType != ''">
+			and punish_type = #{smConsDeviationAmt.punishType}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.lowerThreshold != null and smConsDeviationAmt.lowerThreshold != ''">
+			and lower_threshold = #{smConsDeviationAmt.lowerThreshold}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.lowerPrc != null and smConsDeviationAmt.lowerPrc != ''">
+			and lower_prc = #{smConsDeviationAmt.lowerPrc}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.lowerDevAmt != null and smConsDeviationAmt.lowerDevAmt != ''">
+			and lower_dev_amt = #{smConsDeviationAmt.lowerDevAmt}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperThreshold1 != null and smConsDeviationAmt.upperThreshold1 != ''">
+			and upper_threshold1 = #{smConsDeviationAmt.upperThreshold1}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperPrc1 != null and smConsDeviationAmt.upperPrc1 != ''">
+			and upper_prc1 = #{smConsDeviationAmt.upperPrc1}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperDevAmt1 != null and smConsDeviationAmt.upperDevAmt1 != ''">
+			and upper_dev_amt1 = #{smConsDeviationAmt.upperDevAmt1}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperThreshold2 != null and smConsDeviationAmt.upperThreshold2 != ''">
+			and upper_threshold2 = #{smConsDeviationAmt.upperThreshold2}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperPrc2 != null and smConsDeviationAmt.upperPrc2 != ''">
+			and upper_prc2 = #{smConsDeviationAmt.upperPrc2}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperDevAmt2 != null and smConsDeviationAmt.upperDevAmt2 != ''">
+			and upper_dev_amt2 = #{smConsDeviationAmt.upperDevAmt2}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.orgNo != null and smConsDeviationAmt.orgNo != ''">
+			and org_no = #{smConsDeviationAmt.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmConsDeviationAmtCountByParams" resultType="int">
+		select count(1)	from s_m_cons_deviation_amt where 1=1
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.consId != null and smConsDeviationAmt.consId != ''">
+			and cons_id = #{smConsDeviationAmt.consId}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.schemeId != null and smConsDeviationAmt.schemeId != ''">
+			and scheme_id = #{smConsDeviationAmt.schemeId}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.punishType != null and smConsDeviationAmt.punishType != ''">
+			and punish_type = #{smConsDeviationAmt.punishType}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.lowerThreshold != null and smConsDeviationAmt.lowerThreshold != ''">
+			and lower_threshold = #{smConsDeviationAmt.lowerThreshold}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.lowerPrc != null and smConsDeviationAmt.lowerPrc != ''">
+			and lower_prc = #{smConsDeviationAmt.lowerPrc}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.lowerDevAmt != null and smConsDeviationAmt.lowerDevAmt != ''">
+			and lower_dev_amt = #{smConsDeviationAmt.lowerDevAmt}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperThreshold1 != null and smConsDeviationAmt.upperThreshold1 != ''">
+			and upper_threshold1 = #{smConsDeviationAmt.upperThreshold1}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperPrc1 != null and smConsDeviationAmt.upperPrc1 != ''">
+			and upper_prc1 = #{smConsDeviationAmt.upperPrc1}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperDevAmt1 != null and smConsDeviationAmt.upperDevAmt1 != ''">
+			and upper_dev_amt1 = #{smConsDeviationAmt.upperDevAmt1}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperThreshold2 != null and smConsDeviationAmt.upperThreshold2 != ''">
+			and upper_threshold2 = #{smConsDeviationAmt.upperThreshold2}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperPrc2 != null and smConsDeviationAmt.upperPrc2 != ''">
+			and upper_prc2 = #{smConsDeviationAmt.upperPrc2}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.upperDevAmt2 != null and smConsDeviationAmt.upperDevAmt2 != ''">
+			and upper_dev_amt2 = #{smConsDeviationAmt.upperDevAmt2}
+		</if>
+		<if test="smConsDeviationAmt != null and smConsDeviationAmt.orgNo != null and smConsDeviationAmt.orgNo != ''">
+			and org_no = #{smConsDeviationAmt.orgNo}
+		</if>
+	</select>
+	
+	<!-- 根据方案id删除月度结算用户偏差惩罚费用信息表信息 -->
+	<delete id="deleteConsDevAmtBySchemeIds">
+	    DELETE FROM s_m_cons_deviation_amt where scheme_id IN
+	     <foreach item="schemeId" index="index"
+               collection="schemeIds" open="(" separator="," close=")">  
+                #{schemeId}
+         </foreach>
+	</delete>
+	
+		<!-- 根据方案id获取结算详细信息 -->
+	<select id="getConsDeviAmtBySchemeId" resultType="com.hhwy.purchaseweb.settlement.base.smconsdeviationamt.domain.SmConsDeviationAmtDetail">
+	     SELECT
+			a.id id,
+			a.cons_id consId,
+			b.cons_name consName,
+			b.volt_code voltCode,
+			
+			a.scheme_id schemeId,
+			a.punish_type punishType,
+			a.lower_threshold lowerThreshold,
+			a.lower_prc lowerPrc,
+			a.lower_dev_amt lowerDevAmt,
+			a.upper_threshold1 upperThreshold1,
+			a.upper_prc1 upperPrc1,
+			a.upper_dev_amt1 upperDevAmt1,
+			a.upper_threshold2 upperThreshold2,
+			a.upper_prc2 upperPrc2,
+			a.upper_dev_amt2 upperDevAmt2,
+			
+			IFNULL((SELECT sum(examine.agre_pq) FROM ph_m_agre_pq_examine examine where examine.cons_id=b.id and examine.ym=scheme.ym),
+				CONVERT(
+						CASE RIGHT(scheme.ym, 2) 
+							WHEN '01' THEN ppa.jan
+							WHEN '02' THEN ppa.feb
+							WHEN '03' THEN ppa.mar
+							WHEN '04' THEN ppa.apr
+							WHEN '05' THEN ppa.may
+							WHEN '06' THEN ppa.jun
+							WHEN '07' THEN ppa.jul
+							WHEN '08' THEN ppa.aug
+							WHEN '09' THEN ppa.sept
+							WHEN '10' THEN ppa.oct
+							WHEN '11' THEN ppa.nov
+							WHEN '12' THEN ppa.dece
+						END
+						, DECIMAL(10,3)) ) proxyPq,
+			elec.practical_pq actualPq
+		FROM
+			s_m_cons_deviation_amt a
+		inner JOIN s_c_consumer_info b ON a.scheme_id=#{schemeId} and a.cons_id=b.id
+		inner join s_m_purchase_scheme scheme on a.scheme_id= scheme.id
+		LEFT JOIN s_c_cons_electricity elec on elec.cons_id=a.cons_id and elec.ym=scheme.ym
+		LEFT JOIN s_m_ppa ppa ON b.id = ppa.cons_id and ppa.agre_status!="00" 
+			and concat(left(scheme.ym,4),"-",right(scheme.ym,2)) &gt;= LEFT(ppa.effective_date ,7)
+			AND concat(left(scheme.ym,4),"-",right(scheme.ym,2)) &lt;= LEFT(ppa.expiry_date,7)
+		order by b.cons_name
+	</select>
+	
+	<!-- 根据ym获取当月的所有合同用户信息（偏差费用计算相关信息） -->
+	<select id="getDevAmtDetailListByYm" resultType="com.hhwy.purchaseweb.settlement.base.smconsdeviationamt.domain.SmConsDeviationAmtDetail">
+	      SELECT
+			cons.id consId,
+			cons.cons_name consName,
+			cons.volt_code voltCode,
+			
+			'01' punishType,
+			d.lower_threshold lowerThreshold,
+			d.lower_prc lowerPrc,
+			0 lowerDevAmt,
+			d.upper_threshold upperThreshold1,
+			d.upper_prc upperPrc1,
+			0 upperDevAmt1,
+			0 upperDevAmt2,
+			
+			elec.practical_pq actualPq,
+			IFNULL((SELECT sum(examine.agre_pq) FROM ph_m_agre_pq_examine examine where examine.cons_id=cons.id and examine.ym=#{ym}) ,
+				CONVERT(
+						CASE RIGHT(#{ym}, 2) 
+							WHEN '01' THEN ppa.jan
+							WHEN '02' THEN ppa.feb
+							WHEN '03' THEN ppa.mar
+							WHEN '04' THEN ppa.apr
+							WHEN '05' THEN ppa.may
+							WHEN '06' THEN ppa.jun
+							WHEN '07' THEN ppa.jul
+							WHEN '08' THEN ppa.aug
+							WHEN '09' THEN ppa.sept
+							WHEN '10' THEN ppa.oct
+							WHEN '11' THEN ppa.nov
+							WHEN '12' THEN ppa.dece
+						END
+						, DECIMAL(18,6)) ) proxyPq
+		FROM
+			(
+				SELECT
+					s_c_consumer_info.*
+				FROM
+					s_c_consumer_info
+				INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+					fweb_ac_uoa.org_id = org_no
+					AND fweb_ac_uoa.user_id = #{userId}
+				)
+			) cons 
+		INNER JOIN s_m_ppa ppa ON cons.id = ppa.cons_id and ppa.agre_status!="00" 
+			and concat(left(#{ym},4),"-",right(#{ym},2)) &gt;= LEFT(ppa.effective_date ,7)
+			AND concat(left(#{ym},4),"-",right(#{ym},2)) &lt;= LEFT(ppa.expiry_date,7)
+		LEFT JOIN s_m_agre_punish_cons d ON ppa.id = d.agre_id
+		LEFT JOIN s_c_cons_electricity elec on elec.cons_id=cons.id and elec.ym=#{ym}
+		order by cons.cons_name
+	</select>
+	
+	
+	<!-- 根据用户id和year、minMon、maxMon 来获取用户指定月份区间的总委托电量和总实际用电量 -->
+	<select id="getProxyAndActualPqByParams" resultType="map">
+      	select SUM(actualPq) actualPq, SUM(proxyPq) proxyPq
+		FROM(
+			SELECT
+				mon.month,
+				elec.practical_pq actualPq,
+				IFNULL((SELECT sum(examine.agre_pq) FROM ph_m_agre_pq_examine examine where examine.cons_id=#{consId} and 
+							examine.ym= CONCAT(#{year},mon.month)),
+					CONVERT(
+							CASE mon.month
+								WHEN '01' THEN ppa.jan
+								WHEN '02' THEN ppa.feb
+								WHEN '03' THEN ppa.mar
+								WHEN '04' THEN ppa.apr
+								WHEN '05' THEN ppa.may
+								WHEN '06' THEN ppa.jun
+								WHEN '07' THEN ppa.jul
+								WHEN '08' THEN ppa.aug
+								WHEN '09' THEN ppa.sept
+								WHEN '10' THEN ppa.oct
+								WHEN '11' THEN ppa.nov
+								WHEN '12' THEN ppa.dece
+							END
+							, DECIMAL(10,3)) ) proxyPq
+					FROM
+						(select '01' month UNION all
+							select '02' month UNION all
+							select '03' month UNION all
+							select '04' month UNION all
+							select '05' month UNION all
+							select '06' month UNION all
+							select '07' month UNION all
+							select '08' month UNION all
+							select '09' month UNION all
+							select '10' month UNION all
+							select '11' month UNION all
+							select '12' month
+					) mon 
+					join (select smppa.cons_id cons_id,
+								SUM(smppa.jan) jan, 
+								SUM(smppa.feb) feb, 
+								SUM(smppa.mar) mar, 
+								SUM(smppa.apr) apr, 
+								SUM(smppa.may) may, 
+								SUM(smppa.jun) jun, 
+								SUM(smppa.jul) jul, 
+								SUM(smppa.aug) aug, 
+								SUM(smppa.sept) sept, 
+								SUM(smppa.oct) oct, 
+								SUM(smppa.nov) nov, 
+								SUM(smppa.dece) dece
+						from s_m_ppa smppa where smppa.agre_status!="00" and smppa.cons_id=#{consId}
+								and LEFT(smppa.effective_date ,4) = #{year} AND LEFT(smppa.expiry_date,4)= #{year} group BY smppa.cons_id) ppa 
+					
+					LEFT JOIN s_c_cons_electricity elec on elec.cons_id=#{consId} and elec.ym=CONCAT(#{year},mon.month)
+			) aa where month &gt;= #{minMon} and month &lt;= #{maxMon}
+	</select>
+	
+	
+	
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmGeneratorMonthPq.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmGeneratorMonthPqListByParams" resultType="com.hhwy.purchaseweb.agreement.phmgeneratormonthpq.domain.PhmGeneratorMonthPqDetail">
+		select
+			ID id,
+			agre_id agreId,
+			generator_id generatorId,
+			ym ym,
+			generator_pq generatorPq,
+			generator_prc generatorPrc,
+			org_no orgNo
+		from ph_m_generator_month_pq where 1=1
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.agreId != null and phmGeneratorMonthPq.agreId != ''">
+			and agre_id = #{phmGeneratorMonthPq.agreId}
+		</if>
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.generatorId != null and phmGeneratorMonthPq.generatorId != ''">
+			and generator_id = #{phmGeneratorMonthPq.generatorId}
+		</if>
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.ym != null and phmGeneratorMonthPq.ym != ''">
+			and ym = #{phmGeneratorMonthPq.ym}
+		</if>
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.generatorPq != null and phmGeneratorMonthPq.generatorPq != ''">
+			and generator_pq = #{phmGeneratorMonthPq.generatorPq}
+		</if>
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.orgNo != null and phmGeneratorMonthPq.orgNo != ''">
+			and org_no = #{phmGeneratorMonthPq.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmGeneratorMonthPqCountByParams" resultType="int">
+		select count(1)	from ph_m_generator_month_pq where 1=1
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.agreId != null and phmGeneratorMonthPq.agreId != ''">
+			and agre_id = #{phmGeneratorMonthPq.agreId}
+		</if>
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.generatorId != null and phmGeneratorMonthPq.generatorId != ''">
+			and generator_id = #{phmGeneratorMonthPq.generatorId}
+		</if>
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.ym != null and phmGeneratorMonthPq.ym != ''">
+			and ym = #{phmGeneratorMonthPq.ym}
+		</if>
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.generatorPq != null and phmGeneratorMonthPq.generatorPq != ''">
+			and generator_pq = #{phmGeneratorMonthPq.generatorPq}
+		</if>
+		<if test="phmGeneratorMonthPq != null and phmGeneratorMonthPq.orgNo != null and phmGeneratorMonthPq.orgNo != ''">
+			and org_no = #{phmGeneratorMonthPq.orgNo}
+		</if>
+	</select>
+	
+	<!-- 获取合同机组电量分月信息 -->
+	<select id="getPhmGeneratorMonthPqList" resultType="com.hhwy.purchaseweb.agreement.phmgeneratormonthpq.domain.PhmGeneratorMonthPqDetail">
+		select
+			generator.id id,
+			generator.agre_id agreId,
+			generator.generator_id generatorId,
+			generator_prc generatorPrc,
+			CASE RIGHT(generator.ym,2)
+			    WHEN '01' THEN 'jan'
+			    WHEN '02' THEN 'feb'
+			    WHEN '03' THEN 'mar'
+			    WHEN '04' THEN 'apr'
+			    WHEN '05' THEN 'may'
+			    WHEN '06' THEN 'jun'
+			    WHEN '07' THEN 'jul'
+			    WHEN '08' THEN 'aug'
+			    WHEN '09' THEN 'sep'
+			    WHEN '10' THEN 'oct'
+			    WHEN '11' THEN 'nov'
+			    ELSE 'dec'
+		    END ym,
+			generator.generator_pq generatorPq,
+			generator.org_no orgNo,
+			dist.id distId,
+			dist.tota_pq totaPq,
+			dist.distribution_mode distributionMode,
+			dist.save_decimal saveDecimal,
+			gen.gene_name geneName		
+		from ph_m_generator_month_pq generator
+		left join ph_m_gene_pq_dist dist on generator.agre_id = dist.agre_id and generator.generator_id = dist.generator_id
+		left join ph_c_generator_set gen on generator.generator_id = gen.id
+		where 1=1
+		<if test="agreId != null and agreId != ''">
+			and generator.agre_id = #{agreId}
+		</if>
+	</select>
+	<!-- 根据购电合同id获取合同机组电量分月信息 -->
+	<select id="getGeneMonthPqDetailByAgreId" resultType="com.hhwy.purchaseweb.agreement.phmgeneratormonthpq.domain.PhmGeneratorMonthPqDetail">
+		select
+			generator.agre_id agreId,
+			"合同分月电量" itemName,
+			sum(CASE RIGHT(generator.ym,2) WHEN '01' THEN generator.generator_pq ELSE 0 END ) jan,
+			sum(CASE RIGHT(generator.ym,2) WHEN '02' THEN generator.generator_pq ELSE 0 END ) feb,
+			sum(CASE RIGHT(generator.ym,2) WHEN '03' THEN generator.generator_pq ELSE 0 END ) mar,
+			sum(CASE RIGHT(generator.ym,2) WHEN '04' THEN generator.generator_pq ELSE 0 END ) apr,
+			sum(CASE RIGHT(generator.ym,2) WHEN '05' THEN generator.generator_pq ELSE 0 END ) may,
+			sum(CASE RIGHT(generator.ym,2) WHEN '06' THEN generator.generator_pq ELSE 0 END ) jun,
+			sum(CASE RIGHT(generator.ym,2) WHEN '07' THEN generator.generator_pq ELSE 0 END ) jul,
+			sum(CASE RIGHT(generator.ym,2) WHEN '08' THEN generator.generator_pq ELSE 0 END ) aug,
+			sum(CASE RIGHT(generator.ym,2) WHEN '09' THEN generator.generator_pq ELSE 0 END ) sep,
+			sum(CASE RIGHT(generator.ym,2) WHEN '10' THEN generator.generator_pq ELSE 0 END ) oct,
+			sum(CASE RIGHT(generator.ym,2) WHEN '11' THEN generator.generator_pq ELSE 0 END ) nov,
+			sum(CASE RIGHT(generator.ym,2) WHEN '12' THEN generator.generator_pq ELSE 0 END ) `dec`
+		from ph_m_generator_month_pq generator
+		left join ph_c_generator_set gen on generator.generator_id = gen.id
+		where 1=1
+				and generator.agre_id = #{agreId}
+		GROUP BY generator.agre_id
+	</select>
+	
+	<!-- 获取合同编号 -->
+	<select id="getAgreNoSequence" resultType="string">
+		SELECT MAX(SUBSTR(agre_no,5,3))+1 FROM ph_m_ppa WHERE agre_no LIKE concat(#{year},"%")
+	</select>
+	
+	<!-- 删除合同时根据合同标识删除合同机组电量分月信息 -->
+	<delete id="deletePhmGeneratorMonthPqByAgreId">
+		DELETE
+		FROM
+			ph_m_generator_month_pq
+		WHERE agre_id in <foreach item="item" index="index" collection="agreIds" open="(" separator="," close=")">
+            	#{item}
+            </foreach>
+	</delete>
+</mapper>

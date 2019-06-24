@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmDealInfo.sql">
+
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmDealInfoListByParams" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.PhmDealInfoDetail">
+		select
+			ID id,
+			ym ym,
+			report_detail_id reportDetailId,
+			generator_id generatorId,
+			producer_id producerId,
+			trader_name traderName,
+			attorn_type attornType,
+			deal_pq dealPq,
+			deal_prc dealPrc,
+			org_no orgNo,
+			plan_id planId
+		from ph_m_deal_info 
+		where subitem_flag = '0'
+		<if test="phmDealInfo != null and phmDealInfo.ym != null and phmDealInfo.ym != ''">
+			and ym = #{phmDealInfo.ym}
+		</if>
+		<if test="phmDealInfo != null and phmDealInfo.planId != null and phmDealInfo.planId != ''">
+			and plan_id = #{phmDealInfo.planId}
+		</if>
+		<if test="consIds != null">
+			and cons_id in
+			<foreach collection="consIds" item="item" index="index" open="(" close=")" separator=","> 
+				#{item}
+	    	</foreach> 
+		</if>
+		<if test="phmDealInfo != null and phmDealInfo.reportDetailId != null and phmDealInfo.reportDetailId != ''">
+			and report_detail_id = #{phmDealInfo.reportDetailId}
+		</if>
+		<if test="phmDealInfo != null and phmDealInfo.producerId != null and phmDealInfo.producerId != ''">
+			and producer_id = #{phmDealInfo.producerId}
+		</if>
+		<if test="phmDealInfo != null and phmDealInfo.dealPq != null and phmDealInfo.dealPq != ''">
+			and deal_pq = #{phmDealInfo.dealPq}
+		</if>
+		<if test="phmDealInfo != null and phmDealInfo.dealPrc != null and phmDealInfo.dealPrc != ''">
+			and deal_prc = #{phmDealInfo.dealPrc}
+		</if>
+		<if test="phmDealInfo != null and phmDealInfo.orgNo != null and phmDealInfo.orgNo != ''">
+			and org_no = #{phmDealInfo.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据计划id获取其他省竞价、挂牌交易成交信息录入 -->
+	<select id="getPhmDealInfoByPlanId" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.PhmDealInfoDetail">
+		SELECT
+			report.id reportId,
+			report.plan_id planId,
+			report.report_pq reportPq,
+			report.report_prc reportPrc,
+			report.stage stage,
+			report.volt_code voltCode,
+			report.attorn_type attornType,
+			deal.id id,
+			deal.ym ym,
+			deal.producer_id producerId,
+			deal.deal_pq dealPq,
+			deal.deal_prc dealPrc,
+			deal.trader_name traderName,
+			elec.elec_name elecName
+		FROM
+			ph_m_transaction_report_detail report
+			LEFT JOIN ph_m_deal_info deal ON deal.plan_id = report.plan_id 
+				AND deal.report_detail_id = report.id and deal.subitem_flag = '0'
+			LEFT JOIN ph_c_elec_info elec ON deal.producer_id = elec.id
+		WHERE report.plan_id = #{id}
+		ORDER BY report.stage, deal.producer_id , deal.trader_name
+	</select>
+	
+	<!-- 根据计划id获取其他省双边协商交易成交信息录入 -->
+	<select id="getSbDealInfoByPlanId" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.PhmDealInfoDetail">
+		SELECT
+			deal.id id,
+			deal.ym ym,
+			deal.producer_id producerId,
+			deal.generator_id generatorId,
+			generator.gene_name geneName,
+			deal.deal_pq dealPq,
+			deal.deal_prc dealPrc,
+			elec.elec_name elecName,
+			generator.gene_name geneName,
+			deal.trader_name traderName,
+			deal.subitem_flag subitemFlag,
+			deal.attorn_type attornType
+		FROM
+			ph_m_deal_info deal  
+			LEFT JOIN ph_c_elec_info elec ON deal.producer_id = elec.id
+			left join ph_c_generator_set generator on deal.generator_id = generator.id
+		WHERE deal.plan_id = #{id} and deal.subitem_flag = '0'
+		ORDER BY deal.producer_id , deal.trader_name
+	</select>
+	
+	<!-- 根据planId获取山西、辽宁省竞价、挂牌交易成交信息录入 -->
+	<select id="getSLDealInfoByPlanId" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.PhmDealInfoDetail">
+		SELECT
+			deal.id id,
+			cons.id consId,
+			cons.cons_name consName,
+			cons.elec_type_code elecTypeCode,
+			cons.volt_code voltCode,
+			report.id reportId,
+			report.stage stage,
+			report.report_pq reportPq,
+			report.report_prc reportPrc,
+			report.attorn_type attornType,
+			deal.ym ym,
+			deal.deal_pq dealPq,
+			deal.deal_prc dealPrc,
+			deal.producer_id producerId,
+			elec.elec_name elecName,
+			deal.generator_id generatorId,
+			deal.trader_name traderName,
+			deal.delivery_prc deliveryPrc
+		FROM
+			ph_m_transaction_report_detail report
+			left join ph_m_deal_info deal on deal.report_detail_id = report.id and deal.subitem_flag = '0'
+			left join s_c_consumer_info cons on cons.id = report.cons_id
+			LEFT JOIN ph_c_elec_info elec ON deal.producer_id = elec.id
+		WHERE report.plan_id = #{id}
+		ORDER BY report.cons_id,report.stage, deal.producer_id ,deal.trader_name
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据planId获取山西、辽宁省双边协商交易成交信息录入 -->
+	<select id="getSLSbDealInfoByPlanId" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.PhmDealInfoDetail">
+		SELECT
+			deal.id id,
+			cons.id consId,
+			cons.cons_name consName,
+			cons.elec_type_code elecTypeCode,
+			cons.volt_code voltCode,
+			examine.ym ym,
+			examine.plan_id planId,
+			deal.deal_pq dealPq,
+			deal.attorn_type attornType,
+			deal.deal_prc dealPrc,
+			generator.gene_name geneName,
+			deal.producer_id producerId,
+			deal.generator_id generatorId,
+			(CASE WHEN (deal.producer_id IS Null or deal.producer_id = '') THEN deal.trader_name ELSE elec.elec_name END) traderName,
+			deal.delivery_prc deliveryPrc
+		FROM
+			ph_m_agre_pq_examine examine 
+			left join ph_m_deal_info deal on deal.plan_id = examine.plan_id and deal.cons_id = examine.cons_id and deal.subitem_flag = '0'
+			LEFT JOIN ph_c_elec_info elec ON deal.producer_id = elec.id
+			left join ph_c_generator_set generator on deal.generator_id = generator.id
+			left join s_c_consumer_info cons on cons.id = examine.cons_id
+		WHERE examine.plan_id = #{id} and examine.subitem_flag = '0'
+		ORDER BY examine.cons_id,deal.producer_id,deal.trader_name
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据planId获取成交数量 ,山西辽宁分页用-->
+	<select id="getSLDealInfoCountByPlanId" resultType="int">
+		select count(1)	
+		from ph_m_transaction_report_detail report
+			left join ph_m_deal_info deal on deal.report_detail_id = report.id and deal.subitem_flag = '0'
+		WHERE report.plan_id = #{id}
+	</select>
+	
+	<!-- 根据planId获取成交数量 ,山西辽宁双边协商交易分页用-->
+	<select id="getSLSbDealInfoCountByPlanId" resultType="int">
+		select count(1)	
+		FROM
+			ph_m_agre_pq_examine examine 
+			left join ph_m_deal_info deal on deal.plan_id = examine.plan_id and deal.cons_id = examine.cons_id and deal.subitem_flag = '0'
+		WHERE examine.plan_id = #{id} and examine.subitem_flag = '0'
+	</select>
+	
+	<!-- 根据计划id获取年度交易 本次交易各个分月成交电量详情 -->
+	<select id="getYearDealInfoByPlanId" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.MonthDealInfoDetail">
+		SELECT
+			subitem.id id,
+			report.plan_id planId,
+			deal.id dealId,
+			report.id reportId,
+			report.cons_id consId,
+			cons.cons_name consName,
+			deal.generator_id generatorId,
+			deal.delivery_prc deliveryPrc,
+			<if test="attorn == '01'">
+				deal.trader_name traderName,
+			</if>
+			<if test="attorn == '00'">
+				elec.elec_name traderName,
+			</if>
+			deal.deal_pq totalDealPq,
+			deal.deal_prc dealPrc,
+			month.trade_mode mode,
+			deal.producer_id producerId,
+			report.attorn_type attorn,
+			subitem.jan mon1,
+			subitem.feb mon2,
+			subitem.mar mon3,
+			subitem.apr mon4,
+			subitem.may mon5,
+			subitem.jun mon6,
+			subitem.jul mon7,
+			subitem.aug mon8,
+			subitem.sept mon9,
+			subitem.oct mon10,
+			subitem.nov mon11,
+			subitem.dece mon12
+		FROM
+			ph_m_transaction_report_detail report
+			left join ph_m_purchase_plan_month month on report.plan_id = month.id
+			LEFT JOIN ph_m_deal_info deal ON deal.plan_id = report.plan_id AND deal.report_detail_id = report.id and deal.subitem_flag = '0'
+			LEFT JOIN ph_c_elec_info elec ON deal.producer_id = elec.id
+			left join ph_m_plan_year_subitem subitem on subitem.id = deal.id
+			left join s_c_consumer_info cons on cons.id = report.cons_id
+		WHERE report.plan_id = #{id}
+		<if test="attorn == '01'">
+			ORDER BY report.cons_id,report.stage, deal.producer_id 
+		</if>
+		<if test="attorn == '00'">
+			ORDER BY report.cons_id,report.stage, deal.trader_name
+		</if>
+	</select>
+	
+	<!-- 根据计划id获取山西、辽宁省 双边年度交易 本次交易各个分月成交电量详情 -->
+	<select id="getSlSbYearDealInfoByPlanId" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.MonthDealInfoDetail">
+		SELECT
+			subitem.id id,
+			deal.plan_id planId,
+			deal.id dealId,
+			deal.generator_id generatorId,
+			deal.delivery_prc deliveryPrc,
+			examine.cons_id consId,
+			cons.cons_name consName,
+			<if test="attorn == '01'">
+				deal.trader_name traderName,
+			</if>
+			<if test="attorn == '00'">
+				elec.elec_name traderName,
+			</if>
+			deal.deal_pq totalDealPq,
+			deal.deal_prc dealPrc,
+			month.trade_mode mode,
+			deal.producer_id producerId,
+			deal.attorn_type attorn,
+			subitem.jan mon1,
+			subitem.feb mon2,
+			subitem.mar mon3,
+			subitem.apr mon4,
+			subitem.may mon5,
+			subitem.jun mon6,
+			subitem.jul mon7,
+			subitem.aug mon8,
+			subitem.sept mon9,
+			subitem.oct mon10,
+			subitem.nov mon11,
+			subitem.dece mon12
+		FROM
+			ph_m_agre_pq_examine examine 
+			left join ph_m_purchase_plan_month month on examine.plan_id = month.id 
+			left join ph_m_deal_info deal on deal.plan_id = examine.plan_id and deal.subitem_flag = '0' and (examine.cons_id = deal.cons_id or deal.cons_id is Null)
+			LEFT JOIN ph_c_elec_info elec ON deal.producer_id = elec.id
+			left join ph_m_plan_year_subitem subitem on subitem.id = deal.id
+			left join s_c_consumer_info cons on cons.id = examine.cons_id
+		WHERE examine.plan_id = #{id} and examine.subitem_flag = '0'
+		<if test="attorn == '01'">
+			ORDER BY examine.cons_id,deal.producer_id 
+		</if>
+		<if test="attorn == '00'">
+			ORDER BY examine.cons_id,deal.trader_name
+		</if>
+	</select>
+	
+	<!-- 根据计划id获取双边年度交易 本次交易各个分月成交电量详情 -->
+	<select id="getSbYearDealInfoByPlanId" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.MonthDealInfoDetail">
+		SELECT
+			subitem.id id,
+			deal.plan_id planId,
+			deal.id dealId,
+			deal.cons_id consId,
+			deal.generator_id generatorId,
+			deal.delivery_prc deliveryPrc,
+			<if test="attorn == '01'">
+				deal.trader_name traderName,
+			</if>
+			<if test="attorn == '00'">
+				elec.elec_name traderName,
+			</if>
+			deal.deal_pq totalDealPq,
+			deal.deal_prc dealPrc,
+			month.trade_mode mode,
+			deal.producer_id producerId,
+			deal.attorn_type attorn,
+			subitem.jan mon1,
+			subitem.feb mon2,
+			subitem.mar mon3,
+			subitem.apr mon4,
+			subitem.may mon5,
+			subitem.jun mon6,
+			subitem.jul mon7,
+			subitem.aug mon8,
+			subitem.sept mon9,
+			subitem.oct mon10,
+			subitem.nov mon11,
+			subitem.dece mon12
+		FROM
+			ph_m_deal_info deal
+			left join ph_m_purchase_plan_month month on deal.plan_id = month.id
+			LEFT JOIN ph_c_elec_info elec ON deal.producer_id = elec.id
+			left join ph_m_plan_year_subitem subitem on subitem.id = deal.id
+		WHERE deal.plan_id = #{id} and deal.subitem_flag = '0'
+		<if test="attorn == '01'">
+			ORDER BY deal.producer_id 
+		</if>
+		<if test="attorn == '00'">
+			ORDER BY deal.trader_name
+		</if>
+	</select>
+	
+	<!-- 根据计划id获取月度交易 当年所有已成交电量详情 -->
+	<select id="getMonthDealInfoByYm" resultType="com.hhwy.purchaseweb.bid.phmdealinfo.domain.MonthDealInfoDetail">
+		SELECT
+			deal.id id,
+			deal.plan_id planId,
+			deal.report_detail_id reportId,
+			deal.generator_id generatorId,
+			(CASE WHEN (deal.producer_id IS Null or deal.producer_id = '') THEN deal.trader_name ELSE elec.elec_name END) traderName,
+			deal.deal_pq totalDealPq,
+			month.trade_mode mode,
+			month.trade_variety variety,
+			(CASE WHEN (deal.attorn_type IS Null or deal.attorn_type = '') THEN tran.attorn_type ELSE deal.attorn_type END) attorn,
+			deal.producer_id producerId,
+			deal.cons_id consId,
+			cons.cons_name consName,
+			MAX(CASE RIGHT(df.ym,2) WHEN '01' THEN df.deal_pq ELSE 0 END ) mon1,
+			MAX(CASE RIGHT(df.ym,2) WHEN '02' THEN df.deal_pq ELSE 0 END ) mon2,
+			MAX(CASE RIGHT(df.ym,2) WHEN '03' THEN df.deal_pq ELSE 0 END ) mon3,
+			MAX(CASE RIGHT(df.ym,2) WHEN '04' THEN df.deal_pq ELSE 0 END ) mon4,
+			MAX(CASE RIGHT(df.ym,2) WHEN '05' THEN df.deal_pq ELSE 0 END ) mon5,
+			MAX(CASE RIGHT(df.ym,2) WHEN '06' THEN df.deal_pq ELSE 0 END ) mon6,
+			MAX(CASE RIGHT(df.ym,2) WHEN '07' THEN df.deal_pq ELSE 0 END ) mon7,
+			MAX(CASE RIGHT(df.ym,2) WHEN '08' THEN df.deal_pq ELSE 0 END ) mon8,
+			MAX(CASE RIGHT(df.ym,2) WHEN '09' THEN df.deal_pq ELSE 0 END ) mon9,
+			MAX(CASE RIGHT(df.ym,2) WHEN '10' THEN df.deal_pq ELSE 0 END ) mon10,
+			MAX(CASE RIGHT(df.ym,2) WHEN '11' THEN df.deal_pq ELSE 0 END ) mon11,
+			MAX(CASE RIGHT(df.ym,2) WHEN '12' THEN df.deal_pq ELSE 0 END ) mon12
+		FROM
+			ph_m_purchase_plan_month month
+			LEFT JOIN ph_m_deal_info deal ON deal.plan_id = month.id and deal.subitem_flag = '0'
+			LEFT JOIN ph_m_transaction_report_detail tran on tran.id = deal.report_detail_id
+			LEFT JOIN ph_c_elec_info elec ON deal.producer_id = elec.id
+			left join ph_m_deal_info df on df.parent_id = deal.id and df.subitem_flag = '1'
+			left join s_c_consumer_info cons on cons.id = deal.cons_id
+		WHERE month.ym = left(#{ym},4) and month.plan_status > '03'
+		group by deal.id<!-- (CASE WHEN deal.producer_id is null THEN deal.trader_name ELSE deal.producer_id END) -->
+		ORDER BY deal.plan_id,deal.producer_id,deal.trader_name
+	</select>
+	
+	<!-- 根据planId删除成交信息 -->
+	<delete id="deletePhmDealInfoByPlanId">
+		Delete from ph_m_plan_year_subitem where id in (
+			Select id from ph_m_deal_info where plan_id = #{planId} and subitem_flag = '0'
+		);
+		DELETE FROM ph_m_deal_info WHERE plan_id = #{planId}
+		
+	</delete>
+	
+	<!-- 根据repordIds删除成交信息 -->
+	<delete id="deletePhmDealInfoByReportIds">
+		<foreach collection="array" item="item" index="index" open="" close="" separator=";"> 
+			Delete from ph_m_plan_year_subitem where id in (
+				Select id from ph_m_deal_info where report_detail_id = #{item} and subitem_flag = '0'
+			);
+			DELETE FROM ph_m_deal_info WHERE report_detail_id = #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除phmDealInfo中不存在的reportId -->
+	<delete id="deletePhmDealInfoExceptReportIds">
+		Delete from ph_m_plan_year_subitem where id in (
+			Select id from ph_m_deal_info where plan_id = #{planId} and subitem_flag = '0' and report_detail_id not in 
+				<foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+		);
+		DELETE FROM ph_m_deal_info WHERE plan_id = #{planId} and report_detail_id not in 
+			<foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+			</foreach>;
+	</delete>
+	
+	<!-- 根据planId、ym、reportId更新subitemFlag为“1” 的dealPq值 -->
+	<update id="updateSubPhmDealInfo" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";"> 
+			update ph_m_deal_info
+            <set>  
+				deal_pq = #{item.dealPq}
+            </set>  
+                where ym = #{item.ym} and parent_id = #{item.parentId}
+	    </foreach> 
+	</update>
+	
+	<!-- 提交前校验 -->
+	<select id="checkBeforeSubmit" resultType="int">
+		SELECT 
+			COUNT(1)
+		FROM ph_m_transaction_report_detail a
+		LEFT JOIN ph_m_deal_info b ON a.id = b.report_detail_id
+		WHERE a.plan_id = #{planId} AND b.id IS NULL
+	</select>
+	
+	<!-- 根据id数组获取所有id对应的交易对象信息 -->
+	<select id="getTradeListByIds" resultType = "map">
+		select id id ,
+			  (CASE WHEN (producer_id IS Null or producer_id = '') THEN trader_name ELSE producer_id END) trade
+		from ph_m_deal_info
+		where id in
+			<foreach collection="array" item="item" index="index" open="(" close=")" separator=",">
+					#{item}
+			</foreach>
+	</select>
+	
+	<update id="updatePhmDealInfoByIds" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";"> 
+			update ph_m_deal_info
+            <set>  
+				producer_id = #{item.producerId},
+				trader_name = #{item.traderName},
+				deal_prc = #{item.dealPrc},
+				attorn_type = #{item.attornType},
+				generator_id = #{item.generatorId}
+            </set>  
+                where id = #{item.id} or parent_id = #{item.id}
+	    </foreach> 
+	</update>
+	
+	<!-- 根据planId删除拆月成交信息 -->
+	<delete id="deleteSubPhmDealInfoByPlanId">
+		DELETE FROM ph_m_deal_info WHERE plan_id = #{planId} and subitem_flag = '1'
+	</delete>
+	
+	<!-- 根据parentId删除拆月成交信息 -->
+	<delete id="deleteDealInfoByParentId">
+		<foreach collection="array" item="item" index="index" open="" close="" separator=";">
+			DELETE FROM ph_m_deal_info WHERE parent_id = #{item}
+		</foreach>
+		
+	</delete>
+	
+	<!-- 根据params删除拆月成交信息 -->
+	<delete id="deleteDealInfoByParams">
+		<foreach collection="array" item="item" index="index" open="" close="" separator=";">
+			DELETE FROM ph_m_deal_info WHERE parent_id = #{item}
+		</foreach>
+		
+	</delete>
+	
+</mapper>

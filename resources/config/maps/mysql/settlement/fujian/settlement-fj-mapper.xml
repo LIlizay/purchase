@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="settlementfj.sql">
+	<!-- 根据ym获取购电相关数据统计 -->
+	<select id="getSmSettlementMonthInfoByIdOrYm" parameterType="string" resultType="com.hhwy.purchaseweb.settlement.fujian.domain.FormDataAndCostListFj">
+		select 
+			COUNT(proxyInfo.cons_id) consNum,
+			sum(proxyInfo.proxyPq) totalProxyPq,
+			IFNULL(sum(proxyInfo.actualPq),0) actualTotalPq,
+	
+			<!-- IFNULL(max(dealInfo.bidPq),0) totalBidPq,
+			IFNULL(max(dealInfo.lcPq),0) totalLcPq,
+			max(dealInfo.listedPq) totalListedPq, -->
+			IFNULL(max(dealInfo.bidPq)+max(dealInfo.lcPq)+max(dealInfo.listedPq),0) totalPurchasePq
+		from (select ppa.cons_id cons_id,
+				IFNULL(sum(exam.agre_pq),CASE RIGHT(#{ym},2)
+								WHEN '01' THEN ppa.jan
+								WHEN '02' THEN ppa.feb
+								WHEN '03' THEN ppa.mar
+								WHEN '04' THEN ppa.apr
+								WHEN '05' THEN ppa.may
+								WHEN '06' THEN ppa.jun
+								WHEN '07' THEN ppa.jul
+								WHEN '08' THEN ppa.aug
+								WHEN '09' THEN ppa.sept
+								WHEN '10' THEN ppa.oct
+								WHEN '11' THEN ppa.nov
+								ELSE ppa.dece
+							END)  proxyPq,
+				
+				max(elec.practical_pq) actualPq
+			from 
+				(
+				SELECT
+					s_c_consumer_info.*
+				FROM
+					s_c_consumer_info
+				INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+					fweb_ac_uoa.org_id = org_no
+					AND fweb_ac_uoa.user_id = #{loginUserId}
+				)
+			) cons inner join 
+			(
+				select * 
+				from s_m_ppa 
+				where agre_status !='00' and left(REPLACE(effective_date,'-',''),6) &lt;= #{ym}
+						and left(REPLACE(expiry_date,'-',''),6) &gt;=#{ym}
+			) ppa on cons.id = ppa.cons_id
+			LEFT JOIN ph_m_agre_pq_examine exam on exam.ym=#{ym} and exam.cons_id=ppa.cons_id
+			
+			LEFT JOIN s_c_cons_electricity elec on elec.cons_id=ppa.cons_id and elec.ym=#{ym}
+			GROUP BY ppa.cons_id) proxyInfo
+		,
+		(SELECT 
+				SUM(if(plan.trade_mode='01' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))	bidPq,
+				SUM(if(plan.trade_mode='02' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))	lcPq,
+				SUM(if(plan.trade_mode='03' , if(dealInfo.attorn_type != '02' or dealInfo.attorn_type is null, dealInfo.deal_pq ,-dealInfo.deal_pq) ,0))	listedPq
+		from ph_m_deal_info dealInfo
+		inner JOIN 
+			(
+				SELECT
+					ph_m_purchase_plan_month.*
+				FROM
+					ph_m_purchase_plan_month
+				INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+					fweb_ac_uoa.org_id = org_no
+					AND fweb_ac_uoa.user_id = #{loginUserId}
+				)
+			) plan on plan.id=dealInfo.plan_id  and dealInfo.ym = #{ym} and plan.plan_status='04') dealInfo
+	</select>
+	<!-- 根据结算id settleId获取购电相关数据统计 -->
+	<select id="getFormDataBySettleId" resultType="com.hhwy.purchaseweb.settlement.fujian.domain.FormDataAndCostListFj">
+		select 
+			scheme.id id,
+			scheme.cons_num consNum,
+			scheme.total_proxy_pq totalProxyPq,
+			scheme.delivery_pq actualTotalPq,
+			scheme.total_purchase_pq totalPurchasePq,
+			scheme.comp_profit companyPro,
+			
+			comp.id companyProfitId,
+			comp.dev_pq_prop devPqProp,
+			comp.company_cost_total costAmt,
+			comp.cons_amt_total incomeTotalAmt,
+			comp.dev_dam devDam,
+			comp.cons_checked_pro_total consCheckedProTotal
+		from s_m_purchase_scheme scheme 
+			inner join s_m_company_profit comp on scheme.id=comp.scheme_id and scheme.settle_id = #{string}
+	</select>
+
+	<!-- 根据ym获取售电公司及用户考核等信息 -->
+	<select id="getProfitInfoByYm" parameterType="string" resultType="com.hhwy.purchaseweb.settlement.base.smsettlementmonth.domain.SmSettlementMonthDetail">
+		select 
+			comPro.id companyId,
+			comPro.dev_dam devDam,
+			comPro.company_pro companyPro,
+			(select sum(cons_checked_pro) from s_m_consumer_profit where scheme_id = sc.id) consCheckedProTotal
+		from 
+			 s_m_purchase_scheme sc left join s_m_company_profit comPro on sc.id = comPro.scheme_id
+		where sc.ym = #{string}
+	</select>
+
+	<!-- 根据ym获取当月的所有合同用户信息（方案详情信息） -->
+	<select id="getInitRetailDetailByYm" resultType="com.hhwy.purchaseweb.settlement.fujian.domain.RetailDetailFj">
+	      SELECT
+			cons.id consId,
+			cons.cons_name consName,
+			cons.volt_code voltCode,
+			max(elec.practical_pq) deliveryPq,
+			scheme.deliveryPrc deliveryPrc,
+			scheme.serviceAmt serviceAmt,
+			scheme.consCheckedPro consCheckedPro,
+			scheme.agentProp agentProp,
+			scheme.agentAmt agentAmt,
+			scheme.lcPq lcPq,
+			scheme.bidPq bidPq,
+			scheme.listedPq listedPq,
+			scheme.deliveryCost deliveryCost,
+			scheme.schemeDetailId schemeDetailId,
+			scheme.consProId consProId,
+			(scheme.lcPq + scheme.bidPq + scheme.listedPq) totalPq,
+			IFNULL((SELECT sum(examine.agre_pq) FROM ph_m_agre_pq_examine examine where examine.cons_id=cons.id and examine.ym=#{ym}) 
+				, CONVERT(
+						CASE RIGHT(#{ym}, 2) 
+							WHEN '01' THEN ppa.jan
+							WHEN '02' THEN ppa.feb
+							WHEN '03' THEN ppa.mar
+							WHEN '04' THEN ppa.apr
+							WHEN '05' THEN ppa.may
+							WHEN '06' THEN ppa.jun
+							WHEN '07' THEN ppa.jul
+							WHEN '08' THEN ppa.aug
+							WHEN '09' THEN ppa.sept
+							WHEN '10' THEN ppa.oct
+							WHEN '11' THEN ppa.nov
+							WHEN '12' THEN ppa.dece
+						END
+						, DECIMAL(18,6)) ) proxyPq
+		FROM
+			(
+				SELECT
+					s_c_consumer_info.*
+				FROM
+					s_c_consumer_info
+				INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+					fweb_ac_uoa.org_id = org_no
+					AND fweb_ac_uoa.user_id = #{loginUserId}
+				)
+			) cons 
+
+		INNER JOIN s_m_ppa ppa ON cons.id = ppa.cons_id and ppa.agre_status!="00" 
+			and concat(left(#{ym},4),'-',right(#{ym},2)) &gt;= LEFT(ppa.effective_date ,7)
+			AND concat(left(#{ym},4),'-',right(#{ym},2)) &lt;= LEFT(ppa.expiry_date,7)
+		LEFT JOIN s_c_cons_electricity elec on elec.cons_id=cons.id and elec.ym=#{ym}
+		LEFT JOIN(
+			SELECT detail.id schemeDetailId , detail.cons_id cons_id, detail.delivery_prc deliveryPrc, detail.service_amt serviceAmt, detail.lc_pq lcPq, detail.bid_pq bidPq, 
+				detail.listed_pq listedPq,pro.id consProId, pro.cons_checked_pro consCheckedPro, pro.agent_prop agentProp, pro.agent_amt agentAmt,pro.delivery_cost deliveryCost
+			FROM s_m_purchase_scheme sc INNER JOIN s_m_purchase_scheme_detail detail ON sc.id = detail.scheme_id
+			LEFT JOIN s_m_consumer_profit pro ON pro.scheme_id = detail.scheme_id AND pro.cons_id = detail.cons_id
+			WHERE sc.ym = #{ym}
+		) scheme ON cons.id = scheme.cons_id
+		GROUP by cons.id 
+		order by cons.cons_name
+	</select>
+	<!-- 根据结算id获取当月的所有合同用户信息（方案详情页面用到） -->
+	<select id="getRetailDetailBySettledId" resultType="com.hhwy.purchaseweb.settlement.fujian.domain.RetailDetailFj">
+	      SELECT
+			cons.id consId,
+			cons.cons_name consName,
+			cons.volt_code voltCode,
+			pro.proxy_pq proxyPq,
+			pro.actual_pq deliveryPq,
+			pro.delivery_prc deliveryPrc,
+			pro.delivery_cost deliveryCost,
+			detail.service_amt serviceAmt,
+			pro.cons_checked_pro consCheckedPro,
+			pro.agent_prop agentProp,
+			pro.agent_amt agentAmt,
+			detail.lc_pq lcPq, 
+			detail.bid_pq bidPq, 
+			detail.listed_pq listedPq,
+			pro.dist_total_pq totalPq,
+			detail.id schemeDetailId,
+			pro.id consProId
+		FROM
+		s_c_consumer_info cons 
+		INNER JOIN s_m_purchase_scheme_detail detail on cons.id = detail.cons_id
+		INNER JOIN s_m_purchase_scheme sc ON sc.id = detail.scheme_id and sc.settle_id = #{string} and sc.scheme_status=1
+		INNER JOIN s_m_consumer_profit pro ON pro.scheme_id = detail.scheme_id AND pro.cons_id = detail.cons_id
+		order by cons.cons_name
+	</select>
+</mapper>

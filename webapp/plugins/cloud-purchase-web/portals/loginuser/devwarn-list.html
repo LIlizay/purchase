@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+	<div class="row">
+	<div class="col-md-12">
+	    <div class="panel panel-default">
+			<div class="panel-heading"><span class="line-box"></span>偏差预警信息</div>
+                      	<div class="panel-body">
+				<div class="col-md-a"><span class="text-2">年月</span></div>
+				<div class="col-md-2">
+					<div class="from-group">
+   						<input type="text" class="form-control selectDate" placeholder="yyyy/mm/dd" id="selectYm">
+   						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:86%;"><i class="fa icon-rili"></i></span> -->
+					</div>
+				</div>
+				<div class="col-md-1">
+					<a href="javascript:void(0)" onClick="searchData()" class="btn btn-info btn-sm mt10">查询</a>
+				</div>
+			</div>
+			<div class="panel-body" style="padding-top:0px">
+                      		<div class="table-responsive" style="min-height:300px">
+                      		<div class="bg-info grid-title">偏差预警信息列表</div>
+                      		<div class="grid-table"><table id="listGrid" class="table table-bordered table-hover"></table></div>
+				</div>
+				<div class="col-sm-12 foot_paging">
+							<div class="col-sm-6">
+								<div class="dataTables_info paginationPage" style="margin-top:16px;"></div>
+							</div>
+							<div class="col-sm-6 text-right">
+								<div class="dataTables_paginate paging_simple_numbers" id="dataTables-example_paginate">
+									<ul class="pagination">
+										<li class="paginate_button previous disabled" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_previous"><a href="javascript:void(0)">上一页</a></li>
+										<li class="paginate_button active" aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">1</a></li><li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">2</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">3</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">4</a></li>
+										<li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">5</a></li><li class="paginate_button " aria-controls="dataTables-example" tabindex="0"><a href="javascript:void(0)">6</a></li>
+										<li class="paginate_button next" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_next"><a href="javascript:void(0)">下一页</a></li>
+									</ul>
+								</div>
+							</div>
+					</div>
+			</div>
+		</div>
+	</div>						
+</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    var params = {
+   		ym:'',
+   		consId:$.getLoginUser().consId,
+	    consName:"",
+		status:"",
+		compStatus:"",
+		org_id:$.getLoginUser().org_id,
+    }
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	//计算表格高度
+    	$.initTableCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	var date = new Date();
+    	var month = date.getMonth()+1;
+    	if(month < 10){
+    		month = "0"+month;
+    	}
+    	var ym = date.getFullYear()+"-"+month;
+    	params.ym = ym.replace("-","");
+    	laydate.render({
+    		  elem: '#selectYm', //指定元素
+    		  type:"month",
+    		  value:ym,
+    		  done:function(value, date, endDate){getYear(value)}
+    	});
+    	//设置分页信息
+    	pageUtil.bindClick({handler:function(option){initData(option)}},".pagination");
+    	//初始化列表数据
+    	var option = pageUtil.getPage(".pagination");
+      	//初始化列表数据
+      	initData(option);
+    })
+
+    function initData(option){
+    	if(!params.ym){
+    		MainFrameUtil.alert({title:"提示",body:"请选择查询年月！"});
+      		return;
+    	}
+    	 var param=$.extend({},params);
+    	 param["index"]=option.nowIndex-1;
+    	 param["pageSize"]=option.pageSize;
+    	var queryParams = {
+    		serviceKey:"c_getConsWaringList",
+    		clientKey:"sellandpurchase",
+    		params:param
+    	}
+    	$("#listGrid").createtable({
+    		url:groovyPath + "c_getConsWaringList.do",
+    		method: 'POST',
+            queryParams:queryParams,
+    		rownumbers: true,
+    		fitColumns:true,
+    		column:[[
+    		     {field:'warningDate',title:'预警时间',width:100},
+    		     {field:'warningTypeName',title:'偏差类型',width:100 },
+    		     {field:'warningGradeName',title:'预警级别',width:100},
+    		     {field:'deviationPq',title:'用电偏差（兆瓦时）',width:100},
+    		     {field:'deviationProp',title:'用电偏差率(%)',width:100},
+    		     {field:'detail',title:'详情',width:60,
+    		    	 formatter: function(value,row,index){
+    		    		 return "<a href='javascript:void(0)' onclick=\"detail('"+row.deviationId+"')\">查看</a>";
+    		    	 }
+    		     },
+    		]],
+    		onLoadSuccess:function(data){
+   	    	 pageUtil.setpage({totalPage:data.totalPage},".pagination");
+   	     	}
+    	})
+    }
+    //查询
+    function searchData(){
+    	if(!params.ym){
+    		MainFrameUtil.alert({title:"提示",body:"请选择查询年月！"});
+      		return;
+    	}
+    	pageUtil.resetPage(".pagination");
+    	 var option = pageUtil.getPage(".pagination");
+    	 var param=$.extend({},params);
+    	 param["index"]=option.nowIndex-1;
+    	 param["pageSize"]=option.pageSize;
+    	var queryParams = {
+    		serviceKey:"c_getConsWaringList",
+    		clientKey:"sellandpurchase",
+    		params:param
+    	}
+    	$("table").createtable("load",queryParams);
+    }
+
+    //详情
+    function detail(id){
+    	MainFrameUtil.openDialog({
+	 		id:"devwarn_detail",
+			params:{id:id},
+			herf:"devwarn-detail.html",
+			maximizable:false,
+			width:"90%",
+			height:430,
+			onClose:function(){
+				//查询主页信息
+				window.parent.parent.initdevData(); 
+			}
+	  	  });
+    }
+
+    //赋值查询参数
+    function getYear(value){
+    	if(value){
+    		value = value.split("-")[0] + value.split("-")[1];
+    		params.ym = value;
+    	}else{
+    		params.ym = "";
+    	}
+    }
+    </script>
+	</body>
+</html>

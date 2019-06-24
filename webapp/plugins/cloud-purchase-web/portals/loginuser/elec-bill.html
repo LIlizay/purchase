@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+		<div class="col-md-12">
+		    <div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>电费查询</div>
+                       	<div class="panel-body">
+					<div class="col-md-a"><span class="text-2">年份</span></div>
+					<div class="col-md-2">
+						<div class="from-group">
+             						<input type="text" class="form-control selectDate" placeholder="yyyy/mm/dd" id="selectYear">
+             						<!-- <span class="input-group-sm" style="position:absolute;margin-top: -25px; z-index: 333;left:86%;"><i class="fa icon-rili"></i></span> -->
+         						</div>
+					</div>
+					<div class="col-md-1">
+						<a href="javascript:void(0)" onclick="queryY()" class="btn btn-info btn-sm mt10">查询</a>
+					</div>
+				</div>
+				<div class="panel-body" style="padding-top:0px;">
+                       		<div class="table-responsive">
+                   			<div class="bg-info grid-title">电费列表</div>
+                   			<div class="grid-table"><table id="listGrid" class="table table-bordered table-hover"></table></div>
+					</div>
+				</div>
+			</div>
+		</div>						
+	</div>
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+     <script src="assets/js/base.js"></script>
+     <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+     <script src="assets/js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+    var params = {
+   		year:"",
+   		consId:$.getLoginUser().consId,
+    };
+    $(function(){
+    	//设置页面的高度
+    	$.initpageCss();
+    	//计算表格高度
+    	$.initTableCss();
+    	$(window).resize(function(){
+    		$.initpageCss();
+    	});
+    	var date = new Date();
+    	params.year = date.getFullYear();
+    	laydate.render({
+    		  elem: '#selectYear', //指定元素
+    		  type:"year",
+    		  value:params.year,
+    		  done:function(value, date, endDate){getYear(value)}
+    	});
+    	initList();
+    });
+
+    function initList(){
+    	var queryParams = {
+    		serviceKey:"sw_getElecInfo",
+    		clientKey:"sellandpurchase",
+    		params:params
+    	}
+    	$("#listGrid").createtable({
+    		url:groovyPath + "sw_getElecInfo.do",
+    		method: 'POST',
+            queryParams:queryParams,
+    		rownumbers: true,
+    		fitColumns:false,
+    		column:[[
+    		     {field:'ym',title:'交易年月',width:60},
+    		     {field:'proxyPq',title:'月度合同电量<br/>（兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'dealPq',title:'成交电量<br/>（兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'actualPq',title:'实际用电量<br/>（兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'deliveryPq',title:'结算电量<br/>（兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'deviationPq',title:'偏差电量<br/>（兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'checkPq',title:'偏差考核电量<br/>（兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'compensatePq',title:'赔偿用户电量<br/>（兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'kwhPrc',title:'电度电价<br/>（元/兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'plPrc',title:'政府基金及附加电价<br/>（元/兆瓦时）',width:110,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'transPrc',title:'输配电价<br/>（元/兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'agrePrc',title:'合同电价<br/>（元/兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 var val ="";
+    		    		 if(value !== ""){
+    		    			 val = value
+      		    		 }else if(row.codeType != "01"){
+      		    			val="0";
+      		    		 }
+      		    		 return val;
+      		    	 }	 
+    		     },
+    		     {field:'consCheckPrc',title:'偏差考核电价<br/>（元/兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'compensatePrc',title:'赔偿用户电价<br/>（元/兆瓦时）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'consUncheckedPro',title:'用户购电利润<br/>（元）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'consCheckedPro',title:'偏差考核电费<br/>（元）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'consCompensate',title:'赔偿用户电费<br/>（元）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		     {field:'porfit',title:'节省电费<br/>（元）',width:80,
+    		    	 formatter: function(value,row,index){
+    		    		 if(value !== ""){
+      		    			 return value
+      		    		 }
+      		    		 return "0";
+      		    	 }	 
+    		     },
+    		]],
+    		rowStyler:function(index,row){
+                /* return "height:35px;font-size:12px;"; */
+            },
+            onLoadBefore:function(data){
+            	var result=[];
+            	if(data && data.pqList && data.pqList.length > 1){
+            		result=data.pqList;
+            	} 
+            	return result;
+            }
+    	})
+    }
+
+    function queryY(){
+    	if(params.year){
+    		var queryParams = {
+    			serviceKey:"sw_getElecInfo",
+    			clientKey:"sellandpurchase",
+    			params:params
+    		}
+    		$("table").createtable("load",queryParams);
+    	}else{
+    		MainFrameUtil.alert({title:"提示",body:"请选择查询年份！"});
+      		return;
+    	}
+    }
+
+    function getYear(value){
+    	params.year = value;
+    }
+    </script>
+	</body>
+</html>

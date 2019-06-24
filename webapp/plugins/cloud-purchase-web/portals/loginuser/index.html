@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="row">
+  		<div class="col-md-7" style="padding-left:0px;">
+			<div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>月度用电情况</div>        
+				<div class="panel-body" style="height:250px"> 
+					<div id="actualPq" style="width:100%;height:100%"></div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-5" style="padding-right:0px;">
+			<div class="panel panel-default">
+				<div class="panel-heading"><span class="line-box"></span>我的待办<a href="javascript:void(0)" onClick="clickMenu('todo')" class="more"><i class="fa icon-gengduo"></i></a></div>
+				<div class="panel-body" style="height:250px;overflow:auto">
+					<ul class="articlelist">
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+		    <div class="panel panel-default">
+				<div class="panel-heading tabbox">
+					<ul class="nav nav-pills">
+                             	<li class="active"><a onClick="clickPq('actualPq')" href="javascript:void(0)" data-toggle="tab">电量执行情况</a>
+                             	</li>
+                             	<li class=""><a onClick="clickPq('porfit')" href="javascript:void(0)" data-toggle="tab">节省电费</a>
+                             	</li>
+                         	</ul>
+				</div>
+                 	<div class="panel-body">
+                   		<div id="executePq">
+                           	<div id="executePqEcharts" style="width:100%;height:300px"></div>
+                           	<div style="height:280px"><div class="grid-table"><table id="executePqGrid" class="table table-bordered table-hover" cellpadding="0" cellspacing="0">
+                           	</table></div></div>
+                       	</div>
+                       	<div style="display:none">
+                          	<div id="porfit" style="width:900px;height:460px"></div>
+                       	</div>
+                   	</div>
+			</div>
+		</div>						
+	</div>
+	 <script src="assets/js/jquery-1.10.2.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.metisMenu.js"></script>
+    <script src="assets/js/echarts.js"></script>
+	<script src="assets/js/createEharts2.js"></script>
+      <script src="assets/js/base.js"></script>
+      <script src="assets/js/jquery.json-2.2.js"></script>
+   <!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/js/morris/morris.js"></script> -->
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/custom-scripts.js"></script>
+    <script type="text/javascript">
+    $(window).resize(throll(function(){
+    	if(myChart1){myChart1.resize();}
+    	if(myChart2){myChart2.resize();}
+    	if(myChart3){myChart3.resize();}
+    },100));
+    function throll(fn,delay){
+        var timer=null;
+        return function(){
+            clearTimeout(timer);
+            timer=setTimeout(fn,delay);
+        }
+    }
+    	var myChart1=null;
+    	var myChart2=null;
+    	var myChart3=null;
+    	var params = {
+    		year:"",//当前年
+    		ym:"",//年月
+    		consId:$.getLoginUser().consId,//登录用户id
+    	}
+    	$(function(){
+    		//设置页面的高度
+    		$.initpageCss();
+    		$(window).resize(function(){
+    			$.initpageCss();
+    		});
+    		//计算页面宽度
+    		$("#porfit").css("width",(Number($(".panel-body").last().css("width").replace("px",""))-30).toFixed(3)+"px");
+    		//设置参数
+    		var obj = $.initDate({index:"current",type:"ym"});
+    		params.year=obj.substr(0,4);
+    		params.ym=obj.replace("-","");
+    		//初始化月度用电情况
+    		initActualPq();
+    		//初始化我的代办信息
+    		initAgency();
+    		//初始化电量执行情况
+    		initExecutePq();
+    	});
+    	
+    	//初始化我的代办信息
+    	function initAgency(){
+    		//清空数据
+    		$(".articlelist").empty();
+    		var queryParams = {
+    			 serviceKey:"w_getSwMessageList",
+    			 clientKey:"sellandpurchase",
+    			  params:{
+    			       "consId":params.consId,
+    			       "bgnDate":"",
+    			       "endDate":"",
+    			        "type":"todoType",
+    			        "index":0,
+        				"pageSize":5,
+    			  }
+    		};
+    		$.ajax({
+    			url : groovyPath + "w_getSwMessageList.do",
+    			type : "post",
+    			data:$.toJSON(queryParams),
+    	        contentType:'application/json;charset=UTF-8', 
+    			success : function(data) {
+    				if(!data.message){
+    					var cont = data.value.datas;
+    					for(var i=0; i<cont.length; i++){
+							var obj = cont[i];
+							var html = "<li><a href='javascript:void(0)' onClick='clickToDoList(\""+ obj.msgId +"\")'><i class='fa icon-yousanjiao'></i>"+obj.title
+							+"</a><span class='pull-right text-muted small'>"+obj.sendDate+"</span></li>";
+							$(".articlelist").append(html);
+						}
+    				}else{
+    					MainFrameUtil.alert({title: "失败提示",body:"查询失败！"});
+    		      		return;
+    				}
+    			},
+    			error : function() {
+    				MainFrameUtil.alert({title: "网络失败提示",body:"请刷新页面重试！"});
+    	      		return;
+    			}
+    		})
+    	}	
+    	
+    	//初始化实际用电量
+    	function initActualPq(){
+    		var queryParams = {
+    			serviceKey:"s_getSmConsPowerView",
+    			clientKey:"sellandpurchase",
+    			params:params
+    		}
+    		$.ajax({
+    			url : groovyPath + "s_getSmConsPowerView.do",
+    			type : "post",
+    			data:$.toJSON(queryParams),
+    	        contentType:'application/json;charset=UTF-8',  
+    			success : function(data) {
+    				if(!data.message){
+    					var obj = data.value.datas;
+    					if(obj && obj.list && obj.list.length > 0){
+    						var planPqList = [];
+    						var actualPqList=[];
+    						var xAxisData=[];
+    						var typeList = ["累计计划电量（兆瓦时）","累计实际用电量（兆瓦时）"];
+    						for(var i in obj.list){
+    							xAxisData.push(parseInt(obj.list[i].ymd.substring(6,8)));
+    							planPqList.push(obj.list[i].dayPlanPq);
+    							actualPqList.push(obj.list[i].dayActualPq);
+    						}
+    						myChart1 = $.initEcharts("actualPq","line","用户用电情况",typeList,[planPqList,actualPqList],xAxisData);
+    					}
+    				}else{
+    					MainFrameUtil.alert({title:"失败提示",body:"查询实际用电量失败！"});
+        				return;
+    				}
+    			},
+    			error : function() {
+    				MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+        			return;
+    			}
+    		})
+    	}
+    	//初始化执行电量
+    	function initExecutePq(){
+    		var queryParams = {
+    			serviceKey:"sw_getExecutePqList",
+    			clientKey:"sellandpurchase",
+    			params:params
+    		}
+    		$("#executePqGrid").createtable({
+    			url:groovyPath + "sw_getExecutePqList.do",
+    			method: 'POST',
+    	        queryParams:queryParams,
+    			width:"100%",
+    			rownumbers:false,
+    			fitColumns:true,
+    			column:[[
+    			     {field:'pqType',title:'',width:100},
+    			     {field:'jan',title:'1',width:80},
+    			     {field:'feb',title:'2',width:80},
+    			     {field:'mar',title:'3',width:80},
+    			     {field:'apr',title:'4',width:80},
+    			     {field:'may',title:'5',width:80},
+    			     {field:'jun',title:'6',width:80},
+    			     {field:'jul',title:'7',width:80},
+    			     {field:'aug',title:'8',width:80},
+    			     {field:'sept',title:'9',width:80},
+    			     {field:'oct',title:'10',width:80},
+    			     {field:'nov',title:'11',width:80},
+    			     {field:'dece',title:'12',width:80}
+    			]],
+    			onLoadBefore:function(data){
+    				var result = [];
+    				if(data && data.pqList && data.pqList.length > 0){
+    					result=data.pqList;
+    				}
+    				var agrePqList = data.agrePqList;
+    				var dealPqList = data.dealPqList;
+    				var actualPqList = data.actualPqList;
+    				var deliveryPqList = data.deliveryPqList;
+    				var consPorfitList = data.consPorfitList;
+    				//生成电量执行图形
+    				var lengList = ["月度合同电量（兆瓦时）","成交电量（兆瓦时）","实际用电量（兆瓦时）","结算电量（兆瓦时）"];
+    				var xList = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    				myChart2 = $.initEcharts("executePqEcharts","bar","电量执行情况",lengList,[agrePqList,dealPqList,actualPqList,deliveryPqList],xList);
+    				//生成节省电费图
+    				myChart3 = $.initEcharts("porfit","line","节省电费（元）",["节省电费（元）"],[consPorfitList],xList);
+    				return result;
+    			}
+    		})
+    	}
+    	function clickPq(type){
+    		if(type == 'actualPq'){
+    			if($("#executePq").css("display") != "none") return;
+    			$("#porfit").parent("div").css("display","none");
+    			$("#executePq").css("display","block");
+    		}else if(type == 'porfit'){
+    			if($("#porfit").parent("div").css("display") != "none") return;
+    			$("#executePq").css("display","none");
+    			$("#porfit").parent("div").css("display","block");
+    		}
+    	}
+    	
+    	//点击查看消息
+    	function clickToDoList(id){
+    		 MainFrameUtil.openDialog({
+   	   	 		id:"message_newsdetail",
+   	   			params:{id:id,type:"message"},
+   	   			herf:"message-newsdetail.html",
+   	   			maximizable:false,
+   	   			width:540,
+   	   			height:430,
+   	   	  	  });
+    	}
+    	
+    	function clickMenu(index){
+    		window.parent.parent.clickMenu(index);
+    	}
+    </script>
+	</body>
+</html>

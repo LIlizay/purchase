@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smPrcInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmPrcInfoListByParams" resultType="com.hhwy.purchaseweb.delivery.smprcinfo.domain.SmPrcInfoDetail">  
+		SELECT
+			id,
+			prcCode,
+			elecTypeCode,
+			voltCode,
+			kwhPrc,
+			provinceId,
+			cityCodes,
+			countyCodes,
+			effectMonths,
+			listSort,
+			transPrc,
+			ifnull((total.totalPrc), 0) plPrc,
+			state,
+			kwhPlainPrc,
+			kwhPeakPrc,
+			kwhValleyPrc,
+			kwhTopPrc,
+			kwhDualPrc,
+			cataPlainPrc,
+			cataPeakPrc,
+			cataValleyPrc,
+			cataTopPrc,
+			cataDualPrc,
+			orgNo
+		FROM(
+			SELECT
+				sinfo.ID id,
+				sinfo.prc_code prcCode,
+				`code`.ecode elecTypeCode,
+				`code`.vcode voltCode,
+				sinfo.kwh_prc kwhPrc,
+				sinfo.province_id provinceId,
+				sinfo.city_codes cityCodes,
+				sinfo.county_codes countyCodes,
+				sinfo.effect_months effectMonths,
+				sinfo.list_sort listSort,
+				sinfo.trans_prc transPrc,
+				ifnull((sinfo.pl_prc), 0) plPrc,
+				sinfo.state state,
+				sinfo.kwh_plain_prc kwhPlainPrc,
+				sinfo.kwh_peak_prc kwhPeakPrc,
+				sinfo.kwh_valley_prc kwhValleyPrc,
+				sinfo.kwh_top_prc kwhTopPrc,
+				sinfo.kwh_dual_prc kwhDualPrc,
+				sinfo.cata_plain_prc cataPlainPrc,
+				sinfo.cata_peak_prc cataPeakPrc,
+				sinfo.cata_valley_prc cataValleyPrc,
+				sinfo.cata_top_prc cataTopPrc,
+				sinfo.cata_dual_prc cataDualPrc,
+				sinfo.org_no orgNo,
+				sinfo.create_time
+			FROM
+				(
+				SELECT
+					pcode1.`value` vcode,
+					pcode2.`value` ecode
+				FROM
+					s_p_code pcode1
+				LEFT JOIN s_p_code pcode2 ON pcode1.content5 = pcode2.`value`
+				WHERE
+					pcode1.content5 > 0
+				) CODE
+					LEFT JOIN s_m_prc_info sinfo ON `code`.ecode = sinfo.elec_type_code
+					AND `code`.vcode = sinfo.volt_code
+					AND sinfo.province_id = #{provinceId}
+					<if test="smPrcInfo != null and smPrcInfo.orgNo != null and smPrcInfo.orgNo != ''">
+						and a.org_no = #{orgNo}
+					</if>
+		) a
+		LEFT JOIN (
+			SELECT
+				c.prc_id totalId,
+				SUM(c.sell_prc) totalPrc
+			FROM
+				s_m_fund_prc_info c
+			GROUP BY
+				c.prc_id
+		) total ON total.totalId = a.id
+		order by listSort, elecTypeCode, voltCode
+	</select>
+	<!-- 根据条件查询实体列表 -->
+	<select id="getSmPrcInfoListByVo" resultType="com.hhwy.purchase.domain.SmPrcInfo">
+		SELECT
+			ID id,
+			prc_code prcCode,
+			elec_type_code elecTypeCode,
+			volt_code voltCode,
+			kwh_prc kwhPrc,
+			trans_prc transPrc,
+			pl_prc plPrc,
+			kwh_plain_prc kwhPlainPrc,
+			kwh_peak_prc kwhPeakPrc,
+			kwh_valley_prc kwhValleyPrc,
+			kwh_top_prc kwhTopPrc,
+			kwh_dual_prc kwhDualPrc,
+			cata_plain_prc cataPlainPrc,
+			cata_peak_prc cataPeakPrc,
+			cata_valley_prc cataValleyPrc,
+			cata_top_prc cataTopPrc,
+			cata_dual_prc cataDualPrc,
+			state state,
+			province_id provinceId,
+			city_codes cityCodes,
+			county_codes countyCodes,
+			effect_months effectMonths,
+			list_sort listSort,
+			org_no orgNo,
+			create_time createTime
+		FROM s_m_prc_info
+		where province_id = #{provinceId}
+		<if test="cityCodes != null and cityCodes != ''">
+			and city_codes = #{cityCodes}
+		</if>
+		<if test="cityCodes == null or cityCodes == ''">
+			and (city_codes is null or city_codes = '')
+		</if>
+		<if test="countyCodes != null and countyCodes != ''">
+			and county_codes = #{countyCodes}
+		</if>
+		<if test="countyCodes == null or countyCodes == ''">
+			and (county_codes is null or county_codes = '')
+		</if>
+		<if test="effectMonths != null and effectMonths != ''">
+			and effect_months = #{effectMonths}
+		</if>
+		<if test="effectMonths == null or effectMonths == ''">
+			and (effect_months is null or effect_months = '')
+		</if>
+		<if test="smPrcInfo != null and smPrcInfo.orgNo != null and smPrcInfo.orgNo != ''">
+			and sinfo.org_no = #{smPrcInfo.orgNo}
+		</if>
+	</select>
+	<!-- 根据 省、市、区县、月份 查询符合条件的实体列表 -->
+	<select id="getSmPrcInfoListByMap" resultType="com.hhwy.purchase.domain.SmPrcInfo">
+		SELECT
+			ID id,
+			prc_code prcCode,
+			elec_type_code elecTypeCode,
+			volt_code voltCode,
+			kwh_prc kwhPrc,
+			trans_prc transPrc,
+			pl_prc plPrc,
+			kwh_plain_prc kwhPlainPrc,
+			kwh_peak_prc kwhPeakPrc,
+			kwh_valley_prc kwhValleyPrc,
+			kwh_top_prc kwhTopPrc,
+			kwh_dual_prc kwhDualPrc,
+			cata_plain_prc cataPlainPrc,
+			cata_peak_prc cataPeakPrc,
+			cata_valley_prc cataValleyPrc,
+			cata_top_prc cataTopPrc,
+			cata_dual_prc cataDualPrc,
+			state state,
+			province_id provinceId,
+			city_codes cityCodes,
+			county_codes countyCodes,
+			effect_months effectMonths,
+			list_sort listSort,
+			org_no orgNo,
+			create_time createTime
+		FROM s_m_prc_info
+		where province_id = #{provinceCode}
+		<if test="cityCode != null and cityCode != ''">
+			and city_codes like concat('%',#{cityCode},'%')
+		</if>
+		<if test="cityCode == null or cityCode == ''">
+			and (city_codes is null or city_codes = '')
+		</if>
+		<if test="countyCode != null and countyCode != ''">
+			and county_codes like concat('%',#{countyCode},'%')
+		</if>
+		<if test="countyCode == null or countyCode == ''">
+			and (county_codes is null or county_codes = '')
+		</if>
+		<if test="month != null and month != ''">
+			and effect_months like concat('%',#{month},'%')
+		</if>
+		<if test="month == null or month == ''">
+			and (effect_months is null or effect_months = '')
+		</if>
+		<if test="voltCode != null and voltCode != ''">
+			and volt_code = #{voltCode}
+		</if>
+	</select>
+	<!-- 根据条件查询实体列表 -->
+	<select id="deleteSmPrcInfoByParams">
+		delete
+		FROM s_m_prc_info
+		where province_id = #{provinceId}
+		<if test="cityCodes != null and cityCodes != ''">
+			and city_codes = #{cityCodes}
+		</if>
+		<if test="cityCodes == null or cityCodes == ''">
+			and (city_codes is null or city_codes = '')
+		</if>
+		<if test="countyCodes != null and countyCodes != ''">
+			and county_codes = #{countyCodes}
+		</if>
+		<if test="countyCodes == null or countyCodes == ''">
+			and (county_codes is null or county_codes = '')
+		</if>
+		<if test="effectMonths != null and effectMonths != ''">
+			and effect_months = #{effectMonths}
+		</if>
+		<if test="effectMonths == null or effectMonths == ''">
+			and (effect_months is null or effect_months = '')
+		</if>
+		<if test="smPrcInfo != null and smPrcInfo.orgNo != null and smPrcInfo.orgNo != ''">
+			and sinfo.org_no = #{smPrcInfo.orgNo}
+		</if>
+	</select>
+	<select id="getInitSmPrcInfoList" resultType="com.hhwy.purchaseweb.delivery.smprcinfo.domain.SmPrcInfoDetail">  
+		SELECT
+			pcode1.`value` voltCode,
+			pcode1.`name` voltCodeName,
+			pcode2.`value` elecTypeCode,
+			pcode2.`name` elecTypeCodeName,
+			0 listSort,
+			0 plPrc
+		FROM
+			s_p_code pcode1
+		LEFT JOIN s_p_code pcode2 ON pcode1.content5 = pcode2.`value`
+		WHERE
+			pcode1.content5 > 0
+		order by elecTypeCode, voltCode
+	</select>
+	
+	<!-- 根据用户id获取其对应电价信息 -->
+	<select id="getSmPrcInfoByConsId" resultType="com.hhwy.purchase.domain.SmPrcInfo">  
+		SELECT
+			info.id,
+			info.prc_code prcCode,
+			info.elec_type_code elecTypeCode,
+			info.volt_code voltCode,
+			info.kwh_prc kwhPrc,
+			info.province_id provinceId,
+			info.city_codes cityCodes,
+			info.county_codes countyCodes,
+			info.effect_months effectMonths,
+			info.list_sort listSort,
+			info.trans_prc transPrc,
+			info.pl_prc plPrc,
+			info.state state,
+			info.kwh_plain_prc kwhPlainPrc,
+			info.kwh_peak_prc kwhPeakPrc,
+			info.kwh_valley_prc kwhValleyPrc,
+			info.kwh_top_prc kwhTopPrc,
+			info.kwh_dual_prc kwhDualPrc,
+			info.cata_plain_prc cataPlainPrc,
+			info.cata_peak_prc cataPeakPrc,
+			info.cata_valley_prc cataValleyPrc,
+			info.cata_top_prc cataTopPrc,
+			info.cata_dual_prc cataDualPrc,
+			info.org_no orgNo
+		FROM s_c_consumer_info consumer
+		<!-- (select config.value cons.province_code,cons.volt_code,cons.city_code,cons.country_code,cons.elec_type_code from s_c_consumer_info cons, system_config config 
+				where config.`key`='cloudselling.province' and cons.id = #{consId}) consumer  -->
+		inner join  s_m_prc_info info on info.province_id=consumer.province_code and info.elec_type_code=consumer.elec_type_code and info.volt_code=consumer.volt_code
+		where consumer.id = #{consId}
+			   and info.id = ( 
+			   			ifnull(
+			   				(select prc.id from s_c_consumer_info cons left join s_m_prc_info prc on cons.volt_code = prc.volt_code and cons.province_code = prc.province_id 
+			   					and cons.elec_type_code = prc.elec_type_code and prc.county_codes LIKE CONCAT("%", cons.county_code, "%") where cons.id = #{consId}
+			   					order by prc.update_time desc limit 1),
+			   				 ifnull(
+			   				 	(select prc.id from s_c_consumer_info cons left join s_m_prc_info prc on cons.volt_code = prc.volt_code and cons.province_code = prc.province_id 
+			   				 		and cons.elec_type_code = prc.elec_type_code and prc.city_codes LIKE CONCAT("%", cons.city_code, "%") where cons.id = #{consId} 
+			   				 		order by prc.update_time desc limit 1),
+			   				 	ifnull(
+			   				 		(select prc.id from s_c_consumer_info cons left join s_m_prc_info prc on cons.volt_code = prc.volt_code and cons.province_code = prc.province_id 
+			   				 			and cons.elec_type_code = prc.elec_type_code where cons.id = #{consId} order by prc.update_time desc limit 1),'')
+			   				 	)
+			   				 )
+			   			) limit 1
+	</select>
+</mapper>

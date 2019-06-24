@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>合同执行情况查看</title>
+<link href="assets/css/bootstrap.css" rel="stylesheet" />
+   <link href="assets/css/font-awesome.css" rel="stylesheet" />
+   <link href="assets/css/custom-styles.css" rel="stylesheet" />
+</head>
+<body>
+	<div class="logrow">
+	<div class="col-md-12">
+	    <div class="panel panel-default">
+			<div class="panel-heading">
+				<span class="line-box"></span>合同执行情况查看
+			</div>
+         	<div class="panel-body">
+         		<div class="table-responsive">
+                   <table class="table table-bordered table-hover">
+                        <tr>
+                        	<td class="text-right w-1st">合同执行总体进度</td>
+                            <td colspan="5">
+								<span id="executePqRate" style="display:inline-block;width:80%;height:30px;border:1px solid #C9C9C9;border-radius: 15px;">
+									<span style="height:30px;text-align:center;background:red;color:#000000;border-radius:15px;float: left;"></span>
+									<span style="height:30px;text-align:center;border-radius:15px;float: left;"></span>
+								</span>
+                            </td>
+                        </tr>
+                         <tr>
+                             <td class="text-right w-1st"><span class="f-red">* </span>合同电量</td>
+                             <td class="w-7th" id="agrePq">兆瓦时</td>
+                             <td class="text-right w-1st"><span class="f-red">* </span>已结算电量</td>
+                             <td class="w-7th" id="executePq">兆瓦时</td>
+                             <td class="text-right w-8th"><span class="f-red">* </span>剩余电量</td>
+                             <td class="w-10th" id="unExecutePq">兆瓦时</td>
+                         </tr>
+                   </table>
+                   <div style="min-height:150px">
+                   	<div class="bg-info grid-title">月度购电量预测列表</div>
+           			<table id="listGrid" class="table table-striped table-bordered table-hover">
+                         
+                     </table>
+                   </div>
+                   </div>
+                   <div style="margin-top: 20px;">
+                   	<div class="bg-info grid-title">合同分月执行情况</div>
+                   	<div id="pqEcharts" style="width:100%;height:300px"></div>
+                   </div>
+               </div>
+         	</div>
+		</div>
+	</div>						
+</div>
+<script src="assets/js/jquery-1.10.2.js"></script>
+ <script src="assets/js/bootstrap.min.js"></script>
+ <script src="assets/js/jquery.metisMenu.js"></script>
+ <script src="assets/js/echarts.js"></script>
+	<script src="assets/js/createEharts2.js"></script>
+  <script src="assets/js/base.js"></script>
+  <script src="assets/js/jquery.json-2.2.js"></script>
+<!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+ <script src="assets/js/morris/morris.js"></script> -->
+ <script src="assets/js/custom.js"></script>
+ <script src="assets/js/custom-scripts.js"></script>
+<script type="text/javascript">
+$(window).resize(throll(function(){
+	if(myChart){myChart.resize();}
+},100));
+function throll(fn,delay){
+    var timer=null;
+    return function(){
+        clearTimeout(timer);
+        timer=setTimeout(fn,delay);
+    }
+}
+var params = {
+	agreId : null,
+};
+var myChart = null; 
+var firstLoad = false;
+
+$(function(){
+	//获取参数id
+	var requestParams = window.document.location.search.substr(1).split('&');
+	if(requestParams && requestParams.length > 0){
+		params.agreId = requestParams[0].split("=")[1];
+	}
+	initData();
+});
+
+//初始化数据
+function initData(){
+	var queryParams = {
+			serviceKey:"s_getAgreExecute",
+			clientKey:"sellandpurchase",
+			params:params
+	}
+	$("#listGrid").createtable({
+		url:groovyPath + "s_getAgreExecute.do",
+		method: 'POST',
+        queryParams:queryParams,
+		rownumbers: false,
+		fitColumns:true,
+		column:[[
+		     {field:'pqType',title:'电量类型',width:100},
+		     {field:'Jan',title:'1月',width:80},
+		     {field:'Feb',title:'2月',width:80},
+		     {field:'Mar',title:'3月',width:80},
+		     {field:'Apr',title:'4月',width:80},
+		     {field:'May',title:'5月',width:80},
+		     {field:'June',title:'6月',width:80},
+		     {field:'july',title:'7月',width:80},
+		     {field:'Aug',title:'8月',width:80},
+		     {field:'Sept',title:'9月',width:80},
+		     {field:'Oct',title:'10月',width:80},
+		     {field:'Nov',title:'11月',width:80},
+		     {field:'Dec',title:'12月',width:80}
+		]],
+        onLoadBefore:function(data){
+        	var result = new Array();
+        	var agrePqList = new Array();
+    		var balancePqList = new Array();
+    		var agrePqObject = new Object();//合同电量
+    		agrePqObject["pqType"] = "合同电量";
+			var deliveryPqObject = new Object();//实际用电量
+			deliveryPqObject["pqType"] = "实际用电量";
+			var balancePqObject = new Object();//结算电量
+			balancePqObject["pqType"] = "结算电量";
+			var deviationPqObject = new Object();//偏差电量
+			deviationPqObject["pqType"] = "偏差电量";
+			var deviationRateObject = new Object();//偏差率
+			deviationRateObject["pqType"] = "偏差率";
+        	if(data){
+        		var list = data.list;
+        		var paramsObj = {"1":"Jan","2":"Feb","3":"Mar","4":"May","6":"June","7":"july",
+        				"8":"Aug","9":"Sept","10":"Oct","11":"Nov","12":"Dec"};
+        		for(var i in list){
+        			var obj = list[i];
+        			agrePqObject[paramsObj[obj.month]] = obj.agrePq;
+        			deliveryPqObject[paramsObj[obj.month]] = obj.deliveryPq;
+        			balancePqObject[paramsObj[obj.month]] = obj.balancePq;
+        			deviationPqObject[paramsObj[obj.month]] = obj.deviationPq;
+        			deviationRateObject[paramsObj[obj.month]] = obj.deviationRate;
+        			agrePqList.push(obj.agrePq);
+        			balancePqList.push(obj.balancePq);
+        		 }
+        		var agreTotalPq = data.agrePq;//合同总量
+        		var executePq = data.balancePq;//执行电量
+        		var unExecutePq = data.surplusPq;//未执行电量
+        		var executePqRate = 0;//合同执行总体进度
+        		agreTotalPq = agreTotalPq == null || agreTotalPq == "" ? '': parseFloat(agreTotalPq);
+        		executePq = executePq == null || executePq == "" ? '': parseFloat(executePq);
+        		unExecutePq = unExecutePq == null || unExecutePq == "" ? '': parseFloat(unExecutePq);
+        		//计算未执行电量
+        		if(agreTotalPq != "" && executePq != ""){
+        			unExecutePq = agreTotalPq - executePq;
+        		}
+        		//计算合同执行总体进度
+        		if(agreTotalPq !== 0 && agreTotalPq != "" && executePq != ""){
+        			executePqRate = (parseFloat(executePq)/parseFloat(agreTotalPq)*100).toFixed(2);
+        		}
+        		if(agreTotalPq != "") agreTotalPq = agreTotalPq.toFixed(2);
+        		if(executePq != "") executePq = executePq.toFixed(2);
+        		if(unExecutePq != "") unExecutePq = unExecutePq.toFixed(2);
+        		//赋值合同总电量、已执行电量、未执行电量
+        		$("#agrePq").text(agreTotalPq+"兆瓦时");
+        		$("#executePq").text(executePq+"兆瓦时");
+        		$("#unExecutePq").text(unExecutePq+"兆瓦时");
+        		var widthProp = executePqRate;
+        		if(parseInt(executePqRate) === 0){
+        			$("#executePqRate").empty();
+        			$("#executePqRate").text(widthProp + "%");
+        		}else{
+        			if(widthProp > 100){
+        				widthProp = 100;
+        			}
+        			$("#executePqRate span").first().text(executePqRate + "%");
+        			$("#executePqRate span").first().css("width",widthProp + "%"); 
+        		}
+        	}else{
+        		for(var i=0; i<12; i++){
+        			agrePqList.push("");
+        			balancePqList.push("");
+        		}
+        	}
+    		result.push(agrePqObject);
+    		result.push(deliveryPqObject);
+    		result.push(balancePqObject);
+    		result.push(deviationPqObject);
+    		result.push(deviationRateObject);
+    		var xList=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+        	$.initEcharts("pqEcharts","bar","合同执行情况",["月度合同电量（兆瓦时）","结算电量（兆瓦时）"],[agrePqList,balancePqList],xList);
+        	return result;
+        }
+	})
+}
+</script>
+</body>
+</html>

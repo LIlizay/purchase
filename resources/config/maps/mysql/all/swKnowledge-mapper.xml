@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="swKnowledge.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSwKnowledgeListByParams" resultType="com.hhwy.purchaseweb.swknowledge.domain.SwKnowledgeDetail">
+		select
+			ID id,
+			title title,
+			content content,
+			htm_url htmUrl,
+			bg_image bgImage,
+			file_id fileId,
+			province_code provinceCode,
+			knowledge_class knowledgeClass,
+			create_time createdTime
+		from s_w_knowledge
+		where 1=1
+		<if test="swKnowledge != null and swKnowledge.title != null and swKnowledge.title != ''">
+			and title LIKE CONCAT('%',#{swKnowledge.title},'%') 
+		</if>
+		<if test="swKnowledge != null and swKnowledge.provinceCode != null and swKnowledge.provinceCode != ''">
+			and province_Code = #{swKnowledge.provinceCode}
+		</if>
+		<if test="swKnowledge != null and swKnowledge.knowledgeClass != null and swKnowledge.knowledgeClass != ''">
+			and knowledge_class = #{swKnowledge.knowledgeClass}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSwKnowledgeCountByParams" resultType="int">
+		select count(1)	from s_w_knowledge where 1=1
+		<if test="swKnowledge != null and swKnowledge.title != null and swKnowledge.title != ''">
+			and title LIKE CONCAT('%',#{swKnowledge.title},'%') 
+		</if>
+		<if test="swKnowledge != null and swKnowledge.provinceCode != null and swKnowledge.provinceCode != ''">
+			and province_Code = #{swKnowledge.provinceCode}
+		</if>
+		<if test="swKnowledge != null and swKnowledge.knowledgeClass != null and swKnowledge.knowledgeClass != ''">
+			and knowledge_class = #{swKnowledge.knowledgeClass}
+		</if>
+	</select>
+	
+	
+</mapper>

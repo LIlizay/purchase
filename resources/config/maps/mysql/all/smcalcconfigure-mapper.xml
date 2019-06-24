@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smCalcConfigure.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmCalcConfigureListByParams" resultType="com.hhwy.purchaseweb.crm.smcalcconfigure.domain.SmCalcConfigureDetail">
+		select
+			a.ID id,
+			a.province province,
+			a.sell_db sellDb,
+			a.calc_name calcName,
+			a.calc_content calcContent,
+			a.calc_code calcCode,
+			a.org_no orgNo,
+			a.calc_param calcParam,
+			b.business_name calcCodeName,
+			c.company_name sellDbName,
+			a.status status
+		from s_m_calc_configure a
+		LEFT JOIN com_rule_business b ON b.business_code = a.calc_code
+		LEFT JOIN system_company_domain c ON c.company_database = a.sell_db
+		where 1=1
+		<if test="smCalcConfigure != null and smCalcConfigure.status != null and smCalcConfigure.status != ''">
+			and a.status = #{smCalcConfigure.status}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.province != null and smCalcConfigure.province != ''">
+			and a.province = #{smCalcConfigure.province}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.sellDb != null and smCalcConfigure.sellDb != ''">
+			and a.sell_db = #{smCalcConfigure.sellDb}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.calcName != null and smCalcConfigure.calcName != ''">
+			and a.calc_name = #{smCalcConfigure.calcName}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.calcContent != null and smCalcConfigure.calcContent != ''">
+			and a.calc_content = #{smCalcConfigure.calcContent}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.calcCode != null and smCalcConfigure.calcCode != ''">
+			and a.calc_code = #{smCalcConfigure.calcCode}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.orgNo != null and smCalcConfigure.orgNo != ''">
+			and a.org_no = #{smCalcConfigure.orgNo}
+		</if>
+		order by a.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmCalcConfigureCountByParams" resultType="int">
+		select count(1)	from s_m_calc_configure where 1=1
+		<if test="smCalcConfigure != null and smCalcConfigure.status != null and smCalcConfigure.status != ''">
+			and status = #{smCalcConfigure.status}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.province != null and smCalcConfigure.province != ''">
+			and province = #{smCalcConfigure.province}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.sellDb != null and smCalcConfigure.sellDb != ''">
+			and sell_db = #{smCalcConfigure.sellDb}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.calcName != null and smCalcConfigure.calcName != ''">
+			and calc_name = #{smCalcConfigure.calcName}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.calcContent != null and smCalcConfigure.calcContent != ''">
+			and calc_content = #{smCalcConfigure.calcContent}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.calcCode != null and smCalcConfigure.calcCode != ''">
+			and calc_code = #{smCalcConfigure.calcCode}
+		</if>
+		<if test="smCalcConfigure != null and smCalcConfigure.orgNo != null and smCalcConfigure.orgNo != ''">
+			and org_no = #{smCalcConfigure.orgNo}
+		</if>
+	</select>
+	
+	<!-- 查询规则下拉框数据 -->
+	<select id="getRuleValueList" resultType="Map">
+		SELECT 
+			a.business_name name,
+			a.id code,
+			a.business_code value
+		FROM com_rule_business a
+		LEFT JOIN com_rule_type b ON a.rule_type_id = b.id
+		WHERE 
+			b.code = "province_calc"
+			AND a.enable_flag = "1"
+	</select>
+	
+	<!-- 查询规则参数列表 -->
+	<select id="getRuleParamsList" resultType="Map">
+		SELECT 
+			a.param_desc name,
+			a.param_value value,
+			a.param_name field
+		FROM com_rule_params a
+		LEFT JOIN com_rule_business b ON b.id = a.rule_id
+		WHERE 
+			b.business_code = #{ruleCode}
+			AND b.enable_flag = "1"
+	</select>
+	
+	<!-- 查询售电公司库名 -->
+	<select id="getSellDbList" resultType="Map">
+		SELECT 
+			a.company_name name,
+			a.company_database value
+		FROM system_company_domain a
+	</select>
+	
+	<!-- 树规则节点查询(省) -->
+    <select id="getProTree" resultType="map">
+    	select 
+		a.item_name text,
+		a.item_code provinceId,
+		'province' nodeType,
+		'closed' state
+		 FROM t_dictitem a
+		WHERE a.dict_code='provinceCode'
+		ORDER BY a.serialnumber
+    </select>
+    
+    <!-- 树规则节点查询(规则) -->
+    <select id="getVersion" resultType="map">
+    	SELECT
+			a.id id,
+			a.calc_name text,
+			a.province provinceId,
+			'rule' nodeType,
+			status ruleStatus,
+			'open' state
+		FROM s_m_calc_configure a
+		WHERE a.province = #{provinceId}
+		ORDER BY a.create_time
+    </select>
+	
+</mapper>

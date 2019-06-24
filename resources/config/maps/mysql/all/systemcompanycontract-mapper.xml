@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="systemcompanyContract.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSystemcompanyContractListByParams" resultType="com.hhwy.purchaseweb.systemcompanycontract.domain.SystemcompanyContractDetail">
+		SELECT
+			d.id id,
+			d.company_name companyName,
+			d.company_domain companyDomain,
+			d.org_no province,
+			c.cons_type_code consTypeCode,
+			c.version_code versionCode,
+			c.manager_name managerName,
+			c.effective_date effectiveDate,
+			c.expiry_date expiryDate,
+			c.system_effective_date systemEffectiveDate,
+			c.system_expiry_date systemExpiryDate,
+			c.account_password accountPassword,
+			c.remark remark,
+			c.org_no orgNo
+		FROM
+			system_company_domain d
+		LEFT JOIN system_company_contract c ON d.id = c.id
+		WHERE 1=1
+		<if test="provinceCodeList != null and provinceCodeList.size > 0">
+			AND d.org_no in 
+			<foreach collection="provinceCodeList"  item="item" index="index" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="companyName != null and companyName != ''">
+			AND d.company_name LIKE CONCAT('%',#{companyName},'%') 
+		</if>
+		<if test="consTypeCodeList != null and consTypeCodeList.size > 0">
+			AND c.cons_type_code in 
+			<foreach collection="consTypeCodeList"  item="item" index="index" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="versionCode != null and versionCode != ''">
+			AND c.version_code LIKE CONCAT('%', #{versionCode},'%') 
+		</if>
+		<if test="effectiveDate != null and effectiveDate != ''">
+			AND c.effective_date &gt;= #{effectiveDate}
+		</if>
+		<if test="expiryDate != null and expiryDate != ''">
+			AND #{expiryDate} &lt;= c.expiry_date
+		</if>
+		<if test="managerName != null and managerName != ''">
+			AND c.manager_name LIKE CONCAT('%',#{managerName},'%') 
+		</if>
+		ORDER BY d.register_date desc, CONVERT( d.company_name USING gbk )
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSystemcompanyContractCountByParams" resultType="int">
+		SELECT
+			count(1)
+		FROM
+			system_company_domain d
+		LEFT JOIN system_company_contract c ON d.id = c.id
+		WHERE 1=1
+		<if test="provinceCodeList != null and provinceCodeList.size > 0">
+			AND d.org_no in 
+			<foreach collection="provinceCodeList"  item="item" index="index" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="companyName != null and companyName != ''">
+			AND d.company_name LIKE CONCAT('%',#{companyName},'%') 
+		</if>
+		<if test="consTypeCodeList != null and consTypeCodeList.size > 0">
+			AND c.cons_type_code in 
+			<foreach collection="consTypeCodeList"  item="item" index="index" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="versionCode != null and versionCode != ''">
+			AND c.version_code LIKE CONCAT('%', #{versionCode},'%') 
+		</if>
+		<if test="effectiveDate != null and effectiveDate != ''">
+			AND c.effective_date &gt;= #{effectiveDate}
+		</if>
+		<if test="expiryDate != null and expiryDate != ''">
+			AND #{expiryDate} &lt;= c.expiry_date
+		</if>
+		<if test="managerName != null and managerName != ''">
+			AND c.manager_name LIKE CONCAT('%',#{managerName},'%') 
+		</if>
+	</select>
+	
+	<update id="updateSystemCompanyDomainSql">
+		UPDATE system_company_domain
+		SET
+			org_no = #{province},
+			company_name = #{companyName}
+		WHERE
+			id = #{systemcompanyContract.id}
+	</update>
+	<!-- 查询 版本码值对应 -->	
+	<select id="getVersionSPCodeNameSql" resultType="map">
+		SELECT
+			`value`,
+			`name`
+		FROM s_p_code
+		WHERE 
+			code_type = 'platform_version'
+	</select>
+	<!-- 	首页 验证提示用户到期 -->
+	<select id="getConsInfo" resultType="map" parameterType="String">
+		SELECT
+			d.id id,
+			d.company_name companyName,
+			c.version_code versionCode,
+			c.system_effective_date systemEffectiveDate,
+			c.system_expiry_date systemExpiryDate
+		FROM
+			system_company_domain d
+		INNER JOIN system_company_contract c ON d.id = c.id
+		WHERE
+			d.company_domain = #{string}
+	</select>
+	<!-- 用户到期，清空数据库对应字段 -->
+	<update id="updateConsExpire" >
+		UPDATE system_company_domain
+			SET company_database = ''
+		WHERE
+			id = #{string}
+	</update>
+	
+	<!-- 更新系统合同到期时间 -->
+	<update id="updateSyatemDateSql" >
+		UPDATE 
+			system_company_contract
+		SET 
+			effective_date = #{effectiveDateNew}, 
+			expiry_date = #{expiryDateNew}, 
+			system_effective_date = #{systemEffectiveDateNew}, 
+			system_expiry_date = #{systemExpiryDateNew}
+		WHERE
+			id = #{domainId}
+	</update>
+	
+	
+</mapper>

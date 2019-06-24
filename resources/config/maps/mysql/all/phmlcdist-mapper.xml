@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmLcDist.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmLcDistListByParams" resultType="com.hhwy.purchase.domain.PhmLcDist">  
+		select
+			ID id,
+			scheme_id schemeId,
+			ym ym,
+			agre_pq agrePq,
+			edit_lc_pq editLcPq,
+			lc_pq lcPq,
+			org_no orgNo		
+		from ph_m_lc_dist where 1=1
+		<if test="phmLcDist != null and phmLcDist.schemeId != null and phmLcDist.schemeId != ''">
+			and scheme_id = #{phmLcDist.schemeId}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.ym != null and phmLcDist.ym != ''">
+			and ym = #{phmLcDist.ym}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.agrePq != null and phmLcDist.agrePq != ''">
+			and agre_pq = #{phmLcDist.agrePq}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.editLcPq != null and phmLcDist.editLcPq != ''">
+			and edit_lc_pq = #{phmLcDist.editLcPq}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.lcPq != null and phmLcDist.lcPq != ''">
+			and lc_pq = #{phmLcDist.lcPq}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.orgNo != null and phmLcDist.orgNo != ''">
+			and org_no = #{phmLcDist.orgNo}
+		</if>
+		order by ym
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmLcDistCountByParams" resultType="int">
+		select count(1)	from ph_m_lc_dist where 1=1
+		<if test="phmLcDist != null and phmLcDist.schemeId != null and phmLcDist.schemeId != ''">
+			and scheme_id = #{phmLcDist.schemeId}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.ym != null and phmLcDist.ym != ''">
+			and ym = #{phmLcDist.ym}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.agrePq != null and phmLcDist.agrePq != ''">
+			and agre_pq = #{phmLcDist.agrePq}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.editLcPq != null and phmLcDist.editLcPq != ''">
+			and edit_lc_pq = #{phmLcDist.editLcPq}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.lcPq != null and phmLcDist.lcPq != ''">
+			and lc_pq = #{phmLcDist.lcPq}
+		</if>
+		<if test="phmLcDist != null and phmLcDist.orgNo != null and phmLcDist.orgNo != ''">
+			and org_no = #{phmLcDist.orgNo}
+		</if>
+	</select>
+	
+	<select id="getAgreMonthPq" resultType="map">
+<!-- 		SELECT  -->
+<!-- 			a.id schemeId, -->
+<!-- 			c.ym ym, -->
+<!-- 			CONVERT(SUM(c.agre_pq)+SUM(c.agre_pq)/a.agre_pq*IFNULL(a.dvalue_pq,0),DECIMAL(18,2)) agrePq -->
+<!-- 		FROM ph_m_ph_plan_year_scheme a -->
+<!-- 		LEFT JOIN ph_m_purchase_plan_year b ON b.id = a.plan_id -->
+<!-- 		LEFT JOIN s_m_agre_month_pq c ON c.ym LIKE CONCAT(b.year,'%') -->
+<!-- 		WHERE a.id = #{id} -->
+<!-- 		GROUP BY c.ym -->
+		SELECT
+			a.id schemeId,
+			a.agre_pq agrePq,
+			b.YEAR year,
+			sum(c.jan) jan,
+			sum(c.feb) feb,
+			sum(c.mar) mar,
+			sum(c.apr) apr,
+			sum(c.may) may,
+			sum(c.jun) jun,
+			sum(c.jul) jul,
+			sum(c.aug) aug,
+			sum(c.sept) sept,
+			sum(c.oct) oct,
+			sum(c.nov) nov,
+			sum(c.dece) dece
+		FROM
+			ph_m_ph_plan_year_scheme a
+		LEFT JOIN ph_m_purchase_plan_year b ON b.id = a.plan_id
+		LEFT JOIN s_m_ppa c ON SUBSTR(c.effective_date,1,4)=b.YEAR
+		where a.id=#{schemeId}
+	</select>
+	
+	<select id="getTrackInfo" resultType="map">
+	SELECT
+		CONCAT(CAST(SUBSTR(a.ym,5,2) as SIGNED),'月') month,
+		a.edit_lc_pq lcPq,
+		(a.agre_pq - a.edit_lc_pq) bidPq,
+		b.lc_prc lcPrc,
+		b.bid_prc bidPrc,
+		'' tLcPq,
+		e.deal_pq tBidPq,
+		'' tLcPrc,
+		e.tBidPrc,
+		'' dLcPq,
+		(e.deal_pq - a.agre_pq + a.edit_lc_pq) dBidPq,
+		'' dLcPrc,
+		e.tBidPrc - b.bid_prc dBidPrc
+	FROM ph_m_lc_dist a
+	LEFT JOIN ph_m_ph_plan_year_scheme b ON b.id = a.scheme_id
+	LEFT JOIN (SELECT ym,CONVERT(SUM(deal_pq*deal_prc)/SUM(deal_pq),DECIMAL(18,2)) tBidPrc,
+	SUM(deal_pq) deal_pq FROM ph_m_deal_info GROUP BY ym) e
+	ON e.ym = a.ym
+	WHERE a.scheme_id = #{schemeId}
+	ORDER BY a.ym
+	</select>
+</mapper>

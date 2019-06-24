@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmInvoiceInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmInvoiceInfoListByParams" resultType="com.hhwy.purchaseweb.bid.phminvoiceinfo.domain.PhmInvoiceInfoDetail">
+		select
+			ID id,
+			ym ym,
+			invoice_date invoiceDate,
+			drawer drawer,
+			invoice_code invoiceCode,
+			invoice_number invoiceNumber,
+			settle_id settleId,
+			org_no orgNo,
+			file file
+		from ph_m_invoice_info where 1=1
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.ym != null and phmInvoiceInfo.ym != ''">
+			and ym = #{phmInvoiceInfo.ym}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.invoiceDate != null and phmInvoiceInfo.invoiceDate != ''">
+			and invoice_date = #{phmInvoiceInfo.invoiceDate}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.drawer != null and phmInvoiceInfo.drawer != ''">
+			and drawer = #{phmInvoiceInfo.drawer}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.invoiceCode != null and phmInvoiceInfo.invoiceCode != ''">
+			and invoice_code = #{phmInvoiceInfo.invoiceCode}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.invoiceNumber != null and phmInvoiceInfo.invoiceNumber != ''">
+			and invoice_number = #{phmInvoiceInfo.invoiceNumber}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.settleId != null and phmInvoiceInfo.settleId != ''">
+			and settle_id = #{phmInvoiceInfo.settleId}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.orgNo != null and phmInvoiceInfo.orgNo != ''">
+			and org_no = #{phmInvoiceInfo.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmInvoiceInfoCountByParams" resultType="int">
+		select count(1)	from ph_m_invoice_info where 1=1
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.ym != null and phmInvoiceInfo.ym != ''">
+			and ym = #{phmInvoiceInfo.ym}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.invoiceDate != null and phmInvoiceInfo.invoiceDate != ''">
+			and invoice_date = #{phmInvoiceInfo.invoiceDate}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.drawer != null and phmInvoiceInfo.drawer != ''">
+			and drawer = #{phmInvoiceInfo.drawer}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.invoiceCode != null and phmInvoiceInfo.invoiceCode != ''">
+			and invoice_code = #{phmInvoiceInfo.invoiceCode}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.invoiceNumber != null and phmInvoiceInfo.invoiceNumber != ''">
+			and invoice_number = #{phmInvoiceInfo.invoiceNumber}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.settleId != null and phmInvoiceInfo.settleId != ''">
+			and settle_id = #{phmInvoiceInfo.settleId}
+		</if>
+		<if test="phmInvoiceInfo != null and phmInvoiceInfo.orgNo != null and phmInvoiceInfo.orgNo != ''">
+			and org_no = #{phmInvoiceInfo.orgNo}
+		</if>
+	</select>
+	
+	<!-- 获取发票登记的列表信息 -->
+	<select id="getPhmInvoiceInfoDetailByPage" resultType="com.hhwy.purchaseweb.bid.phminvoiceinfo.domain.PhmInvoiceInfoDetail">
+		SELECT
+			info.id id,
+			scheme.ym ym,
+			info.invoice_date invoiceDate,
+			info.drawer drawer,
+			info.invoice_code invoiceCode,
+			info.invoice_number invoiceNumber,
+			info.settle_id settleId,
+			info.org_no orgNo,
+			info.file file,
+		   	scheme.delivery_pq deliveryPq,
+			scheme.comp_profit profit
+		FROM
+			ph_m_invoice_info info
+			INNER JOIN s_m_purchase_scheme scheme on scheme.settle_id = info.settle_id and scheme.scheme_status=1
+			LEFT JOIN s_m_company_profit profit ON scheme.id = profit.scheme_id
+		WHERE 1=1 
+		<if test="bgnYm != null and bgnYm != ''">
+			and scheme.ym <![CDATA[>=]]> #{bgnYm}
+		</if>
+		<if test="endYm != null and endYm != ''">
+			and scheme.ym <![CDATA[<=]]> #{endYm}
+		</if>
+		ORDER BY scheme.ym DESC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 获取发票登记的列表信息数量 -->
+	<select id="getPhmInvoiceInfoDetailCountByPage" resultType="int">
+		SELECT COUNT(1) FROM ph_m_purchase_plan_month plan
+		WHERE (plan.plan_status="06" or  plan.plan_status="07") 
+		<if test="bgnYm != null and bgnYm != ''">
+			and plan.ym <![CDATA[>=]]> #{bgnYm}
+		</if>
+		<if test="endYm != null and endYm != ''">
+			and plan.ym <![CDATA[<=]]> #{endYm}
+		</if>
+	</select>
+</mapper>

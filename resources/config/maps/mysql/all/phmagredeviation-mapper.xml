@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmAgreDeviation.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmAgreDeviationListByParams" resultType="com.hhwy.purchaseweb.agreement.phmagredeviation.domain.PhmAgreDeviationDetail">
+		select
+			ID id,
+			agre_id agreId,
+			upper_check_flag upperCheckFlag,
+			upper_pq_prop upperPqProp,
+			upper_check_prc_type upperCheckPrcType,
+			upper_check_prc upperCheckPrc,
+			upper_check_prc_prop upperCheckPrcProp,
+			lower_check_flag lowerCheckFlag,
+			lower_pq_prop lowerPqProp,
+			lower_check_prc_type lowerCheckPrcType,
+			lower_check_prc lowerCheckPrc,
+			lower_check_prc_prop lowerCheckPrcProp,
+			org_no orgNo		
+		from ph_m_agre_deviation where 1=1
+		<if test="phmAgreDeviation != null and phmAgreDeviation.agreId != null and phmAgreDeviation.agreId != ''">
+			and agre_id = #{phmAgreDeviation.agreId}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperCheckFlag != null and phmAgreDeviation.upperCheckFlag != ''">
+			and upper_check_flag = #{phmAgreDeviation.upperCheckFlag}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperPqProp != null and phmAgreDeviation.upperPqProp != ''">
+			and upper_pq_prop = #{phmAgreDeviation.upperPqProp}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperCheckPrcType != null and phmAgreDeviation.upperCheckPrcType != ''">
+			and upper_check_prc_type = #{phmAgreDeviation.upperCheckPrcType}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperCheckPrc != null and phmAgreDeviation.upperCheckPrc != ''">
+			and upper_check_prc = #{phmAgreDeviation.upperCheckPrc}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperCheckPrcProp != null and phmAgreDeviation.upperCheckPrcProp != ''">
+			and upper_check_prc_prop = #{phmAgreDeviation.upperCheckPrcProp}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerCheckFlag != null and phmAgreDeviation.lowerCheckFlag != ''">
+			and lower_check_flag = #{phmAgreDeviation.lowerCheckFlag}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerPqProp != null and phmAgreDeviation.lowerPqProp != ''">
+			and lower_pq_prop = #{phmAgreDeviation.lowerPqProp}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerCheckPrcType != null and phmAgreDeviation.lowerCheckPrcType != ''">
+			and lower_check_prc_type = #{phmAgreDeviation.lowerCheckPrcType}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerCheckPrc != null and phmAgreDeviation.lowerCheckPrc != ''">
+			and lower_check_prc = #{phmAgreDeviation.lowerCheckPrc}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerCheckPrcProp != null and phmAgreDeviation.lowerCheckPrcProp != ''">
+			and lower_check_prc_prop = #{phmAgreDeviation.lowerCheckPrcProp}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.orgNo != null and phmAgreDeviation.orgNo != ''">
+			and org_no = #{phmAgreDeviation.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmAgreDeviationCountByParams" resultType="int">
+		select count(1)	from ph_m_agre_deviation where 1=1
+		<if test="phmAgreDeviation != null and phmAgreDeviation.agreId != null and phmAgreDeviation.agreId != ''">
+			and agre_id = #{phmAgreDeviation.agreId}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperCheckFlag != null and phmAgreDeviation.upperCheckFlag != ''">
+			and upper_check_flag = #{phmAgreDeviation.upperCheckFlag}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperPqProp != null and phmAgreDeviation.upperPqProp != ''">
+			and upper_pq_prop = #{phmAgreDeviation.upperPqProp}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperCheckPrcType != null and phmAgreDeviation.upperCheckPrcType != ''">
+			and upper_check_prc_type = #{phmAgreDeviation.upperCheckPrcType}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperCheckPrc != null and phmAgreDeviation.upperCheckPrc != ''">
+			and upper_check_prc = #{phmAgreDeviation.upperCheckPrc}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.upperCheckPrcProp != null and phmAgreDeviation.upperCheckPrcProp != ''">
+			and upper_check_prc_prop = #{phmAgreDeviation.upperCheckPrcProp}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerCheckFlag != null and phmAgreDeviation.lowerCheckFlag != ''">
+			and lower_check_flag = #{phmAgreDeviation.lowerCheckFlag}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerPqProp != null and phmAgreDeviation.lowerPqProp != ''">
+			and lower_pq_prop = #{phmAgreDeviation.lowerPqProp}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerCheckPrcType != null and phmAgreDeviation.lowerCheckPrcType != ''">
+			and lower_check_prc_type = #{phmAgreDeviation.lowerCheckPrcType}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerCheckPrc != null and phmAgreDeviation.lowerCheckPrc != ''">
+			and lower_check_prc = #{phmAgreDeviation.lowerCheckPrc}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.lowerCheckPrcProp != null and phmAgreDeviation.lowerCheckPrcProp != ''">
+			and lower_check_prc_prop = #{phmAgreDeviation.lowerCheckPrcProp}
+		</if>
+		<if test="phmAgreDeviation != null and phmAgreDeviation.orgNo != null and phmAgreDeviation.orgNo != ''">
+			and org_no = #{phmAgreDeviation.orgNo}
+		</if>
+	</select>
+	
+	<!-- 删除合同时根据合同标识删除合同偏差考核规则信息 -->
+	<delete id="deletePhmAgreDeviationByAgreId">
+		DELETE
+		FROM
+			ph_m_agre_deviation
+		WHERE agre_id in <foreach item="item" index="index" collection="agreIds" open="(" separator="," close=")">
+            	#{item}
+            </foreach>
+	</delete>
+</mapper>

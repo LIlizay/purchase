@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="purchasesettle.sql">
+	<!-- 售电结算 3M28号加了phPlanAddConsFlag = '1'  因为购电计划制定业务修改 ‘1’为购电计划制定选择的用户 -->
+	<select id="getPurchaseSettleList" resultType="com.hhwy.purchaseweb.delivery.purchasesettle.domain.PurchaseSettleDetail" >
+		select ID id,ym ym,plan_name planName,
+			   (SELECT COUNT(1) FROM ph_m_plan_cons_rela rela
+					WHERE rela.plan_id = m.id AND rela.phPlanAddConsFlag = '1') consNum,
+			   setters setters,
+			   (SELECT SUM(r.report_pq) FROM ph_m_transactionl_report r
+					WHERE r.plan_id = m.id) reportPq,
+			   (SELECT SUM(d.deal_pq) FROM ph_m_deal_info d
+					WHERE d.plan_id = m.id) dealPq,
+			   (SELECT SUM(bal.proxy_pq) FROM ph_m_balance_info bal
+					WHERE bal.plan_id = m.id) delivryPq,
+				plan_status planStatus,
+				org_no orgNo,
+				amt.compBalanceAmt compBalanceAmt,
+				amt.sellCheckProfit sellCheckProfit,
+				amt.sellProfit sellProfit
+		from ph_m_purchase_plan_month m 
+		left join(SELECT
+			b.plan_id plan_id,
+			SUM(b.comp_balance_amt) compBalanceAmt,
+			SUM(b.comp_balance_amt) - SUM(li.liquidation_amt) sellCheckProfit,
+			(SUM(b.comp_balance_amt) - SUM(li.liquidation_amt) 
+			- SUM(comp.compensate_amt) + SUM(li.deviation_amt)) sellProfit
+		FROM 
+			(SELECT
+			bDist.plan_id plan_id,
+			bDist.cons_id cons_id,
+			SUM(bDist.comp_balance_amt) comp_balance_amt
+		FROM
+			ph_m_balance_dist bDist
+		GROUP BY bDist.ym,bDist.cons_id) b
+		LEFT JOIN ph_m_liquidation_dist li
+		ON b.plan_id = li.plan_id AND b.cons_id = li.cons_id
+		LEFT JOIN ph_m_compensate_dist comp
+		ON b.plan_id = comp.plan_id AND b.cons_id = comp.cons_id
+		GROUP BY b.plan_id) amt on m.id = amt.plan_id
+		where 1=1
+		<choose>
+	        <when test="startYm !=null and startYm != '' and endYm !=null and endYm != ''">
+	            and m.ym between replace(#{startYm},'-',"") and replace(#{endYm},'-',"")
+	        </when>
+	        <when test="startYm !=null and startYm != ''">
+	            and m.ym  &gt; replace(#{startYm},'-',"")
+	        </when>
+	        <when test="endYm !=null and endYm != ''">
+	            and m.ym  &lt;  replace(#{endYm},'-',"")
+	        </when>
+    	</choose>
+		order by m.ym desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 查询购电结算列表数量 -->
+	<select id="getPurchaseSettleCount" resultType="int" >
+		SELECT 
+			COUNT(1)
+		FROM ph_m_purchase_plan_month
+		where 1=1
+		<choose>
+	        <when test="startYm !=null and startYm != '' and endYm !=null and endYm != ''">
+	            and ym between replace(#{startYm},'-',"") and replace(#{endYm},'-',"")
+	        </when>
+	        <when test="startYm !=null and startYm != ''">
+	            and ym  &gt; replace(#{startYm},'-',"")
+	        </when>
+	        <when test="endYm !=null and endYm != ''">
+	            and ym  &lt;  replace(#{endYm},'-',"")
+	        </when>
+    	</choose>
+	</select>
+	
+	<select id="getSettleDetailList" resultType="com.hhwy.purchaseweb.delivery.purchasesettle.domain.SettleDetail">
+		SELECT 
+			b.cons_name consName,
+			a.bid_pq bidPq,
+			a.bid_amt bidAmt,
+			a.proxy_pq proxyPq,
+			a.proxy_amt proxyAmt,
+			a.deviation_pq deviationPq,
+			a.deviation_amt deviationAmt,
+			b.volt_code voltCode,
+			b.elec_type_code elecTypeCode,
+			c.cont_name contName,
+			c.phone contPhone
+		FROM ph_m_balance_info a 
+		LEFT JOIN s_c_consumer_info b ON b.id = a.cons_id
+		LEFT JOIN s_c_contacts_info c ON c.cons_id = b.id
+		WHERE a.plan_id = #{id}
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<select id="getSettleDetailCount" resultType="int">
+		SELECT 
+			COUNT(1)
+		FROM ph_m_balance_info a 
+	</select>
+	<select id="getSum" resultType="com.hhwy.purchaseweb.delivery.purchasesettle.domain.PurchaseSettleDetail">
+		SELECT 
+			sum(proxy_amt - bid_amt) sellProfit,
+			sum(after_tax_profit) afterTaxProfit
+		FROM
+		ph_m_balance_info
+		where plan_id = #{id}
+	</select>
+</mapper>

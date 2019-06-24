@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smPurchaseSchemeDetail.sql">
+	<!-- 根据条件查询列表 -->
+	<!-- <select id="getSmPurchaseSchemeDetailListByParams" resultType="com.hhwy.purchase.domain.SmPurchaseSchemeDetail">
+		select
+			ID id,
+			cons_id consId,
+			scheme_id schemeId,
+			divi_code diviCode,
+			agre_prc agrePrc,
+			divi_value diviValue,
+			party_a_lc_prop partyALcProp,
+			bid_divi_code bidDiviCode,
+			bid_agre_prc bidAgrePrc,
+			bid_divi_value bidDiviValue,
+			party_a_bid_prop partyABidProp,
+			lc_pq lcPq,
+			bid_pq bidPq,
+			listed_pq listedPq,
+			proxy_pq proxyPq,
+			delivery_pq deliveryPq,
+			delivery_prc deliveryPrc,
+			service_amt serviceAmt,
+			org_no orgNo		
+		from s_m_purchase_scheme_detail where 1=1
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.consId != null and smPurchaseSchemeDetail.consId != ''">
+			and cons_id = #{smPurchaseSchemeDetail.consId}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.schemeId != null and smPurchaseSchemeDetail.schemeId != ''">
+			and scheme_id = #{smPurchaseSchemeDetail.schemeId}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.diviCode != null and smPurchaseSchemeDetail.diviCode != ''">
+			and divi_code = #{smPurchaseSchemeDetail.diviCode}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.agrePrc != null and smPurchaseSchemeDetail.agrePrc != ''">
+			and agre_prc = #{smPurchaseSchemeDetail.agrePrc}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.diviValue != null and smPurchaseSchemeDetail.diviValue != ''">
+			and divi_value = #{smPurchaseSchemeDetail.diviValue}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.partyALcProp != null and smPurchaseSchemeDetail.partyALcProp != ''">
+			and party_a_lc_prop = #{smPurchaseSchemeDetail.partyALcProp}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.bidDiviCode != null and smPurchaseSchemeDetail.bidDiviCode != ''">
+			and bid_divi_code = #{smPurchaseSchemeDetail.bidDiviCode}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.bidAgrePrc != null and smPurchaseSchemeDetail.bidAgrePrc != ''">
+			and bid_agre_prc = #{smPurchaseSchemeDetail.bidAgrePrc}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.bidDiviValue != null and smPurchaseSchemeDetail.bidDiviValue != ''">
+			and bid_divi_value = #{smPurchaseSchemeDetail.bidDiviValue}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.partyABidProp != null and smPurchaseSchemeDetail.partyABidProp != ''">
+			and party_a_bid_prop = #{smPurchaseSchemeDetail.partyABidProp}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.lcPq != null and smPurchaseSchemeDetail.lcPq != ''">
+			and lc_pq = #{smPurchaseSchemeDetail.lcPq}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.bidPq != null and smPurchaseSchemeDetail.bidPq != ''">
+			and bid_pq = #{smPurchaseSchemeDetail.bidPq}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.listedPq != null and smPurchaseSchemeDetail.listedPq != ''">
+			and listed_pq = #{smPurchaseSchemeDetail.listedPq}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.proxyPq != null and smPurchaseSchemeDetail.proxyPq != ''">
+			and proxy_pq = #{smPurchaseSchemeDetail.proxyPq}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.deliveryPq != null and smPurchaseSchemeDetail.deliveryPq != ''">
+			and delivery_pq = #{smPurchaseSchemeDetail.deliveryPq}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.deliveryPrc != null and smPurchaseSchemeDetail.deliveryPrc != ''">
+			and delivery_prc = #{smPurchaseSchemeDetail.deliveryPrc}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.serviceAmt != null and smPurchaseSchemeDetail.serviceAmt != ''">
+			and service_amt = #{smPurchaseSchemeDetail.serviceAmt}
+		</if>
+		<if test="smPurchaseSchemeDetail != null and smPurchaseSchemeDetail.orgNo != null and smPurchaseSchemeDetail.orgNo != ''">
+			and org_no = #{smPurchaseSchemeDetail.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select> -->
+	
+	<!-- 根据方案id删除方案详情信息 -->
+	<delete id="deleteConsInfo">
+	    DELETE FROM s_m_purchase_scheme_detail where scheme_id IN
+	     <foreach item="schemeId" index="index"
+               collection="schemeIds" open="(" separator="," close=")">  
+                #{schemeId}
+         </foreach>
+	</delete>
+	
+	<!-- 根据方案id获取结算详细信息 -->
+	<select id="getSchemeDetailBySchemeId" resultType="com.hhwy.purchaseweb.settlement.base.smpurchaseschemedetail.domain.SmPurchaseSchemeDetailDetail">
+	     SELECT
+			a.id id,
+			a.cons_id consId,
+			b.cons_name consName,
+			b.volt_code voltCode,
+			a.scheme_id schemeId,
+			a.divi_code diviCode,
+			a.agre_prc agrePrc,
+			a.divi_value diviValue,
+			a.party_a_lc_prop partyALcProp,
+			a.bid_divi_code bidDiviCode,
+			a.bid_agre_prc bidAgrePrc,
+			a.bid_divi_value bidDiviValue,
+			a.party_a_bid_prop partyABidProp,
+			a.lc_pq lcPq,
+			a.bid_pq bidPq,
+			a.listed_pq listedPq,
+	<!-- a.proxy_pq proxyPq, -->
+			a.delivery_pq deliveryPq,
+			a.delivery_prc deliveryPrc,
+			a.service_amt serviceAmt,
+			
+			IFNULL((SELECT sum(examine.agre_pq) FROM ph_m_agre_pq_examine examine where examine.cons_id=b.id and examine.ym=scheme.ym),
+				CONVERT(
+						CASE RIGHT(scheme.ym, 2) 
+							WHEN '01' THEN ppa.jan
+							WHEN '02' THEN ppa.feb
+							WHEN '03' THEN ppa.mar
+							WHEN '04' THEN ppa.apr
+							WHEN '05' THEN ppa.may
+							WHEN '06' THEN ppa.jun
+							WHEN '07' THEN ppa.jul
+							WHEN '08' THEN ppa.aug
+							WHEN '09' THEN ppa.sept
+							WHEN '10' THEN ppa.oct
+							WHEN '11' THEN ppa.nov
+							WHEN '12' THEN ppa.dece
+						END
+						, DECIMAL(10,3)) ) proxyPq,
+			elec.practical_pq actualPq,
+			d.profit_mode profitMode,
+			d.agent agent,
+			d.bid_profit_mode bidProfitMode,
+			d.bid_agent bidAgent
+		FROM
+
+			s_m_purchase_scheme_detail a
+		inner JOIN s_c_consumer_info b ON a.scheme_id=#{schemeId} and a.cons_id=b.id
+		inner join s_m_purchase_scheme scheme on scheme.id=#{schemeId}
+		LEFT JOIN s_c_cons_electricity elec on elec.cons_id=a.cons_id and elec.ym=scheme.ym
+		LEFT JOIN s_m_ppa ppa ON b.id = ppa.cons_id and ppa.agre_status!="00" 
+			and concat(left(scheme.ym,4),'-',right(scheme.ym,2)) &gt;= LEFT(ppa.effective_date ,7)
+			AND concat(left(scheme.ym,4),'-',right(scheme.ym,2)) &lt;= LEFT(ppa.expiry_date,7)
+		LEFT JOIN s_m_dist_mode d ON ppa.id = d.agre_id
+		order by b.cons_name
+	</select>
+	
+	<!-- 根据ym获取当月的所有合同用户信息（方案详情信息） -->
+	<select id="getSchemeDetailListByYm" resultType="com.hhwy.purchaseweb.settlement.base.smpurchaseschemedetail.domain.SmPurchaseSchemeDetailDetail">
+	      SELECT
+			cons.id consId,
+			cons.cons_name consName,
+			cons.volt_code voltCode,
+			d.divi_code diviCode,
+			d.agre_prc agrePrc,
+			d.divi_type diviType,
+			d.divi_value diviValue,
+			d.party_a_lc_prop partyALcProp,
+			d.bid_divi_code bidDiviCode,
+			d.bid_agre_prc bidAgrePrc,
+			d.bid_divi_type bidDiviType,
+			d.bid_divi_value bidDiviValue,
+			d.party_a_bid_prop partyABidProp,
+			max(elec.practical_pq) actualPq,
+			IFNULL((SELECT sum(examine.agre_pq) FROM ph_m_agre_pq_examine examine where examine.cons_id=cons.id and examine.ym=#{ym}) 
+				, CONVERT(
+						CASE RIGHT(#{ym}, 2) 
+							WHEN '01' THEN ppa.jan
+							WHEN '02' THEN ppa.feb
+							WHEN '03' THEN ppa.mar
+							WHEN '04' THEN ppa.apr
+							WHEN '05' THEN ppa.may
+							WHEN '06' THEN ppa.jun
+							WHEN '07' THEN ppa.jul
+							WHEN '08' THEN ppa.aug
+							WHEN '09' THEN ppa.sept
+							WHEN '10' THEN ppa.oct
+							WHEN '11' THEN ppa.nov
+							WHEN '12' THEN ppa.dece
+						END
+						, DECIMAL(18,6)) ) proxyPq,
+			d.profit_mode profitMode,
+			d.agent agent,
+			d.bid_profit_mode bidProfitMode,
+			d.bid_agent bidAgent
+		FROM
+			(
+				SELECT
+					s_c_consumer_info.*
+				FROM
+					s_c_consumer_info
+				INNER JOIN ac_user_org_auth fweb_ac_uoa ON (
+					fweb_ac_uoa.org_id = org_no
+					AND fweb_ac_uoa.user_id = #{userId}
+				)
+			) cons 
+
+		INNER JOIN s_m_ppa ppa ON cons.id = ppa.cons_id and ppa.agre_status!="00" 
+			and concat(left(#{ym},4),'-',right(#{ym},2)) &gt;= LEFT(ppa.effective_date ,7)
+			AND concat(left(#{ym},4),'-',right(#{ym},2)) &lt;= LEFT(ppa.expiry_date,7)
+		LEFT JOIN s_m_dist_mode d ON ppa.id = d.agre_id
+		LEFT JOIN s_c_cons_electricity elec on elec.cons_id=cons.id and elec.ym=#{ym}
+		GROUP by cons.id 
+		order by cons.cons_name
+	</select>
+	<!--  根据方案id删除其下所有方案详情信息 -->
+	<delete id="deleteSchemeDetailBySchemeId">
+		delete from s_m_purchase_scheme_detail where scheme_id=#{string}
+	</delete>
+</mapper>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smDeviationInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmDeviationInfoListByParams" resultType="com.hhwy.purchaseweb.deviationcheck.smdeviationinfo.domain.SmDeviationInfoDetail">
+		select
+				<!-- status status,
+				comp_status compStatus	 -->
+			dev.ID id,
+			dev.cons_id consId,
+			info.cons_name consName,
+			DATE_FORMAT(dev.warning_date,'%Y-%m-%d') warningDate,	
+			dev.warning_type warningType,
+			dev.warning_grade warningGrade,
+			dev.org_no orgNo,
+			CONVERT((b.actual_pq -b.plan_pq) / b.plan_pq * 100,DECIMAL(18,2)) deviationProp
+		from s_m_deviation_info dev 
+		left join s_c_consumer_info info on dev.cons_id = info.id
+		LEFT JOIN s_m_cons_power_view b on b.ymd = DATE_FORMAT(dev.warning_date,'%Y%m%d') AND b.cons_id = dev.cons_id
+		where 1=1
+		<if test="consName != null and consName != ''">
+			and info.cons_name LIKE CONCAT('%',#{consName},'%')
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.consId != null and smDeviationInfo.consId != ''">
+			and dev.cons_id = #{smDeviationInfo.consId}
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.warningDate != null and smDeviationInfo.warningDate != ''">
+			and dev.warning_date = #{smDeviationInfo.warningDate}
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.warningType != null and smDeviationInfo.warningType != ''">
+			and dev.warning_type = #{smDeviationInfo.warningType}
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.warningGrade != null and smDeviationInfo.warningGrade != ''">
+			and dev.warning_grade = #{smDeviationInfo.warningGrade}
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.orgNo != null and smDeviationInfo.orgNo != ''">
+			and dev.org_no = #{smDeviationInfo.orgNo}
+		</if>
+		<if test="ym != null and ym != ''">
+			and DATE_FORMAT(dev.warning_date,'%Y%m') = #{ym}
+		</if>
+		order by dev.warning_date DESC ,CONVERT(ABS(b.actual_pq -b.plan_pq) / b.plan_pq * 100 ,DECIMAL(18,2)) DESC ,info.cons_name DESC
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmDeviationInfoCountByParams" resultType="int">
+		select count(1)	
+		from s_m_deviation_info dev 
+		left join s_c_consumer_info info on dev.cons_id = info.id 
+		where 1=1
+		<if test="consName != null and consName != ''">
+			and info.cons_name LIKE CONCAT('%',#{consName},'%')
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.consId != null and smDeviationInfo.consId != ''">
+			and dev.cons_id = #{smDeviationInfo.consId}
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.warningDate != null and smDeviationInfo.warningDate != ''">
+			and dev.warning_date = #{smDeviationInfo.warningDate}
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.warningType != null and smDeviationInfo.warningType != ''">
+			and dev.warning_type = #{smDeviationInfo.warningType}
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.warningGrade != null and smDeviationInfo.warningGrade != ''">
+			and dev.warning_grade = #{smDeviationInfo.warningGrade}
+		</if>
+		<if test="smDeviationInfo != null and smDeviationInfo.orgNo != null and smDeviationInfo.orgNo != ''">
+			and dev.org_no = #{smDeviationInfo.orgNo}
+		</if>
+		<if test="ym != null and ym != ''">
+			and DATE_FORMAT(dev.warning_date,'%Y%m') = #{ym}
+		</if>
+	</select>
+	<!-- 根据用户id和预警时间查询偏差预警信息详情 -->
+	<select id="getSmDeviationInfoDetailById" resultType="com.hhwy.purchaseweb.deviationcheck.smdeviationinfo.domain.SmDeviationInfoDetail" parameterType="String">
+		SELECT 
+			a.cons_id,
+			a.id id,
+			a.warning_date warningDate,
+			a.warning_type warningType,
+			a.warning_grade warningGrade,
+			b.plan_pq planPq,
+			b.actual_pq actualPq,
+			b.day_plan_pq dayPlanPq,
+			b.day_actual_pq dayActualPq,
+			<!-- ABS(b.actual_pq - b.plan_pq) deviationPq,
+			ABS(b.day_actual_pq - b.day_plan_pq) dayDeviationPq, -->
+			CONVERT((b.actual_pq - b.plan_pq) * 100 / b.plan_pq, DECIMAL(18,2)) deviationProp,
+			CONVERT((b.day_actual_pq - b.day_plan_pq) * 100 / b.day_plan_pq, DECIMAL(18,2)) dayDeviationProp,
+			max(pw.plan_pq) agrePq
+		FROM s_m_deviation_info a
+		LEFT JOIN s_m_cons_power_view b on b.ymd = DATE_FORMAT(a.warning_date,'%Y%m%d') and b.cons_id = a.cons_id AND b.ym IS NOT NULL
+		LEFT JOIN s_m_cons_power_view pw on pw.cons_id = a.cons_id AND b.ym = pw.ym
+		WHERE a.id = #{string}
+	<!-- 	IFNULL(CONVERT(sum(f.agre_pq), DECIMAL(18,2)), CONVERT(
+				CASE RIGHT(b.ym, 2) 
+					WHEN '01' THEN e.jan
+					WHEN '02' THEN e.feb
+					WHEN '03' THEN e.mar
+					WHEN '04' THEN e.apr
+					WHEN '05' THEN e.may
+					WHEN '06' THEN e.jun
+					WHEN '07' THEN e.jul
+					WHEN '08' THEN e.aug
+					WHEN '09' THEN e.sept
+					WHEN '10' THEN e.oct
+					WHEN '11' THEN e.nov
+					WHEN '12' THEN e.dece
+				END
+				, DECIMAL(18,2))) agrePq
+		LEFT JOIN s_m_ppa e ON b.cons_id = e.cons_id and e.agre_status!='00' AND left(REPLACE(e.effective_date, '-' ,''),6) &lt;= REPLACE(b.ym, '-' ,'') AND left(REPLACE(e.expiry_date, '-' ,''),6) &gt;= REPLACE(b.ym, '-' ,'')
+		LEFT JOIN ph_m_agre_pq_examine f ON f.cons_id = b.cons_id AND f.ym = REPLACE(b.ym, '-' ,'') -->
+	</select>
+	
+	
+	
+	<!-- 根据用户id列表和抄表年月ym获取此超表年月内的偏差预警 -->
+	<select id="getDeviationInfoListByConsIdAndYm" resultType="com.hhwy.purchaseweb.deviationcheck.smdeviationinfo.domain.SmDeviationInfoDetail">
+		select
+			dev.ID id,
+			dev.cons_id consId,
+			info.cons_name consName,
+			DATE_FORMAT(dev.warning_date,'%Y-%m-%d') warningDate,	
+			dev.warning_type warningType,
+			dev.warning_grade warningGrade,
+			dev.org_no orgNo,
+			CONVERT((b.actual_pq -b.plan_pq) / b.plan_pq * 100,DECIMAL(18,2)) deviationProp
+		from s_m_deviation_info dev 
+		inner join s_c_consumer_info info on dev.cons_id = info.id and info.id=#{consId}
+		inner JOIN s_m_cons_power_view b on b.ymd = DATE_FORMAT(dev.warning_date,'%Y%m%d') AND b.cons_id = dev.cons_id and b.ym=#{ym}
+		order by dev.warning_date
+	</select>
+	<!-- 根据用户id和时间区间删除偏差预警 -->
+	<delete id="deleteByConsIdListAndDateRange">
+		delete from s_m_deviation_info 
+		where cons_id in 
+			<foreach collection="consIdList" open="(" close=")" separator="," item="consId">
+				#{consId} 
+			</foreach>
+			and DATE_FORMAT(warning_date,'%Y%m%d') &lt;=#{endDate}
+			and DATE_FORMAT(warning_date,'%Y%m%d') &gt;=#{startDate}
+	</delete>
+	<!-- 根据用户id和时间List删除偏差预警 -->
+	<delete id="deleteByConsIdAndYmdList">
+		delete from s_m_deviation_info 
+		where cons_id = #{consId} 
+			and DATE_FORMAT(warning_date,'%Y%m%d') in 
+			<foreach collection="ymdList" open="(" close=")" separator="," item="ymd">
+				#{ymd}
+			</foreach>
+	</delete>
+	
+	<!-- 根据consId查询用户偏差预警规则 -->
+	<select id="getConsRule" resultType="Map" parameterType="String">
+		SELECT
+			a.min_prop minProp,
+			a.warn_prompt warnPrompt,
+			a.warn_type warnType,
+			c.name warnName
+		FROM s_m_cons_warning_info a
+		LEFT JOIN s_m_cons_early_warning b ON a.rule_id = b.id
+		LEFT JOIN s_p_code c ON c.value = a.warn_type AND c.code_type = 'sell_warnClass'
+		WHERE 
+			b.cons_id = #{String}
+		ORDER BY a.warn_prompt, a.min_prop DESC
+	</select>
+	
+	<!-- 查询默认偏差预警规则 -->
+	<select id="getDefaultRuleSql" resultType="Map">
+		SELECT
+			a.min_prop minProp,
+			a.warn_prompt warnPrompt,
+			a.warn_type warnType,
+			c.name warnName
+		FROM s_m_cons_warning_info a
+		LEFT JOIN s_m_cons_early_warning b ON a.rule_id = b.id
+		LEFT JOIN s_p_code c ON c.value = a.warn_type AND c.code_type = 'sell_warnClass'
+		WHERE b.rule_flag = '1'
+		ORDER BY a.warn_prompt, a.min_prop DESC
+	</select>
+	
+	<!-- 根据用户id数组删除所有偏差预警 -->
+	<delete id="deleteDeviationInfoByConsIds">
+		DELETE
+		FROM
+			s_m_deviation_info
+		where cons_id IN 
+			<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+	 			#{item}  
+	 		</foreach>
+	</delete>
+	<!-- 新增偏差预警 -->
+	<insert id="addDeviationInfoList">
+		INSERT INTO s_m_deviation_info 
+			(`id`, `cons_id`, `warning_date`, `warning_type`, `status`, `warning_grade`, `create_time`, `create_user`, 
+				`update_time`, `update_user`, `org_no`, `comp_status`) 
+		VALUES 
+			<foreach collection="addList" item="item" index="index" separator="," > 
+				(
+					#{item.id},
+					#{item.consId},
+					#{item.warningDate},
+					#{item.warningType},
+					#{item.status},
+					#{item.warningGrade},
+					now(),
+					#{loginUserId},
+					now(),
+					#{loginUserId},
+					#{orgNo},
+					#{item.compStatus}
+				)
+		    </foreach> 		
+	</insert>
+</mapper>

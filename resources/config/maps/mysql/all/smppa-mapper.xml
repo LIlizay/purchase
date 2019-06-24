@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smPpa.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmPpaListByParams" resultType="com.hhwy.purchaseweb.contract.smppa.domain.SmPpaDetail">
+		select
+			ppa.ID id,
+			ppa.agre_no agreNo,
+			ppa.agre_name agreName,
+			org.name orgName,
+			ppa.cons_id consId,
+			cons.cons_no consNo,
+			cons.cons_name consName,
+			cons.elec_type_code elecType,
+			ppa.agre_type agreType,
+			ppa.agre_ver agreVer,
+			ppa.party_b partyB,
+			ppa.party_a partyA,
+			ppa.sign_date signDate,
+			ppa.effective_date effectiveDate,
+			ppa.expiry_date expiryDate,
+			ppa.recorder recorder,
+			ppa.record_date recordDate,
+			ppa.agre_status agreStatus,
+			ppa.file_id fileId,
+			ppa.proxy_mode proxyMode,
+			ROUND(ppa.proxy_pq,3) proxyPq,
+			ppa.dist_mode distMode,
+			ppa.jan jan,
+			ppa.feb feb,
+			ppa.mar mar,
+			ppa.apr apr,
+			ppa.may may,
+			ppa.jun jun,
+			ppa.jul jul,
+			ppa.aug aug,
+			ppa.sept sept,
+			ppa.oct oct,
+			ppa.nov nov,
+			ppa.dece dece,
+			COUNT(sup.id) supNum
+		from s_m_ppa ppa 
+		left join s_c_consumer_info cons on cons.id = ppa.cons_id
+		left join s_c_org_info org on org.id = cons.org_id
+		left join s_m_agre_sup sup on ppa.id = sup.ppa_id
+		where 1=1
+		<if test="consIds != null and consIds.length != 0">
+			and cons_id in 
+			<foreach collection="consIds" index="index" item="tag" open="(" separator="," close=")">
+		   		#{tag}
+		  	</foreach>
+		</if>
+		<if test="orgId != null and orgId != ''">
+			and org.id = #{orgId}
+		</if>
+		<if test="consNo != null and consNo != ''">
+			and cons.cons_no like CONCAT('%', #{consNo}, '%')
+		</if>
+		<if test="consName != null and consName != ''">
+			and cons.cons_name like CONCAT('%', #{consName}, '%')
+		</if>
+		<if test="smPpa != null and smPpa.agreNo != null and smPpa.agreNo != ''">
+			and ppa.agre_no like CONCAT('%', #{smPpa.agreNo}, '%')
+		</if>
+		<if test="smPpa != null and smPpa.agreName != null and smPpa.agreName != ''">
+			and ppa.agre_name like CONCAT('%', #{smPpa.agreName}, '%')
+		</if>
+		<if test="smPpa != null and smPpa.consId != null and smPpa.consId != ''">
+			and ppa.cons_id = #{smPpa.consId}
+		</if>
+		<if test="smPpa != null and smPpa.agreType != null and smPpa.agreType != ''">
+			and ppa.agre_type = #{smPpa.agreType}
+		</if>
+		<if test="smPpa != null and smPpa.agreVer != null and smPpa.agreVer != ''">
+			and ppa.agre_ver = #{smPpa.agreVer}
+		</if>
+		<if test="smPpa != null and smPpa.partyB != null and smPpa.partyB != ''">
+			and ppa.party_b = #{smPpa.partyB}
+		</if>
+		<if test="smPpa != null and smPpa.partyA != null and smPpa.partyA != ''">
+			and ppa.party_a = #{smPpa.partyA}
+		</if>
+		<if test="smPpa != null and smPpa.signDate != null and smPpa.signDate != ''">
+			and ppa.sign_date = #{smPpa.signDate}
+		</if>
+		
+		<choose>
+			<when test="smPpa != null and smPpa.effectiveDate != null and smPpa.effectiveDate != '' and smPpa.expiryDate != null and smPpa.expiryDate != ''">
+				and NOT(#{smPpa.effectiveDate} &gt; DATE_FORMAT(ppa.expiry_date,'%Y-%m') OR #{smPpa.expiryDate} &lt; DATE_FORMAT(ppa.effective_date,'%Y-%m'))
+			</when>
+			<when test="smPpa != null and smPpa.effectiveDate != null and smPpa.effectiveDate != ''">
+				and DATE_FORMAT(ppa.effective_date,'%Y-%m') &lt;= #{smPpa.effectiveDate} AND #{smPpa.effectiveDate} &lt;= DATE_FORMAT(ppa.expiry_date,'%Y-%m')
+			</when>
+			<when test="smPpa != null and smPpa.expiryDate != null and smPpa.expiryDate != ''">
+				and DATE_FORMAT(ppa.effective_date,'%Y-%m') &lt;= #{smPpa.expiryDate} AND #{smPpa.expiryDate} &lt;= DATE_FORMAT(ppa.expiry_date,'%Y-%m')
+			</when>
+		</choose>
+		
+		<if test="smPpa != null and smPpa.recorder != null and smPpa.recorder != ''">
+			and ppa.recorder = #{smPpa.recorder}
+		</if>
+		<if test="smPpa != null and smPpa.recordDate != null and smPpa.recordDate != ''">
+			and ppa.record_date = #{smPpa.recordDate}
+		</if>
+		<if test="smPpa != null and smPpa.agreStatus != null and smPpa.agreStatus != ''">
+			and ppa.agre_status = #{smPpa.agreStatus}
+		</if>
+		<if test="smPpa != null and smPpa.fileId != null and smPpa.fileId != ''">
+			and ppa.file_id = #{smPpa.fileId}
+		</if>
+		<if test="smPpa != null and smPpa.proxyMode != null and smPpa.proxyMode != ''">
+			and ppa.proxy_mode = #{smPpa.proxyMode}
+		</if>
+		<if test="smPpa != null and smPpa.proxyPq != null and smPpa.proxyPq != ''">
+			and ppa.proxy_pq = #{smPpa.proxyPq}
+		</if>
+		<if test="smPpa != null and smPpa.distMode != null and smPpa.distMode != ''">
+			and ppa.dist_mode = #{smPpa.distMode}
+		</if>
+		<if test="smPpa != null and smPpa.dece != null and smPpa.dece != ''">
+			and ppa.dece = #{smPpa.dece}
+		</if>
+		Group by ppa.id order by ppa.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmPpaCountByParams" resultType="int">
+		select count(1)	from s_m_ppa ppa where 1=1
+		<if test="consIds != null and consIds.length != 0">
+			and cons_id in 
+			<foreach collection="consIds" index="index" item="tag" open="(" separator="," close=")">
+		   		#{tag}
+		  	</foreach>
+		</if>
+		<if test="smPpa != null and smPpa.agreNo != null and smPpa.agreNo != ''">
+			and agre_no = #{smPpa.agreNo}
+		</if>
+		<if test="smPpa != null and smPpa.agreName != null and smPpa.agreName != ''">
+			and agre_name = #{smPpa.agreName}
+		</if>
+		<if test="smPpa != null and smPpa.consId != null and smPpa.consId != ''">
+			and cons_id = #{smPpa.consId}
+		</if>
+		<if test="smPpa != null and smPpa.agreType != null and smPpa.agreType != ''">
+			and agre_type = #{smPpa.agreType}
+		</if>
+		<if test="smPpa != null and smPpa.agreVer != null and smPpa.agreVer != ''">
+			and agre_ver = #{smPpa.agreVer}
+		</if>
+		<if test="smPpa != null and smPpa.partyB != null and smPpa.partyB != ''">
+			and party_b = #{smPpa.partyB}
+		</if>
+		<if test="smPpa != null and smPpa.partyA != null and smPpa.partyA != ''">
+			and party_a = #{smPpa.partyA}
+		</if>
+		<if test="smPpa != null and smPpa.signDate != null and smPpa.signDate != ''">
+			and sign_date = #{smPpa.signDate}
+		</if>
+		
+		<choose>
+			<when test="smPpa != null and smPpa.effectiveDate != null and smPpa.effectiveDate != '' and smPpa.expiryDate != null and smPpa.expiryDate != ''">
+				and NOT(#{smPpa.effectiveDate} &gt; DATE_FORMAT(ppa.expiry_date,'%Y-%m') OR #{smPpa.expiryDate} &lt; DATE_FORMAT(ppa.effective_date,'%Y-%m'))
+			</when>
+			<when test="smPpa != null and smPpa.effectiveDate != null and smPpa.effectiveDate != ''">
+				and DATE_FORMAT(ppa.effective_date,'%Y-%m') &lt;= #{smPpa.effectiveDate} AND #{smPpa.effectiveDate} &lt;= DATE_FORMAT(ppa.expiry_date,'%Y-%m')
+			</when>
+			<when test="smPpa != null and smPpa.expiryDate != null and smPpa.expiryDate != ''">
+				and DATE_FORMAT(ppa.effective_date,'%Y-%m') &lt;= #{smPpa.expiryDate} AND #{smPpa.expiryDate} &lt;= DATE_FORMAT(ppa.expiry_date,'%Y-%m')
+			</when>
+		</choose>
+
+		<if test="smPpa != null and smPpa.recorder != null and smPpa.recorder != ''">
+			and recorder = #{smPpa.recorder}
+		</if>
+		<if test="smPpa != null and smPpa.recordDate != null and smPpa.recordDate != ''">
+			and record_date = #{smPpa.recordDate}
+		</if>
+		<if test="smPpa != null and smPpa.agreStatus != null and smPpa.agreStatus != ''">
+			and agre_status = #{smPpa.agreStatus}
+		</if>
+		<if test="smPpa != null and smPpa.fileId != null and smPpa.fileId != ''">
+			and file_id = #{smPpa.fileId}
+		</if>
+		<if test="smPpa != null and smPpa.proxyMode != null and smPpa.proxyMode != ''">
+			and proxy_mode = #{smPpa.proxyMode}
+		</if>
+		<if test="smPpa != null and smPpa.proxyPq != null and smPpa.proxyPq != ''">
+			and proxy_pq = #{smPpa.proxyPq}
+		</if>
+		<if test="smPpa != null and smPpa.distMode != null and smPpa.distMode != ''">
+			and dist_mode = #{smPpa.distMode}
+		</if>
+	</select>
+	<!-- 根据 年月查询未生成月度计划用户-->
+	<select id="getPpaConsId" resultType="com.hhwy.selling.domain.SmPpa">
+		SELECT
+			t.cons_id consId,
+			t.proxy_pq proxyPq,
+			d.cons_id
+		FROM
+			s_m_ppa t
+		LEFT JOIN s_m_purchase_plan_dist d ON d.ym = #{ym}
+		AND d.cons_id = t.cons_id
+		WHERE
+			#{year} BETWEEN DATE_FORMAT(t.effective_date, '%Y')
+		AND DATE_FORMAT(t.expiry_date, '%Y')
+		AND t.agre_status = '01'
+		AND d.cons_id IS NULL
+	</select>
+	<!-- 根据 年月查询未生成中长期计划用户-->
+	<!-- <select id="getLcConsId" resultType="java.util.Map">
+		SELECT
+			t.cons_id consId,
+			(
+				SELECT
+					cons_name
+				FROM
+					s_c_consumer_info
+				WHERE
+					id = t.cons_id
+			) consName,
+			t.proxy_pq contractPq
+		FROM
+			s_m_ppa t
+		LEFT JOIN s_m_lc_plan p ON p.year = #{year} AND p.status = '03'
+		LEFT JOIN s_m_lc_plan_dist d ON p.id = d.plan_id
+		WHERE
+			#{year} BETWEEN DATE_FORMAT(t.effective_date, '%Y') 
+		AND DATE_FORMAT(t.expiry_date, '%Y')
+			AND t.agre_status = '01'
+		AND d.cons_id IS NULL
+	</select> -->
+	
+	<!-- 查询新增长协购电计划页面表格数据 -->
+	<select id="perMonthData" resultType="java.util.Map">
+		select  
+			p.effective_date as effectiveDate,
+			p.expiry_date as expiryDate,
+			p.jan,
+			p.feb,
+			p.mar,
+			p.apr,
+			p.may,
+			p.jun,
+			p.jul,
+			p.aug,
+			p.sept,
+			p.oct,
+			p.nov,
+			p.dece
+		from s_m_ppa p
+		where p.effective_date &lt; '${nextYear}' and  p.expiry_date &gt; '${currYear}'
+	</select>
+	
+	
+	<!-- 根据购电合同id获取月度委托电量-->
+	<select id="getAgrePqByAgreId" resultType="com.hhwy.purchaseweb.contract.smppa.domain.SmPpaDetail">
+		select
+			ppa.id id,
+			ppa.proxy_pq proxyPq,
+			sum(CASE RIGHT(agre.ym,2) WHEN '01' THEN agre.agre_pq ELSE 0 END ) jan,
+			sum(CASE RIGHT(agre.ym,2) WHEN '02' THEN agre.agre_pq ELSE 0 END ) feb,
+			sum(CASE RIGHT(agre.ym,2) WHEN '03' THEN agre.agre_pq ELSE 0 END ) mar,
+			sum(CASE RIGHT(agre.ym,2) WHEN '04' THEN agre.agre_pq ELSE 0 END ) apr,
+			sum(CASE RIGHT(agre.ym,2) WHEN '05' THEN agre.agre_pq ELSE 0 END ) may,
+			sum(CASE RIGHT(agre.ym,2) WHEN '06' THEN agre.agre_pq ELSE 0 END ) jun,
+			sum(CASE RIGHT(agre.ym,2) WHEN '07' THEN agre.agre_pq ELSE 0 END ) jul,
+			sum(CASE RIGHT(agre.ym,2) WHEN '08' THEN agre.agre_pq ELSE 0 END ) aug,
+			sum(CASE RIGHT(agre.ym,2) WHEN '09' THEN agre.agre_pq ELSE 0 END ) sep,
+			sum(CASE RIGHT(agre.ym,2) WHEN '10' THEN agre.agre_pq ELSE 0 END ) oct,
+			sum(CASE RIGHT(agre.ym,2) WHEN '11' THEN agre.agre_pq ELSE 0 END ) nov,
+			sum(CASE RIGHT(agre.ym,2) WHEN '12' THEN agre.agre_pq ELSE 0 END ) `dec`
+		from s_m_ppa ppa
+		left join ph_m_agre_pq_examine agre on ppa.cons_id = agre.cons_id
+		where ppa.id = #{id}
+	</select>
+	
+	<!-- 根据购电合同id获取实际用电量 3M28号加了phPlanAddConsFlag = '1'  因为购电计划制定业务修改 ‘1’为购电计划制定选择的用户 -->
+	<select id="getActualPqByAgreId" resultType="com.hhwy.purchaseweb.contract.smppa.domain.SmPpaDetail">
+		select
+			ppa.id id,
+			sum(CASE RIGHT(plan.ym,2) WHEN '01' THEN actual.actual_pq ELSE 0 END ) jan,
+			sum(CASE RIGHT(plan.ym,2) WHEN '02' THEN actual.actual_pq ELSE 0 END ) feb,
+			sum(CASE RIGHT(plan.ym,2) WHEN '03' THEN actual.actual_pq ELSE 0 END ) mar,
+			sum(CASE RIGHT(plan.ym,2) WHEN '04' THEN actual.actual_pq ELSE 0 END ) apr,
+			sum(CASE RIGHT(plan.ym,2) WHEN '05' THEN actual.actual_pq ELSE 0 END ) may,
+			sum(CASE RIGHT(plan.ym,2) WHEN '06' THEN actual.actual_pq ELSE 0 END ) jun,
+			sum(CASE RIGHT(plan.ym,2) WHEN '07' THEN actual.actual_pq ELSE 0 END ) jul,
+			sum(CASE RIGHT(plan.ym,2) WHEN '08' THEN actual.actual_pq ELSE 0 END ) aug,
+			sum(CASE RIGHT(plan.ym,2) WHEN '09' THEN actual.actual_pq ELSE 0 END ) sep,
+			sum(CASE RIGHT(plan.ym,2) WHEN '10' THEN actual.actual_pq ELSE 0 END ) oct,
+			sum(CASE RIGHT(plan.ym,2) WHEN '11' THEN actual.actual_pq ELSE 0 END ) nov,
+			sum(CASE RIGHT(plan.ym,2) WHEN '12' THEN actual.actual_pq ELSE 0 END ) `dec`
+		from s_m_ppa ppa
+		left join ph_m_plan_cons_rela actual on ppa.cons_id = actual.cons_id
+		left join ph_m_purchase_plan_month plan on plan.id = actual.plan_id
+		where ppa.id = #{id}
+		AND actual.phPlanAddConsFlag = '1'
+	</select>
+	
+	<!-- 更新合同状态 -->
+	<update id="expiredApply">
+		update s_m_ppa set agre_status = 
+        case when #{string} &lt; effective_date then '01'
+        when #{string} &gt; expiry_date then '03'
+        else '02' end where agre_status != "00"
+	</update>
+	
+	<!-- 合同有效期内的用户查询 -->
+	<select id="getSmPpaList" resultType="com.hhwy.purchaseweb.contract.smppa.domain.SmPpaDetail">
+		select
+			ppa.ID id,
+			ppa.cons_id consId,
+			cons.cons_no consNo,
+			cons.cons_name consName,
+			ppa.party_b partyB,
+			ppa.effective_date effectiveDate,
+			ppa.expiry_date expiryDate,
+			ppa.dece dece
+		from s_m_ppa ppa 
+		left join s_c_consumer_info cons on cons.id = ppa.cons_id
+		left join s_c_org_info org on org.id = cons.org_id
+		where ppa.cons_id = #{smPpa.consId}
+		and (
+			(ppa.effective_date &lt;= #{smPpa.effectiveDate} and ppa.expiry_date &gt;= #{smPpa.effectiveDate})
+			or (ppa.effective_date &lt;= #{smPpa.expiryDate} and ppa.expiry_date &gt;= #{smPpa.expiryDate})
+			or (ppa.effective_date &gt;= #{smPpa.effectiveDate} and ppa.expiry_date &lt;= #{smPpa.expiryDate})
+		)
+		<if test="smPpa != null and smPpa.id != null and smPpa.id != ''">
+			and ppa.id != #{smPpa.id}
+		</if>
+	</select>
+	
+	<!-- 根据id数组获取SmPpa对象  -->
+	<select id="getSmPpaByIds" resultType="com.hhwy.selling.domain.SmPpa">
+		SELECT
+			agre_status agreStatus,
+			agre_no agreNo
+		FROM
+			s_m_ppa
+		WHERE 
+			id in
+		<foreach collection="array" index="index" item="ids" open="(" separator="," close=")">
+           #{ids}
+        </foreach>
+	</select>
+	
+	<!-- 根据用户id及购电计划年月获取用户合同电量，为月度够电计划提供服务 -->
+	<select id="getSmPpaByConsIdAndYm" resultType="com.hhwy.selling.domain.SmPpa">
+		SELECT * FROM s_m_ppa
+		WHERE 
+			cons_id = #{consId} AND agre_status != "00" 
+			and #{ym} &gt;= LEFT(effective_date ,7)
+			AND #{ym} &lt;= LEFT(expiry_date,7)
+	</select>
+	<!-- 负荷预测  s_c_cons_electricity ym格式201801 ,参数s_m_ppa合同日期格式 2018-01-01-->
+	<select id="getForecast" resultType="map">
+		SELECT CAST(RIGHT(e.ym,2) AS SIGNED) MONTH,IFNULL(e.person_forecast_pq,0) personForecastPq 
+		FROM s_c_cons_electricity e WHERE e.cons_id = #{consId} AND LEFT(e.ym,4) = LEFT(#{effectiveDate},4)
+		AND substring(#{effectiveDate},6,2) &lt;= RIGHT(e.ym,2) AND RIGHT(e.ym,2) &lt;= substring(#{expiryDate},6,2)
+		AND (e.person_forecast_pq IS NOT NULL or e.data_forecast_pq IS NOT NULL)
+		ORDER BY e.ym ASC
+	</select>
+	
+	<!-- 有无负荷预测权限 -->
+	<select id="getForecastRes" resultType="String">
+		SELECT
+			res.name
+		FROM
+			ac_user_role role
+		LEFT JOIN ac_role_resource r ON r.role_id = role.role_id
+		LEFT JOIN ac_resource res ON res.id = r.resource_id
+		WHERE
+			role.user_id = #{userId}
+		AND res.code = 'cloud_selling_01030202forecast'
+	</select>
+	
+	<!-- 根据合同id删除月度购电相关数据 -->
+	<delete id="deleteSmppaRelated">
+		DELETE rela FROM ph_m_plan_cons_rela rela 
+		where cons_id = #{consId} and plan_id in (select plan.id from ph_m_purchase_plan_month plan
+			WHERE plan.ym &lt;= #{expiryYm} and plan.ym &gt;= #{effectiveYm});
+		
+		DELETE FROM ph_m_agre_pq_examine 
+			WHERE cons_id = #{consId} and ym &lt;= #{expiryYm} and ym &gt;= #{effectiveYm};
+			
+		DELETE detail FROM s_m_purchase_scheme_detail detail 
+		where detail.cons_id = #{consId} and detail.scheme_id in (select scheme.id from s_m_purchase_scheme scheme 
+			WHERE  scheme.ym &lt;= #{expiryYm} and scheme.ym &gt;= #{effectiveYm});
+
+		DELETE cons FROM s_m_consumer_profit cons 
+		where cons.cons_id = #{consId} and cons.scheme_id in (select scheme.id from s_m_purchase_scheme scheme 
+			WHERE  scheme.ym  &lt;= #{expiryYm} and scheme.ym &gt;= #{effectiveYm});
+	</delete>
+	
+	<!-- 根据合同id 获取月度结算中的用户收益信息,用于删除售电合同时判断用 -->
+	<select id="getAccountsYmBySmppaId" resultType="string">
+		SELECT
+			distinct scheme.ym ym
+		FROM s_m_consumer_profit profit 
+		inner join s_m_ppa ppa on ppa.id = #{id} and profit.cons_id = ppa.cons_id
+		inner join s_m_purchase_scheme scheme on profit.scheme_id = scheme.id and ppa.agre_status !='00'
+			AND left(REPLACE(ppa.effective_date,'-',''),6) &lt;=scheme.ym and left(REPLACE(ppa.expiry_date,'-',''),6) &gt;= scheme.ym
+		order by scheme.ym desc
+	</select>
+	
+	<!-- 根据合同id 获取实际用电量列表,用于删除售电合同时判断用 -->
+	<select id="getPhmPlanConsRelaBySmppaId" resultType="string">
+		select
+			distinct plan.ym ym
+		from ph_m_plan_cons_rela rela 
+		inner join ph_m_purchase_plan_month plan on rela.plan_id = plan.id
+		inner join s_m_ppa ppa on rela.cons_id = ppa.cons_id and ppa.agre_status !='00'
+			AND left(REPLACE(ppa.effective_date,'-',''),6) &lt;= plan.ym and left(REPLACE(ppa.expiry_date,'-',''),6) &gt;= plan.ym
+		where ppa.id = #{id}
+	</select>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="purchasesms.sql">
+
+	<!-- 获取已发送短信用户信息 -->
+	<select id="getSwSmsByParams" resultType="map">
+		SELECT
+			id id,
+			receive_person receivePerson,
+			send_person sendPerson,
+			content content,	
+			send_date sendDate,
+			receive_phone receivePhone,
+			cons_id consId,
+			company_id companyId,
+			org_no orgNo,
+			plan_id planId,
+			sms_type smsType,
+			status status
+		FROM
+			s_w_sms
+		WHERE content = #{content}
+		<if test="consId != null and consId != ''">
+			AND cons_id = #{consId}
+		</if>
+		<if test="status != null and status != '' ">
+			AND `status` = #{status}
+		</if>
+		AND send_date = DATE_FORMAT(#{sendDate},'%Y-%m-%d')
+	</select>
+	
+	<!-- 保存消息提醒信息 -->
+	<insert id="saveSwSms">
+		INSERT INTO s_w_sms(id,receive_person,send_person,content,send_date,receive_phone,cons_id,status,create_user,update_user,org_no)
+		VALUES(#{id},#{receivePerson},#{sendPerson},#{content},#{sendDate},#{receivePhone},#{consId},#{status},#{createUser},#{updateUser},#{orgNo})
+	</insert>
+	
+	<update id="updateSwSms">
+		UPDATE s_w_sms
+		SET receive_person = #{receivePerson},
+		 send_person = #{sendPerson},
+		 content = #{content},
+		 send_date = #{sendDate},
+		 receive_phone = #{receivePhone},
+		 cons_id = #{consId},
+		 status = #{status}
+		WHERE
+			id = #{id}
+	</update>
+</mapper>

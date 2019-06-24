@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmForecastPrc.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmForecastPrcListByParams" resultType="com.hhwy.purchase.domain.PhmForecastPrc">  
+		select
+			ID id,
+			year year,
+			lc_upper_prc lcUpperPrc,
+			lc_middle_prc lcMiddlePrc,
+			lc_lower_prc lcLowerPrc,
+			bid_upper_prc bidUpperPrc,
+			bid_middle_prc bidMiddlePrc,
+			bid_lower_prc bidLowerPrc,
+			org_no orgNo		
+		from ph_m_forecast_prc where 1=1
+		<if test="phmForecastPrc != null and phmForecastPrc.year != null and phmForecastPrc.year != ''">
+			and year = #{phmForecastPrc.year}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.lcUpperPrc != null and phmForecastPrc.lcUpperPrc != ''">
+			and lc_upper_prc = #{phmForecastPrc.lcUpperPrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.lcMiddlePrc != null and phmForecastPrc.lcMiddlePrc != ''">
+			and lc_middle_prc = #{phmForecastPrc.lcMiddlePrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.lcLowerPrc != null and phmForecastPrc.lcLowerPrc != ''">
+			and lc_lower_prc = #{phmForecastPrc.lcLowerPrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.bidUpperPrc != null and phmForecastPrc.bidUpperPrc != ''">
+			and bid_upper_prc = #{phmForecastPrc.bidUpperPrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.bidMiddlePrc != null and phmForecastPrc.bidMiddlePrc != ''">
+			and bid_middle_prc = #{phmForecastPrc.bidMiddlePrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.bidLowerPrc != null and phmForecastPrc.bidLowerPrc != ''">
+			and bid_lower_prc = #{phmForecastPrc.bidLowerPrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.orgNo != null and phmForecastPrc.orgNo != ''">
+			and org_no = #{phmForecastPrc.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmForecastPrcCountByParams" resultType="int">
+		select count(1)	from ph_m_forecast_prc where 1=1
+		<if test="phmForecastPrc != null and phmForecastPrc.year != null and phmForecastPrc.year != ''">
+			and year = #{phmForecastPrc.year}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.lcUpperPrc != null and phmForecastPrc.lcUpperPrc != ''">
+			and lc_upper_prc = #{phmForecastPrc.lcUpperPrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.lcMiddlePrc != null and phmForecastPrc.lcMiddlePrc != ''">
+			and lc_middle_prc = #{phmForecastPrc.lcMiddlePrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.lcLowerPrc != null and phmForecastPrc.lcLowerPrc != ''">
+			and lc_lower_prc = #{phmForecastPrc.lcLowerPrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.bidUpperPrc != null and phmForecastPrc.bidUpperPrc != ''">
+			and bid_upper_prc = #{phmForecastPrc.bidUpperPrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.bidMiddlePrc != null and phmForecastPrc.bidMiddlePrc != ''">
+			and bid_middle_prc = #{phmForecastPrc.bidMiddlePrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.bidLowerPrc != null and phmForecastPrc.bidLowerPrc != ''">
+			and bid_lower_prc = #{phmForecastPrc.bidLowerPrc}
+		</if>
+		<if test="phmForecastPrc != null and phmForecastPrc.orgNo != null and phmForecastPrc.orgNo != ''">
+			and org_no = #{phmForecastPrc.orgNo}
+		</if>
+	</select>
+</mapper>

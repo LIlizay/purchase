@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmReportRemind.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmReportRemindListByParams" resultType="com.hhwy.purchase.domain.PhmReportRemind">
+		select
+			ID id,
+			send_date sendDate,
+			remind_time remindTime,
+			sender sender,
+			content content,
+			org_no orgNo,
+			cons_id consId,
+			plan_id planId		
+		from ph_m_report_remind where 1=1
+		<if test="phmReportRemind != null and phmReportRemind.sendDate != null and phmReportRemind.sendDate != ''">
+			and send_date = #{phmReportRemind.sendDate}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.remindTime != null and phmReportRemind.remindTime != ''">
+			and remind_time = #{phmReportRemind.remindTime}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.sender != null and phmReportRemind.sender != ''">
+			and sender = #{phmReportRemind.sender}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.content != null and phmReportRemind.content != ''">
+			and content = #{phmReportRemind.content}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.orgNo != null and phmReportRemind.orgNo != ''">
+			and org_no = #{phmReportRemind.orgNo}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.consId != null and phmReportRemind.consId != ''">
+			and cons_id = #{phmReportRemind.consId}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.planId != null and phmReportRemind.planId != ''">
+			and plan_id = #{phmReportRemind.planId}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmReportRemindCountByParams" resultType="int">
+		select count(1)	from ph_m_report_remind where 1=1
+		<if test="phmReportRemind != null and phmReportRemind.sendDate != null and phmReportRemind.sendDate != ''">
+			and send_date = #{phmReportRemind.sendDate}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.remindTime != null and phmReportRemind.remindTime != ''">
+			and remind_time = #{phmReportRemind.remindTime}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.sender != null and phmReportRemind.sender != ''">
+			and sender = #{phmReportRemind.sender}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.content != null and phmReportRemind.content != ''">
+			and content = #{phmReportRemind.content}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.orgNo != null and phmReportRemind.orgNo != ''">
+			and org_no = #{phmReportRemind.orgNo}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.consId != null and phmReportRemind.consId != ''">
+			and cons_id = #{phmReportRemind.consId}
+		</if>
+		<if test="phmReportRemind != null and phmReportRemind.planId != null and phmReportRemind.planId != ''">
+			and plan_id = #{phmReportRemind.planId}
+		</if>
+	</select>
+</mapper>

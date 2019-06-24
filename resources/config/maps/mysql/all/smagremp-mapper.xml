@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smAgreMp.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getScMpInfoList" parameterType="java.util.Map" resultType="com.hhwy.purchaseweb.contract.smagremp.domain.SmAgreMpInfoDetail">
+		select
+			agre.id id,
+			COALESCE(agre.mp_id,mp.ID) mpId,
+			agre.agre_id agreId,
+			mp.cons_id consId,
+			mp.mp_no mpNo,
+			mp.volt_code voltCode,
+			mp.fluctuates_flag fluctuatesFlag,
+			mp.elec_sort elecSort,
+			mp.meter_no meterNo,
+			mp.cat_prc catPrc,
+			(select cat_prc_abbr catPrcAbbr from m_e_cat_prc where prc_code = mp.cat_prc order by para_vn desc limit 0,1) catPrcName,
+			agre.proxy_pq proxyPq
+		from s_c_mp_info mp
+		left join s_m_agre_mp agre 
+		  on agre.mp_id = mp.id
+		 and agre.agre_id = #{agreId}
+	   where mp.cons_id = #{consId}
+	   order by mp.create_time desc
+	</select>
+	<!-- 根据条件查询列表 -->
+	<select id="getSmAgreMpListByParams" resultType="com.hhwy.selling.domain.SmAgreMp">
+		select
+			ID id,
+			agre_id agreId,
+			mp_id mpId,
+			proxy_pq proxyPq		
+		from s_m_agre_mp where 1=1
+		<if test="smAgreMp != null and smAgreMp.agreId != null and smAgreMp.agreId != ''">
+			and agre_id = #{smAgreMp.agreId}
+		</if>
+		<if test="smAgreMp != null and smAgreMp.mpId != null and smAgreMp.mpId != ''">
+			and mp_id = #{smAgreMp.mpId}
+		</if>
+		<if test="smAgreMp != null and smAgreMp.proxyPq != null and smAgreMp.proxyPq != ''">
+			and proxy_pq = #{smAgreMp.proxyPq}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmAgreMpCountByParams" resultType="int">
+		select count(1)	from s_m_agre_mp where 1=1
+		<if test="smAgreMp != null and smAgreMp.agreId != null and smAgreMp.agreId != ''">
+			and agre_id = #{smAgreMp.agreId}
+		</if>
+		<if test="smAgreMp != null and smAgreMp.mpId != null and smAgreMp.mpId != ''">
+			and mp_id = #{smAgreMp.mpId}
+		</if>
+		<if test="smAgreMp != null and smAgreMp.proxyPq != null and smAgreMp.proxyPq != ''">
+			and proxy_pq = #{smAgreMp.proxyPq}
+		</if>
+	</select>
+	
+	<!-- 根据合同编号删除数据 -->
+	<delete id="deleteSmAgreMpByAgreIds">
+		delete from s_m_agre_mp where agre_id in  
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+		  	#{item}  
+		</foreach>
+	</delete>
+</mapper>

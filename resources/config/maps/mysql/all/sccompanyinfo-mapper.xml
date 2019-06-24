@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scCompanyInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getScCompanyInfoListByParams" resultType="com.hhwy.selling.domain.ScCompanyInfo">
+		select
+			ID id,
+			province province,
+			company_id companyId,
+			company_name companyName,
+			legal_agent legalAgent,
+			auth_agent authAgent,
+			addr addr,
+			mobile mobile,
+			fax fax,
+			postcode postcode,
+			bank_name bankName,
+			bank_no bankNo,
+			vat_no vatNo		
+		from s_c_company_info where 1=1
+		<if test="scCompanyInfo != null and scCompanyInfo.province != null and scCompanyInfo.province != ''">
+			and province = #{scCompanyInfo.province}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.companyId != null and scCompanyInfo.companyId != ''">
+			and company_id = #{scCompanyInfo.companyId}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.companyName != null and scCompanyInfo.companyName != ''">
+			and company_name LIKE CONCAT('%',#{scCompanyInfo.companyName},'%') 
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.legalAgent != null and scCompanyInfo.legalAgent != ''">
+			and legal_agent = #{scCompanyInfo.legalAgent}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.authAgent != null and scCompanyInfo.authAgent != ''">
+			and auth_agent = #{scCompanyInfo.authAgent}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.addr != null and scCompanyInfo.addr != ''">
+			and addr = #{scCompanyInfo.addr}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.mobile != null and scCompanyInfo.mobile != ''">
+			and mobile = #{scCompanyInfo.mobile}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.fax != null and scCompanyInfo.fax != ''">
+			and fax = #{scCompanyInfo.fax}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.postcode != null and scCompanyInfo.postcode != ''">
+			and postcode = #{scCompanyInfo.postcode}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.bankName != null and scCompanyInfo.bankName != ''">
+			and bank_name = #{scCompanyInfo.bankName}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.bankNo != null and scCompanyInfo.bankNo != ''">
+			and bank_no = #{scCompanyInfo.bankNo}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.vatNo != null and scCompanyInfo.vatNo != ''">
+			and vat_no = #{scCompanyInfo.vatNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getScCompanyInfoCountByParams" resultType="int">
+		select count(1)	from s_c_company_info where 1=1
+		<if test="scCompanyInfo != null and scCompanyInfo.province != null and scCompanyInfo.province != ''">
+			and province = #{scCompanyInfo.province}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.companyId != null and scCompanyInfo.companyId != ''">
+			and company_id = #{scCompanyInfo.companyId}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.companyName != null and scCompanyInfo.companyName != ''">
+			and company_name LIKE CONCAT('%',#{scCompanyInfo.companyName},'%') 
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.legalAgent != null and scCompanyInfo.legalAgent != ''">
+			and legal_agent = #{scCompanyInfo.legalAgent}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.authAgent != null and scCompanyInfo.authAgent != ''">
+			and auth_agent = #{scCompanyInfo.authAgent}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.addr != null and scCompanyInfo.addr != ''">
+			and addr = #{scCompanyInfo.addr}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.mobile != null and scCompanyInfo.mobile != ''">
+			and mobile = #{scCompanyInfo.mobile}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.fax != null and scCompanyInfo.fax != ''">
+			and fax = #{scCompanyInfo.fax}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.postcode != null and scCompanyInfo.postcode != ''">
+			and postcode = #{scCompanyInfo.postcode}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.bankName != null and scCompanyInfo.bankName != ''">
+			and bank_name = #{scCompanyInfo.bankName}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.bankNo != null and scCompanyInfo.bankNo != ''">
+			and bank_no = #{scCompanyInfo.bankNo}
+		</if>
+		<if test="scCompanyInfo != null and scCompanyInfo.vatNo != null and scCompanyInfo.vatNo != ''">
+			and vat_no = #{scCompanyInfo.vatNo}
+		</if>
+	</select>
+</mapper>

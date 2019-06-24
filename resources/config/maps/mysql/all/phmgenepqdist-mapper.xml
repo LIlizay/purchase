@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmGenePqDist.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhmGenePqDistListByParams" resultType="com.hhwy.purchase.domain.PhmGenePqDist">
+		select
+			ID id,
+			agre_id agreId,
+			generator_id generatorId,
+			tota_pq totaPq,
+			distribution_mode distributionMode,
+			save_decimal saveDecimal,
+			org_no orgNo		
+		from ph_m_gene_pq_dist where 1=1
+		<if test="phmGenePqDist != null and phmGenePqDist.agreId != null and phmGenePqDist.agreId != ''">
+			and agre_id = #{phmGenePqDist.agreId}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.generatorId != null and phmGenePqDist.generatorId != ''">
+			and generator_id = #{phmGenePqDist.generatorId}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.totaPq != null and phmGenePqDist.totaPq != ''">
+			and tota_pq = #{phmGenePqDist.totaPq}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.distributionMode != null and phmGenePqDist.distributionMode != ''">
+			and distribution_mode = #{phmGenePqDist.distributionMode}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.saveDecimal != null and phmGenePqDist.saveDecimal != ''">
+			and save_decimal = #{phmGenePqDist.saveDecimal}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.orgNo != null and phmGenePqDist.orgNo != ''">
+			and org_no = #{phmGenePqDist.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmGenePqDistCountByParams" resultType="int">
+		select count(1)	from ph_m_gene_pq_dist where 1=1
+		<if test="phmGenePqDist != null and phmGenePqDist.agreId != null and phmGenePqDist.agreId != ''">
+			and agre_id = #{phmGenePqDist.agreId}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.generatorId != null and phmGenePqDist.generatorId != ''">
+			and generator_id = #{phmGenePqDist.generatorId}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.totaPq != null and phmGenePqDist.totaPq != ''">
+			and tota_pq = #{phmGenePqDist.totaPq}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.distributionMode != null and phmGenePqDist.distributionMode != ''">
+			and distribution_mode = #{phmGenePqDist.distributionMode}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.saveDecimal != null and phmGenePqDist.saveDecimal != ''">
+			and save_decimal = #{phmGenePqDist.saveDecimal}
+		</if>
+		<if test="phmGenePqDist != null and phmGenePqDist.orgNo != null and phmGenePqDist.orgNo != ''">
+			and org_no = #{phmGenePqDist.orgNo}
+		</if>
+	</select>
+	
+	<!-- 删除合同时根据合同标识删除合同机组电量分配方式信息 -->
+	<delete id="deletePhmGenePqDistByAgreId">
+		DELETE
+		FROM
+			ph_m_gene_pq_dist
+		WHERE agre_id in <foreach item="item" index="index" collection="agreIds" open="(" separator="," close=")">
+            	#{item}
+            </foreach>
+	</delete>
+</mapper>

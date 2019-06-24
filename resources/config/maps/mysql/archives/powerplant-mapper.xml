@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="powerplant.sql">
+	<select id="getPowerPlantList" resultType="com.hhwy.purchaseweb.archives.powerplant.domain.PowerPlantDetail">
+		SELECT 
+			a.id id,
+			a.elec_name elecName,
+			(SELECT COUNT(1) FROM ph_c_generator_set b WHERE b.elec_id = a.id) generCount,
+			a.inst_cap instCap,
+			a.elec_type_code elecTypeCode,
+			a.bloc_id blocId,
+			a.network_flag networkFlag
+		FROM ph_c_elec_info a 
+		<where>
+			<if test=" elecName != null and elecName != ''">
+				a.elec_name like concat("%",#{elecName},"%")
+			</if>
+			<if test="elecTypeCode != null and elecTypeCode != ''">
+				and a.elec_type_code = #{elecTypeCode}
+			</if>
+			<if test="blocId != null and blocId != ''">
+				and a.bloc_id = #{blocId}
+			</if>
+		</where>
+		order by a.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	<select id="getPowerPlantCount" resultType="int">
+		SELECT 
+			COUNT(1)
+		FROM ph_c_elec_info a 
+		<where>
+			<if test=" elecName != null and elecName != ''">
+				a.elec_name like concat("%",#{elecName},"%")
+			</if>
+			<if test="elecTypeCode != null and elecTypeCode != ''">
+				and a.elec_type_code = #{elecTypeCode}
+			</if>
+			<if test="blocId != null and blocId != ''">
+				and a.bloc_id = #{blocId}
+			</if>
+		</where>
+	</select>
+	<select id="getPhcContactsInfoListByParams" resultType="com.hhwy.purchase.domain.PhcContactsInfo">  
+		select
+			ID id,
+			elec_id elecId,
+			fax fax,
+			addr addr,
+			e_mail eMail,
+			cont_name contName,
+			phone phone,
+			postcode postcode,
+			org_no orgNo		
+		from ph_c_contacts_info where 
+		elec_id = #{id}
+		order by create_time desc
+	</select>
+	<select id="getPhcGeneratorSetListByParams" resultType="com.hhwy.purchaseweb.archives.powerplant.domain.PhcGeneratorSetDetail">  
+		select
+			ID id,
+			elec_id elecId,
+			gene_name geneName,
+			volt_code voltCode,
+			type_code typeCode,
+			schedul_relation schedulRelation,
+			electric_capacity electricCapacity,
+			use_hours useHours,
+			inner_flag innerFlag,
+			desu_flag desuFlag,
+			deni_flag deniFlag,
+			dust_flag dustFlag,
+			carb_flag carbFlag,
+			bid_gene_flag bidGeneFlag,
+			prot_gene_flag protGeneFlag,
+			max_output maxOutput,
+			min_output minOutput,
+			coal_wastage coalWastage,
+			desu_prc desuPrc,
+			deni_prc deniPrc,
+			dust_prc dustPrc,
+			disc_prc discPrc,
+			wastage_coefficient wastageCoefficient,
+			mark_mp_name markMpName,
+			mark_mp_rate markMpRate,
+			mark_mp_no markMpNo,
+			org_no orgNo		
+		from ph_c_generator_set where elec_id = #{id}
+		order by create_time desc
+	</select>
+	<select id="checkName" resultType="string">
+		SELECT 
+			id
+		FROM
+		ph_c_elec_info WHERE
+		elec_name = #{elecName}
+		<if test="id != null and id != ''">
+			AND id != #{id}
+		</if>
+	</select>
+	<delete id="deletePhcContactsInfo">
+		DELETE FROM ph_c_contacts_info 
+		WHERE elec_id = #{id}
+	</delete>
+	<delete id="deletePhcGeneratorSet">
+		DELETE FROM ph_c_generator_set
+		WHERE elec_id = #{id}
+	</delete>
+	
+	<!-- 获取机组信息 -->
+	<select id="getPhcGeneratorSetList" parameterType="String" resultType="map">
+		SELECT
+			id value,
+			gene_name name
+		FROM
+			ph_c_generator_set
+		WHERE elec_id = #{elecId}
+	</select>
+	
+	<!-- 根据机组ID 获取机组信息 -->
+	<select id="getPhcGeneratorSetById" parameterType="String" resultType="com.hhwy.purchaseweb.archives.powerplant.domain.PhcGeneratorSetDetail">
+		SELECT
+			id id,
+			gene_name geneName,
+			volt_code voltCode,
+			type_code typeCode,
+			schedul_relation schedulRelation,
+			electric_capacity electricCapacity,
+			use_hours useHours,
+			bid_gene_flag bidGeneFlag,
+			max_output maxOutput,
+			min_output minOutput,
+			wastage_coefficient wastageCoefficient,
+			coal_wastage coalWastage,
+			inner_flag innerFlag,
+			prot_gene_flag protGeneFlag,
+			desu_flag desuFlag,
+			deni_flag deniFlag,
+			dust_flag dustFlag,
+			carb_flag carbFlag,
+			desu_prc desuPrc,
+			deni_prc deniPrc,
+			dust_prc dustPrc,
+			disc_prc discPrc,
+			mark_mp_name markMpName,
+			mark_mp_rate markMpRate,
+			mark_mp_no markMpNo
+		FROM
+			ph_c_generator_set
+		WHERE id = #{id}
+	</select>
+	
+	<!-- 根据电厂ID 获取机组信息 -->
+	<select id="getGeneratorByPowerId" parameterType="String" resultType="com.hhwy.purchase.domain.PhcGeneratorSet">
+		SELECT
+			id id,
+			gene_name geneName
+		FROM
+			ph_c_generator_set
+		WHERE elec_id = #{id}
+	</select>
+</mapper>

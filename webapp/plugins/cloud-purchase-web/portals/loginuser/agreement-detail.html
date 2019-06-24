@@ -1,0 +1,614 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>合同查看</title>
+<link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+</head>
+<body>
+	<div class="logrow">
+		<div class="col-md-12">
+		    <div class="panel panel-default">
+				<div class="panel-heading">
+					<span class="line-box"></span>合同查看
+				</div>
+	           	<div class="panel-body">
+	           		<div class="table-responsive">
+	                     <table class="table table-striped table-bordered table-hover">
+	                         <thead>
+	                             <tr>
+	                                 <th colspan="6" class="bg-info">用户信息</th>
+	                             </tr>
+	                         </thead>
+	                         <tbody>
+	                             <tr>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>用户名称 :</td>
+	                                 <td class="w-7th" id="consName"></td>
+	                                 <td class="text-right  w-1st">电压等级 :</td>
+	                                 <td class="w-7th" id="voltCodeName"></td>
+	                                  <td class="text-right w-1st">用电类型 :</td>
+	                                 <td id="elecTypeCodeName" class="w-8th"></td>
+	                             </tr>
+	                             <tr>
+	                                 <td class="text-right w-1st">用电容量 :</td>
+	                                 <td id="electriccCapacity" class="w-7th">kVA</td>
+	                                 <td class="text-right w-1st"></td>
+	                                 <td class="w-7th"></td>
+	                                 <td class="text-right w-1st"></td>
+	                                 <td class="w-8th"></td>
+	                             </tr>
+	                         </tbody>
+	                     </table>
+	                    
+	                     <table class="table table-striped table-bordered table-hover">
+	                         <thead>
+	                             <tr>
+	                                 <th colspan="6" class="bg-info">合同基本信息</th>
+	                             </tr>
+	                         </thead>
+	                         <tbody>
+	                             <tr>
+	                                 <td class="text-right w-1st">合同编号 :</td>
+	                                 <td class="w-7th" id="agreNo"></td>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>合同名称 :</td>
+	                                 <td class="w-7th" id="agreName"></td>
+	                                  <td class="text-right w-1st">合同类型 :</td>
+	                                 <td id="agreTypeName" class="w-8th"></td>
+	                             </tr>
+	                             <tr>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>合同开始日期 :</td>
+	                                 <td id="effectiveDate" class="w-7th"></td>
+	                                  <td class="text-right w-1st"><span class="f-red">* </span>合同结束日期 :</td>
+	                                 <td id="expiryDate" class="w-7th"></td>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>合同签订时间 :</td>
+	                                 <td id="signDate" class="w-8th"></td>
+	                             </tr>
+	                              <tr>
+	                                 <!--  <td class="text-right"><span class="f-red">* </span>合同模板号</td>
+	                                 <td id="agreVerName"></td> -->
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>售电公司签订人 :</td>
+	                                 <td id="partyB" class="w-7th"></td>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>用户签订人 :</td>
+	                                 <td id="partyA" class="w-7th"></td>
+	                                 <td class="text-right w-1st"></td>
+	                                 <td class="w-8th"></td>
+	                             </tr>
+	                              <tr class="files">
+	                                 <td class="text-right"><span class="f-red">* </span>附件 :</td>
+	                                 <td colspan="5" id="fileId"></td>
+	                             </tr>
+	                         </tbody>
+	                     </table>
+	                     <table style="margin-bottom: 0px;" class="table table-striped table-bordered table-hover">
+	                         <thead>
+	                             <tr>
+	                                 <th colspan="6" class="bg-info">代理电量管理</th>
+	                             </tr>
+	                         </thead>
+	                         <tbody>
+	                              <tr>
+	                                 <td class="text-right w-4th"><span class="f-red">* </span>代理总电量 :</td>
+	                                 <td class="w-10th" id="agrePq">兆瓦时</td>
+	                                 <td class="text-right w-4th"><span class="f-red">* </span>按月分配方式 :</td>
+	                                 <td class="w-10th" id="distModeName"></td>
+	                             </tr>
+	                         </tbody>
+	                     </table>
+	                     <table style="text-align:center;" id="listGrid" class="table table-bordered table-hover">
+	                          <tr class="bg-gray" style="background-color:#f5f5f5">
+	                          	<td colspan="12">按月分配(兆瓦时)</td>
+	                          </tr>
+	                          <tr class="bg-gray" style="background-color:#f5f5f5">
+								<td>1月</td>
+								<td>2月</td>
+								<td>3月</td>
+								<td>4月</td>
+								<td>5月</td>
+								<td>6月</td>
+								<td>7月</td>
+								<td>8月</td>
+								<td>9月</td>
+								<td>10月</td>
+								<td>11月</td>
+								<td>12月</td>
+                             </tr>
+	                     </table>
+	                     <table class="table table-striped table-bordered table-hover">
+	                         <thead>
+	                             <tr>
+	                                 <th colspan="6" class="bg-info">双边电量分成方式</th>
+	                             </tr>
+	                         </thead>
+	                         <tbody>
+	                             <tr>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>分成方式 :</td>
+	                                 <td id="diviCodeName" class="w-7th"></td>
+	                                 <td class="text-right w-1st mode5"><span class="f-red">* </span>结算模式 :</td>
+	                                 <td id="settlementModeName" class="w-7th mode5"></td>
+	                                 <td class="mode51" colspan="2"></td>
+	                                 <td class="mode52 text-center" colspan="2"><span style="color: rgb(128, 128, 128);font-size: x-small;">价差为正：表示电力用户高于目录电价结算<br/>价差为负：表示电力用户低于目录电价结算</span></td>
+	                                 <td class="mode6" colspan="4"></td>
+	                             </tr>
+	                              <tr class="mode2">
+	                             	 <td class="text-right w-1st mode1"><span class="f-red">* </span>保底协议价:</td>
+	                                 <td id="agrePrc" class="w-7th mode1">元/兆瓦时</td>
+	                                 <td class="text-right w-1st mode22"><span class="f-red">* </span>分成基准 :</td>
+	                                 <td id="diviTypeName" class="w-7th mode22">元/兆瓦时</td>
+	                                 <td class="text-right w-1st mode21"><span class="f-red">* </span>分成基准值 :</td>
+	                                 <td id="diviValue" class="w-7th mode21">元/兆瓦时</td>
+	                                 <td class="mode11" colspan="2"></td>
+	                                  <td class="mode12" colspan="4"></td>
+	                             </tr>
+	                              <tr class="mode2">
+	                              	<td class="text-right w-1st mode3"><span class="f-red">* </span>收益模式选择 :</td>
+	                                 <td id="profitModeName" class="w-7th mode3"></td>
+	                             	 <td class="text-right w-1st"><span class="f-red">* </span>售方双边分成比 :</td>
+	                                 <td id="partyBLcProp" class="w-7th">%</td>
+	                                  <td class="text-right w-1st"><span class="f-red">* </span>用户双边分成比 :</td>
+	                                 <td class="w-7th" id="partyALcProp">%</td>
+	                                  <td class="mode24" colspan="2"></td>
+	                             </tr>
+	                             <tr class="mode53">
+	                             	<td class="text-right w-1st"><span class="f-red">* </span>代理服务费 :</td>
+	                                 <td id="agent" class="w-7th"></td>
+	                                 <td colspan="4"></td>
+	                             </tr>
+	                         </tbody>
+	                     </table>
+	                     <table class="table table-striped table-bordered table-hover">
+	                         <thead>
+	                             <tr>
+	                                 <th colspan="6" class="bg-info">竞价电量分成方式</th>
+	                             </tr>
+	                         </thead>
+	                         <tbody>
+	                             <tr>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>分成方式 :</td>
+	                                 <td id="bidDiviCodeName" class="w-7th"></td>
+	                                 <td class="text-right w-1st mode5Bid"><span class="f-red">* </span>结算模式 :</td>
+	                                 <td id="bidSettlementModeName" class="w-7th mode5Bid"></td>
+	                                 <td class="mode51Bid" colspan="2"></td>
+	                                 <td class="mode52Bid text-center" colspan="2"><span style="color: rgb(128, 128, 128);font-size: x-small;">价差为正：表示电力用户高于目录电价结算<br/>价差为负：表示电力用户低于目录电价结算</span></td>
+	                                 <td class="mode6Bid" colspan="4"></td>
+	                             </tr>
+	                              <tr class="mode2Bid">
+	                             	 <td class="text-right w-1st mode1Bid"><span class="f-red">* </span>保底协议价:</td>
+	                                 <td id="bidAgrePrc" class="w-7th mode1Bid">元/兆瓦时</td>
+	                                 <td class="text-right w-1st mode22Bid"><span class="f-red">* </span>分成基准 :</td>
+	                                 <td id="bidDiviTypeName" class="w-7th mode22Bid">元/兆瓦时</td>
+	                                 <td class="text-right w-1st mode21Bid"><span class="f-red">* </span>分成基准值 :</td>
+	                                 <td id="bidDiviValue" class="w-7th mode21Bid">元/兆瓦时</td>
+	                                 <td class="mode11Bid" colspan="2"></td>
+	                                  <td class="mode12Bid" colspan="4"></td>
+	                             </tr>
+	                              <tr class="mode2Bid">
+	                              	<td class="text-right w-1st mode3Bid"><span class="f-red">* </span>收益模式选择 :</td>
+	                                 <td id="bidProfitModeName" class="w-7th mode3Bid"></td>
+	                             	 <td class="text-right w-1st"><span class="f-red">* </span>售方竞价分成比例 :</td>
+	                                 <td id="partyBBidProp" class="w-7th">%</td>
+	                                  <td class="text-right w-1st"><span class="f-red">* </span>用户竞价分成比例  :</td>
+	                                 <td class="w-7th" id="partyABidProp">%</td>
+	                                  <td class="mode24Bid" colspan="2"></td>
+	                             </tr>
+	                             <tr class="mode53Bid">
+	                             	<td class="text-right w-1st"><span class="f-red">* </span>代理服务费 :</td>
+	                                 <td id="bidAgent" class="w-7th"></td>
+	                                 <td colspan="4"></td>
+	                             </tr>
+	                         </tbody>
+	                     </table>
+	                     <table class="table table-striped table-bordered table-hover">
+	                         <thead>
+	                             <tr>
+	                                 <th colspan="6" class="bg-info">用户违约惩罚方式 :</th>
+	                             </tr>
+	                         </thead>
+	                         <tbody>
+	                         	<tr>
+	                                 <td class="text-right w-1st">生效条件</td>
+	                                 <td id="effectiveCondition" colspan="5"></td>
+	                             </tr>
+	                             <tr>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>正偏差惩罚类型</td>
+	                                 <td id="punishTypeUpperName" class="w-7th"></td>
+	                                 <td class="text-right w-1st"></td>
+	                                 <td class="w-7th"></td>
+	                                 <td class="text-right w-1st"></td>
+	                                 <td class="w-8th"></td>
+	                             </tr>
+	                              <tr class="upperFlag">
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>允许范围</td>
+	                                 <td id="upperThreshold" class="w-7th">%</td>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>惩罚基准</td>
+	                                 <td id="upperTypeName" class="w-7th"></td>
+	                                  <td class="text-right upperTypeFlag w-1st"><span class="f-red">* </span>惩罚比例</td>
+	                                 <td id="upperProp" class="upperTypeFlag w-7th">%</td>
+	                                 <td class="text-right no-upperTypeFlag w-1st"><span class="f-red">* </span>惩罚协议价</td>
+	                                 <td id="upperPrc" class="no-upperTypeFlag w-8th">元/兆瓦时</td>
+	                             </tr>
+	                              <tr>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>负偏差惩罚类型</td>
+	                                 <td id="punishTypeLowerName" class="w-7th"></td>
+	                                <td class="text-right w-1st"></td>
+	                                 <td class="w-7th"></td>
+	                                 <td class="text-right w-1st"></td>
+	                                 <td class="w-8th"></td>
+	                             </tr>
+	                              <tr class="lowerFlag">
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>允许范围</td>
+	                                 <td id="lowerThreshold" class="w-7th">%</td>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>惩罚基准值</td>
+	                                 <td id="lowerTypeName" class="w-7th"></td>
+	                                 <td class="text-right lowerTypeFlag w-1st"><span class="f-red">* </span>惩罚比例</td>
+	                                 <td id="lowerProp" class="lowerTypeFlag w-8th">%</td>
+	                                 <td class="text-right no-lowerTypeFlag w-1st"><span class="f-red">* </span>惩罚协议价</td>
+	                                 <td id="lowerPrc" class="no-lowerTypeFlag w-8th">元/兆瓦时</td>
+	                             </tr>
+	                         </tbody>
+	                     </table>
+	                     <table class="table table-striped table-bordered table-hover">
+	                         <thead>
+	                             <tr>
+	                                 <th colspan="6" class="bg-info">售电公司违约惩罚方式</th>
+	                             </tr>
+	                         </thead>
+	                         <tbody>
+	                             <tr>
+	                                 <td class="text-right w-1st">生效条件</td>
+	                                 <td id="effectiveCondition2" colspan="3"></td>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>是否赔偿</td>
+	                                 <td id="compFlagName" class="w-8th"></td>
+	                             </tr>
+	                              <tr class="compPunFlag">
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>赔偿阈值</td>
+	                                 <td id="compThreshold" class="w-7th">%</td>
+	                                 <td class="text-right w-1st"><span class="f-red">* </span>赔偿电价基准 </td>
+	                                 <td id="compTypeName" class="w-7th"></td>
+	                                 <td class="text-right w-1st compTypeFlag"><span class="f-red">* </span>赔偿比例值</td>
+	                                 <td id="compProp" class="w-8th compTypeFlag">%</td>
+	                                 <td class="text-right no-compTypeFlag"><span class="f-red">* </span>赔偿协议价</td>
+	                                 <td id="compPrc" class="w-8th no-compTypeFlag">元/兆瓦时</td>
+	                             </tr>
+	                         </tbody>
+	                     </table>
+	                 </div>
+	           	</div>
+			</div>
+		</div>						
+	</div>
+<script src="assets/js/jquery-1.10.2.js"></script>
+ <script src="assets/js/bootstrap.min.js"></script>
+ <script src="assets/js/jquery.metisMenu.js"></script>
+  <script src="assets/js/base.js"></script>
+  <script src="assets/js/jquery.json-2.2.js"></script>
+<!--  <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+ <script src="assets/js/morris/morris.js"></script> -->
+ <script src="assets/js/custom.js"></script>
+ <script src="assets/js/custom-scripts.js"></script>
+<script type="text/javascript">
+$(function(){
+	//获取参数id
+	var id = MainFrameUtil.getParams("agre_detail").id;
+	initData(id);
+});
+
+//初始化数据
+function initData(id){
+	var queryParams = {
+			serviceKey:"s_getBidAgreInfo",
+			clientKey:"sellandpurchase",
+			params:{
+				agreId:id,
+				org_id:$.getLoginUser().org_id,
+			}
+	}
+	$.ajax({
+		url : groovyPath + "s_getBidAgreInfo.do",
+		type : "post",
+		data:$.toJSON(queryParams),
+        contentType:'application/json;charset=UTF-8',  
+		success : function(data) {
+			if(data.value){
+				setGridData(data.value.datas);
+			}else{
+				MainFrameUtil.alert({title:"失败提示",body:"查询失败！"});
+	      		return;
+			}
+		},
+		error : function() {
+			MainFrameUtil.alert({title:"网络失败提示",body:"请刷新页面重试！"});
+      		return;
+		}
+	})
+}
+
+//生成表格数据
+function setGridData(data){
+	//设置合同信息
+	var smPpa = data;
+	for(var obj in smPpa){
+		if(obj != "fileId"){
+			if($("#" + obj) != null && $("#" + obj).length > 0){
+				var cont = smPpa[obj];
+				var text = $("#" + obj).text();
+				if(!cont){
+					cont = "";
+				}
+				cont = cont + text;
+				$("#" + obj).text(cont);
+			}
+		}
+	}
+	//设置代理服务费单位
+	if(data.diviCode == "06" && data.settlementMode){
+		var unit = "";
+		if(data.settlementMode == "03"){
+			unit="元/兆瓦时";
+		}else if(data.settlementMode == "04"){
+			unit="元";
+		}
+		$("#agent").append(unit);
+	}
+	if(data.bidDiviCode == "06" && data.bidSettlementMode){
+		var unit = "";
+		if(data.bidSettlementMode == "03"){
+			unit="元/兆瓦时";
+		}else if(data.bidSettlementMode == "04"){
+			unit="元";
+		}
+		$("#bidAgent").append(unit);
+	}
+	if(smPpa.fileData && smPpa.fileData.length > 0){
+		for(var i in smPpa.fileData){
+			var file = smPpa.fileData[i];
+			if(i == 0){
+				$("#fileId").html("<a href='"+filePath+"/"+ file.fileId +"'>" + file.fileName + "</a>");
+			}else{
+				$(".files").last().after("<tr class='files'><td class='text-right'></td><td colspan='5' id='fileId"+i+"'><a href='"+filePath+"/"+ file.fileId +"'>" + file.fileName + "</a></td></tr>");
+			}
+		}
+	}
+	
+	//设置代理电量列表信息
+	var list = ["jan","feb","mar","apr","may","jun","jul","aug","sept","oct","nov","dece"]
+	var html = "<tr>";
+	for(var i in list){
+		var obj = list[i];
+		html +="<td>" + smPpa[obj] + "</td>";
+	}
+	html +="</tr>";
+	$("#listGrid").append(html);
+	//设置分成方式管理--双边电量分成方式
+	if(data.diviCode == "01"){//保底
+		$(".mode2").hide();
+		$(".mode53").hide();
+		$(".mode6").hide();
+		if(data.settlementMode == "01"){//价差
+			$(".mode51").hide();
+			$(".mode52").show();
+		}else{
+			$(".mode52").hide();
+			$(".mode51").show();
+		}
+		$(".mode22").hide();
+		$(".mode21").hide();
+		$(".mode12").hide();
+		$(".mode1").show();
+		$(".mode11").show();
+	}else if(data.diviCode == "03"){//分成
+		$(".mode53").hide();
+		$(".mode5").hide();
+		$(".mode51").hide();
+		$(".mode52").hide();
+		$(".mode1").hide();
+		$(".mode52").hide();
+		$(".mode52").hide();
+		$(".mode52").hide();
+		$(".mode3").hide();
+		if(data.diviType == "03"){//人工录入
+			$(".mode12").hide();
+			$(".mode21").show();
+			$(".mode11").show();
+		}else{
+			$(".mode21").hide();
+			$(".mode11").hide();
+			$(".mode12").show();
+		}
+		$(".mode2").show();
+		$(".mode22").show();
+		$(".mode6").show();
+		$(".mode24").show();
+	}else if(data.diviCode == "04"){//保底或分成
+		$(".mode53").hide();
+		$(".mode6").hide();
+		if(data.settlementMode == "01"){//价差
+			$(".mode51").hide();
+			$(".mode52").show();
+		}else{
+			$(".mode52").hide();
+			$(".mode51").show();
+		}
+		$(".mode12").hide();
+		$(".mode24").hide();
+		if(data.diviType == "03"){//人工录入
+			$(".mode11").hide();
+			$(".mode21").show();
+		}else{
+			$(".mode21").hide();
+			$(".mode11").show();
+		}
+		$(".mode2").show();
+		$(".mode22").show();
+		$(".mode5").show();
+		$(".mode1").show();
+		$(".mode3").show();
+	}else if(data.diviCode == "05"){//保底加分成
+		$(".mode53").hide();
+		$(".mode6").hide();
+		$(".mode3").hide();
+		if(data.settlementMode == "01"){//价差
+			$(".mode51").hide();
+			$(".mode52").show();
+		}else{
+			$(".mode52").hide();
+			$(".mode51").show();
+		}
+		$(".mode22").hide();
+		$(".mode11").hide();
+		$(".mode21").hide();
+		$(".mode5").show();
+		$(".mode1").show();
+		$(".mode2").show();
+		$(".mode12").show();
+		$(".mode24").show();
+	}else if(data.diviCode == "06"){//代理服务费
+		$(".mode2").hide();
+		$(".mode52").hide();
+		$(".mode6").hide();
+		$(".mode5").show();
+		$(".mode51").show();
+		if(data.settlementMode){
+			$(".mode53").show();
+		}else{
+			$(".mode53").hide();
+		}
+	}
+	//设置分成方式管理--竞价电量分成方式
+	if(data.bidDiviCode == "01"){//保底
+		$(".mode2Bid").hide();
+		$(".mode53Bid").hide();
+		$(".mode6Bid").hide();
+		if(data.bidSettlementMode == "01"){//价差
+			$(".mode51Bid").hide();
+			$(".mode52Bid").show();
+		}else{
+			$(".mode52Bid").hide();
+			$(".mode51Bid").show();
+		}
+		$(".mode22Bid").hide();
+		$(".mode21Bid").hide();
+		$(".mode12Bid").hide();
+		$(".mode1Bid").show();
+		$(".mode11Bid").show();
+	}else if(data.bidDiviCode == "03"){//分成
+		$(".mode53Bid").hide();
+		$(".mode5Bid").hide();
+		$(".mode51Bid").hide();
+		$(".mode52Bid").hide();
+		$(".mode1Bid").hide();
+		$(".mode52Bid").hide();
+		$(".mode52Bid").hide();
+		$(".mode52Bid").hide();
+		$(".mode3Bid").hide();
+		if(data.bidDiviType == "03"){//人工录入
+			$(".mode12Bid").hide();
+			$(".mode21Bid").show();
+			$(".mode11Bid").show();
+		}else{
+			$(".mode21Bid").hide();
+			$(".mode11Bid").hide();
+			$(".mode12Bid").show();
+		}
+		$(".mode2Bid").show();
+		$(".mode22Bid").show();
+		$(".mode6Bid").show();
+		$(".mode24Bid").show();
+	}else if(data.bidDiviCode == "04"){//保底或分成
+		$(".mode53Bid").hide();
+		$(".mode6Bid").hide();
+		if(data.bidSettlementMode == "01"){//价差
+			$(".mode51Bid").hide();
+			$(".mode52Bid").show();
+		}else{
+			$(".mode52Bid").hide();
+			$(".mode51Bid").show();
+		}
+		$(".mode12Bid").hide();
+		$(".mode24Bid").hide();
+		if(data.bidDiviType == "03"){//人工录入
+			$(".mode11Bid").hide();
+			$(".mode21Bid").show();
+		}else{
+			$(".mode21Bid").hide();
+			$(".mode11Bid").show();
+		}
+		$(".mode2Bid").show();
+		$(".mode22Bid").show();
+		$(".mode5Bid").show();
+		$(".mode1Bid").show();
+		$(".mode3Bid").show();
+	}else if(data.bidDiviCode == "05"){//保底加分成
+		$(".mode53Bid").hide();
+		$(".mode6Bid").hide();
+		$(".mode3Bid").hide();
+		if(data.bidSettlementMode == "01"){//价差
+			$(".mode51Bid").hide();
+			$(".mode52Bid").show();
+		}else{
+			$(".mode52Bid").hide();
+			$(".mode51Bid").show();
+		}
+		$(".mode22Bid").hide();
+		$(".mode11Bid").hide();
+		$(".mode21Bid").hide();
+		$(".mode5Bid").show();
+		$(".mode1Bid").show();
+		$(".mode2Bid").show();
+		$(".mode12Bid").show();
+		$(".mode24Bid").show();
+	}else if(data.bidDiviCode == "06"){//代理服务费
+		$(".mode2Bid").hide();
+		$(".mode52Bid").hide();
+		$(".mode6Bid").hide();
+		$(".mode5Bid").show();
+		$(".mode51Bid").show();
+		if(data.bidSettlementMode){
+			$(".mode53Bid").show();
+		}else{
+			$(".mode53Bid").hide();
+		}
+	}
+	//设置电力用户的展示
+	if(data.punishTypeUpper == 1){//电力用户惩罚
+		$(".upperFlag").show();
+		if(data.upperType == "01"){//人工录入
+			$(".upperTypeFlag").hide();
+			$(".no-upperTypeFlag").show();
+		}else{
+			$(".no-upperTypeFlag").hide();
+			$(".upperTypeFlag").show();
+		}
+	}else{//不惩罚
+		$(".upperFlag").hide();
+	}
+	if(data.punishTypeLower == 1){//电力用户惩罚
+		$(".lowerFlag").show();
+		if(data.lowerType == "01"){//人工录入
+			$(".lowerTypeFlag").hide();
+			$(".no-lowerTypeFlag").show();
+		}else{
+			$(".no-lowerTypeFlag").hide();
+			$(".lowerTypeFlag").show();
+		}
+	}else{//不惩罚
+		$(".lowerFlag").hide();
+	}
+	//设置售电公司展示
+	if(data.compFlag == 1){//赔偿
+		$(".compPunFlag").show();
+		if(data.compType == "01"){//人工录入
+			$(".compTypeFlag").hide();
+			$(".no-compTypeFlag").show();
+		}else{
+			$(".no-compTypeFlag").hide();
+			$(".compTypeFlag").show();
+		}
+	}else{//不赔偿
+		$(".compPunFlag").hide();
+	}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phmPurchasePlanMonth.sql">
+	<!-- 根据条件查询列表购电计划制定选择的用户 -->
+	<select id="getPhmPurchasePlanMonthListByParams" resultType="com.hhwy.purchaseweb.bid.phmpurchaseplanmonth.domain.PhmPurchasePlanMonthDetail">
+		select ID,
+		   setters setters,
+		   trade_period period,
+		   plan_name planName,
+		   (CASE m.trade_period WHEN '01' THEN ym ELSE CONCAT(SUBSTR(ym,1,4),'-',SUBSTR(ym,5,2)) END) ym,
+		   trade_variety variety,
+		   trade_mode mode,
+		   (SELECT COUNT(1) FROM ph_m_agre_pq_examine examine
+				WHERE examine.plan_id = m.id AND  examine.subitem_flag = '0') consNum,
+		   (SELECT SUM(agre_pq) FROM ph_m_agre_pq_examine e WHERE e.plan_id = m.id and e.subitem_flag = '0') reportPq,
+		   (SELECT SUM(r.report_pq) FROM ph_m_transaction_report_detail r WHERE r.plan_id = m.id) tranPq,
+		   (SELECT SUM(deal_pq) FROM ph_m_deal_info d WHERE d.plan_id = m.id and d.subitem_flag='0') dealPq,
+			plan_status planStatus
+		from ph_m_purchase_plan_month m where 1=1
+		<choose>
+	        <when test="startYm !=null and startYm != '' and endYm !=null and endYm != ''">
+	            and ym between replace(#{startYm},'-','') and replace(#{endYm},'-','') or ym = left(#{startYm},4) or ym = left(#{endYm},4)
+	        </when>
+	        <when test="startYm !=null and startYm != ''">
+	            and ym  &gt;= replace(#{startYm},'-','') or ym = left(#{startYm},4)
+	        </when>
+	        <when test="endYm !=null and endYm != ''">
+	            and ym  &lt;=  replace(#{endYm},'-','') or ym = left(#{endYm},4)
+	        </when>
+			<when test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.ym != null and phmPurchasePlanMonth.ym != ''">
+				and ym = #{phmPurchasePlanMonth.ym}
+			</when>
+    	</choose>
+		<if test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.setters != null and phmPurchasePlanMonth.setters != ''">
+			and setters = #{phmPurchasePlanMonth.setters}
+		</if>
+		<if test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.planStatus != null and phmPurchasePlanMonth.planStatus != ''">
+			and plan_status = #{phmPurchasePlanMonth.planStatus}
+		</if>
+		<if test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.orgNo != null and phmPurchasePlanMonth.orgNo != ''">
+			and org_no = #{phmPurchasePlanMonth.orgNo}
+		</if>
+		<if test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.id != null and phmPurchasePlanMonth.id != ''">
+			and m.id = #{phmPurchasePlanMonth.id}
+		</if>
+		<if test="planName != null and planName != ''">
+			and m.plan_name LIKE concat('%',#{planName},'%') 
+		</if>
+		order by ym desc,plan_name desc, m.id desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhmPurchasePlanMonthCountByParams" resultType="int">
+		select count(1)	from ph_m_purchase_plan_month where 1=1
+		<choose>
+	        <when test="startYm !=null and startYm != '' and endYm !=null and endYm != ''">
+	            and ym between replace(#{startYm},'-','') and replace(#{endYm},'-','')
+	        </when>
+	        <when test="startYm !=null and startYm != ''">
+	            and ym &gt; replace(#{startYm},'-','')
+	        </when>
+	        <when test="endYm !=null and endYm != ''">
+	            and ym &lt; replace(#{endYm},'-','')
+	        </when>
+			<when test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.ym != null and phmPurchasePlanMonth.ym != ''">
+				and ym = #{phmPurchasePlanMonth.ym}
+			</when>
+    	</choose>
+		<if test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.setters != null and phmPurchasePlanMonth.setters != ''">
+			and setters = #{phmPurchasePlanMonth.setters}
+		</if>
+		<if test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.planStatus != null and phmPurchasePlanMonth.planStatus != ''">
+			and plan_status = #{phmPurchasePlanMonth.planStatus}
+		</if>
+		<if test="phmPurchasePlanMonth != null and phmPurchasePlanMonth.orgNo != null and phmPurchasePlanMonth.orgNo != ''">
+			and org_no = #{phmPurchasePlanMonth.orgNo}
+		</if>
+	</select>
+	
+	<!-- 根据年月获取计划 -->
+	<select id="getPhmPurchasePlanMonthByYm" resultType="com.hhwy.purchase.domain.PhmPurchasePlanMonth">
+		select * from ph_m_purchase_plan_month m where ym=#{ym}
+	</select>
+	
+	<!-- 更新计划状态 -->
+	<update id="updatePlanStatus" parameterType="String">
+		update ph_m_purchase_plan_month set plan_status = #{planStatus} where id = #{planId}
+	</update>
+	
+	<!-- 查询当前月份是否存在-->
+	<select id="getPlanValidate" resultType="java.util.Map">
+			SELECT 
+				DATE_FORMAT(DATE_ADD(NOW(),INTERVAL 1 MONTH), '%Y%m') nowDate, 
+				count(t.id) count   
+			FROM 	ph_m_purchase_plan_month t  
+			WHERE 
+				t.ym = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL 1 MONTH), '%Y%m') 
+			LIMIT 0,1
+	</select>
+	
+	<!-- 根据计划id获取本次委托电量、已成交电量、已申报电量 -->
+	<select id="getPqCountByPlanId" resultType="java.util.Map">
+			SELECT 
+				sum(examine.agre_pq) agrePq,
+				(SELECT sum(deal.deal_pq) 
+				 from ph_m_deal_info deal left join ph_m_purchase_plan_month m on m.id = deal.plan_id 
+				 where m.plan_status > '03' 
+				 and (CASE WHEN LENGTH(examine.ym) > 4 then deal.ym = examine.ym 
+				 			ELSE (deal.ym LIKE CONCAT(examine.ym,'%') and deal.subitem_flag = '0') END)) dealPq,
+				(SELECT sum(report.report_pq) 
+				 from ph_m_transaction_report_detail report where report.plan_id = examine.plan_id) reportPq
+			FROM 
+				ph_m_agre_pq_examine examine	
+			WHERE 
+				examine.plan_id = #{id} and examine.subitem_flag = '0'
+	</select>
+	
+	<delete id="deleteConsPowerView">
+		DELETE FROM s_m_cons_power_view WHERE plan_id = #{planId}
+	</delete>
+	
+	<!-- 根据年月查询-->
+	<select id="getPhmPurchasePlanMonthListByYm" resultType="com.hhwy.purchaseweb.bid.phmpurchaseplanmonth.domain.PhmPurchasePlanMonthDetail">
+		SELECT report.pq reportPq,
+			 ppa.pq ppaPq,
+			 d.pq dealPq
+		FROM(
+			(SELECT deal.ym ym,IFNULL(SUM(deal.deal_pq),0) pq
+			 FROM ph_m_deal_info deal LEFT JOIN ph_m_purchase_plan_month month on month.id = deal.plan_id
+			 where month.plan_status > '03' and deal.ym = #{ym}
+			)report
+			 LEFT JOIN(
+				SELECT deal.ym ym,IFNULL(SUM(deal.deal_pq),0) pq
+				FROM ph_m_deal_info deal LEFT JOIN ph_m_purchase_plan_month month on month.id = deal.plan_id
+				where month.plan_status > '03' and deal.ym = #{ym} AND month.trade_mode = '02'
+			 ) ppa ON report.ym = ppa.ym
+			 LEFT JOIN(
+				SELECT deal.ym ym,IFNULL(SUM(deal.deal_pq),0) pq
+				FROM ph_m_deal_info deal LEFT JOIN ph_m_purchase_plan_month month on month.id = deal.plan_id
+				where month.plan_status > '03' and deal.ym = #{ym} AND month.trade_mode = '01'
+			 ) d ON d.ym = report.ym
+		 )
+	</select>
+</mapper>

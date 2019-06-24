@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="swConsInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSwConsInfoListByParams" resultType="com.hhwy.selling.domain.SwConsInfo">  
+		select
+			ID id,
+			cons_id consId,
+			login_name loginName,
+			company_id companyId,
+			org_no orgNo		
+		from s_w_cons_info where 1=1
+		<if test="swConsInfo != null and swConsInfo.consId != null and swConsInfo.consId != ''">
+			and cons_id = #{swConsInfo.consId}
+		</if>
+		<if test="swConsInfo != null and swConsInfo.loginName != null and swConsInfo.loginName != ''">
+			and login_name = #{swConsInfo.loginName}
+		</if>
+		<if test="swConsInfo != null and swConsInfo.companyId != null and swConsInfo.companyId != ''">
+			and company_id = #{swConsInfo.companyId}
+		</if>
+		<if test="swConsInfo != null and swConsInfo.orgNo != null and swConsInfo.orgNo != ''">
+			and org_no = #{swConsInfo.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSwConsInfoCountByParams" resultType="int">
+		select count(1)	from s_w_cons_info where 1=1
+		<if test="swConsInfo != null and swConsInfo.consId != null and swConsInfo.consId != ''">
+			and cons_id = #{swConsInfo.consId}
+		</if>
+		<if test="swConsInfo != null and swConsInfo.loginName != null and swConsInfo.loginName != ''">
+			and login_name = #{swConsInfo.loginName}
+		</if>
+		<if test="swConsInfo != null and swConsInfo.companyId != null and swConsInfo.companyId != ''">
+			and company_id = #{swConsInfo.companyId}
+		</if>
+		<if test="swConsInfo != null and swConsInfo.orgNo != null and swConsInfo.orgNo != ''">
+			and org_no = #{swConsInfo.orgNo}
+		</if>
+	</select>
+	
+	<select id="getRelaList" resultType="com.hhwy.purchaseweb.login.swconsinfo.domain.RelaDetail">
+		SELECT 
+			rela.id id,
+			users.user_name userName,
+			users.login_name loginName,
+			cons.cons_name consName,
+			cons.id consId,
+			cont.id contId,
+			cont.phone phone,
+			IF(rela.id IS NULL,"0","1") relaFlag
+		FROM ac_user_org_auth auth 
+		LEFT JOIN ac_user_org org ON org.org_id = auth.org_id
+		LEFT JOIN ac_user users ON users.id = org.user_id
+		LEFT JOIN s_w_cons_info rela ON rela.login_name = users.login_name
+		LEFT JOIN s_c_consumer_info cons ON cons.id = rela.cons_id
+		LEFT JOIN s_c_contacts_info cont ON cont.cons_id = cont.id 
+		WHERE users.id is not null AND auth.user_id = #{userId}
+		AND org.type = '0'
+		<if test="userName != null and userName != ''">
+			and users.user_name LIKE concat("%",#{userName},"%")
+		</if>
+		<if test="loginName != null and loginName != ''">
+			and users.login_name LIKE concat("%",#{loginName},"%")
+		</if>
+		<choose>
+			<when test="relateStatus == '01'">and rela.id IS NULL</when>
+			<when test="relateStatus == '02'">and rela.id IS NOT NULL</when>
+		</choose>
+		order by users.create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<select id="getRelaCount" resultType="int">
+		SELECT 
+			COUNT(1)
+		FROM ac_user_org_auth auth 
+		LEFT JOIN ac_user_org org ON org.org_id = auth.org_id
+		LEFT JOIN ac_user users ON users.id = org.user_id
+		LEFT JOIN s_w_cons_info rela ON rela.login_name = users.login_name
+		LEFT JOIN s_c_consumer_info cons ON cons.id = rela.cons_id
+		WHERE users.id is not null AND auth.user_id = #{userId}
+		AND org.type = '0'
+			<if test="userName != null and userName != ''">
+				and users.user_name LIKE concat("%",#{userName},"%")
+			</if>
+			<if test="loginName != null and loginName != ''">
+				and users.login_name LIKE concat("%",#{loginName},"%")
+			</if>
+			<choose>
+				<when test="relateStatus == '01'">and rela.id IS NULL</when>
+				<when test="relateStatus == '02'">and rela.id IS NOT NULL</when>
+			</choose>
+	</select>
+</mapper>

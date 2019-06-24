@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phfConsProductionPlan.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getPhfConsProductionPlanListByParams" resultType="com.hhwy.purchaseweb.forecast.phfconsproductionplan.domain.PhfConsProductionPlanDetail">
+		select
+			a.ID id,
+			a.cons_id consId,
+			a.year year,
+			a.product_name productName,
+			a.unit unit,
+			a.Jan jan,
+			a.Feb feb,
+			a.Mar mar,
+			a.Apr apr,
+			a.May may,
+			a.Jun jun,
+			a.Jul jul,
+			a.Aug aug,
+			a.Sept sept,
+			a.Oct oct,
+			a.Nov nov,
+			a.Dece dece,
+			a.org_no orgNo,
+			b.cons_name consName		
+		from ph_f_cons_production_plan a
+		left join s_c_consumer_info b on a.cons_id=b.id
+		where 1=1
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.consId != null and phfConsProductionPlan.consId != ''">
+			and a.cons_id = #{phfConsProductionPlan.consId}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.year != null and phfConsProductionPlan.year != ''">
+			and a.year = #{phfConsProductionPlan.year}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.productName != null and phfConsProductionPlan.productName != ''">
+			and a.product_name = #{phfConsProductionPlan.productName}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.unit != null and phfConsProductionPlan.unit != ''">
+			and a.unit = #{phfConsProductionPlan.unit}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.jan != null and phfConsProductionPlan.jan != ''">
+			and a.Jan = #{phfConsProductionPlan.jan}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.feb != null and phfConsProductionPlan.feb != ''">
+			and a.Feb = #{phfConsProductionPlan.feb}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.mar != null and phfConsProductionPlan.mar != ''">
+			and a.Mar = #{phfConsProductionPlan.mar}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.apr != null and phfConsProductionPlan.apr != ''">
+			and a.Apr = #{phfConsProductionPlan.apr}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.may != null and phfConsProductionPlan.may != ''">
+			and a.May = #{phfConsProductionPlan.may}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.jun != null and phfConsProductionPlan.jun != ''">
+			and a.Jun = #{phfConsProductionPlan.jun}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.jul != null and phfConsProductionPlan.jul != ''">
+			and a.Jul = #{phfConsProductionPlan.jul}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.aug != null and phfConsProductionPlan.aug != ''">
+			and a.Aug = #{phfConsProductionPlan.aug}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.sept != null and phfConsProductionPlan.sept != ''">
+			and a.Sept = #{phfConsProductionPlan.sept}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.oct != null and phfConsProductionPlan.oct != ''">
+			and a.Oct = #{phfConsProductionPlan.oct}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.nov != null and phfConsProductionPlan.nov != ''">
+			and a.Nov = #{phfConsProductionPlan.nov}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.dece != null and phfConsProductionPlan.dece != ''">
+			and a.Dece = #{phfConsProductionPlan.dece}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.orgNo != null and phfConsProductionPlan.orgNo != ''">
+			and a.org_no = #{phfConsProductionPlan.orgNo}
+		</if>
+		order by a.year desc,a.create_time asc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getPhfConsProductionPlanCountByParams" resultType="int">
+		select count(1)	from ph_f_cons_production_plan where 1=1
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.consId != null and phfConsProductionPlan.consId != ''">
+			and cons_id = #{phfConsProductionPlan.consId}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.year != null and phfConsProductionPlan.year != ''">
+			and year = #{phfConsProductionPlan.year}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.productName != null and phfConsProductionPlan.productName != ''">
+			and product_name = #{phfConsProductionPlan.productName}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.unit != null and phfConsProductionPlan.unit != ''">
+			and unit = #{phfConsProductionPlan.unit}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.jan != null and phfConsProductionPlan.jan != ''">
+			and Jan = #{phfConsProductionPlan.jan}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.feb != null and phfConsProductionPlan.feb != ''">
+			and Feb = #{phfConsProductionPlan.feb}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.mar != null and phfConsProductionPlan.mar != ''">
+			and Mar = #{phfConsProductionPlan.mar}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.apr != null and phfConsProductionPlan.apr != ''">
+			and Apr = #{phfConsProductionPlan.apr}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.may != null and phfConsProductionPlan.may != ''">
+			and May = #{phfConsProductionPlan.may}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.jun != null and phfConsProductionPlan.jun != ''">
+			and Jun = #{phfConsProductionPlan.jun}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.jul != null and phfConsProductionPlan.jul != ''">
+			and Jul = #{phfConsProductionPlan.jul}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.aug != null and phfConsProductionPlan.aug != ''">
+			and Aug = #{phfConsProductionPlan.aug}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.sept != null and phfConsProductionPlan.sept != ''">
+			and Sept = #{phfConsProductionPlan.sept}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.oct != null and phfConsProductionPlan.oct != ''">
+			and Oct = #{phfConsProductionPlan.oct}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.nov != null and phfConsProductionPlan.nov != ''">
+			and Nov = #{phfConsProductionPlan.nov}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.dece != null and phfConsProductionPlan.dece != ''">
+			and Dece = #{phfConsProductionPlan.dece}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.orgNo != null and phfConsProductionPlan.orgNo != ''">
+			and org_no = #{phfConsProductionPlan.orgNo}
+		</if>
+	</select>
+	
+	<!-- 查询父节点信息 -->
+	<select id="getParentNodeList" resultType="com.hhwy.purchaseweb.forecast.phfconsproductionplan.domain.PhfConsProductionPlanDetail">
+		select
+			a.cons_id id,
+			a.cons_id consId,
+			b.cons_name consName,
+			a.year year,
+			'closed' state
+		from ph_f_cons_production_plan a
+		left join s_c_consumer_info b on a.cons_id=b.id
+		where 1=1
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.consId != null and phfConsProductionPlan.consId != ''">
+			and a.cons_id = #{phfConsProductionPlan.consId}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.year != null and phfConsProductionPlan.year != ''">
+			and a.year = #{phfConsProductionPlan.year}
+		</if>
+		group by a.cons_id
+		order by a.year desc,a.cons_id asc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 查询父节点数量 -->
+	<select id="getParentNodeCount" resultType="int">
+		select count(1) from(
+	    select cons_id	from ph_f_cons_production_plan where 1=1
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.consId != null and phfConsProductionPlan.consId != ''">
+			and cons_id = #{phfConsProductionPlan.consId}
+		</if>
+		<if test="phfConsProductionPlan != null and phfConsProductionPlan.year != null and phfConsProductionPlan.year != ''">
+			and year = #{phfConsProductionPlan.year}
+		</if>
+		group by cons_id)tt
+	</select>
+	
+	<delete id="deleteConsInfo">
+	    delete from ph_f_cons_production_plan where cons_id=#{consId} and year=#{year}
+	</delete>
+	
+	<!-- 查询用户产能  ,大数据用-->
+	<select id="getConsProductionByConsIdAndYear" resultType="com.hhwy.purchase.domain.PhfConsProductionPlan">
+		select
+			id id,
+			cons_id consId,
+			year year,
+			product_name productName,
+			unit unit,
+			sum(Jan) jan,
+			sum(Feb) feb,
+			sum(Mar) mar,
+			sum(Apr) apr,
+			sum(May) may,
+			sum(Jun) jun,
+			sum(Jul) jul,
+			sum(Aug) aug,
+			sum(Sept) sept,
+			sum(Oct) oct,
+			sum(Nov) nov,
+			Dece dece
+		from ph_f_cons_production_plan
+		where cons_id=#{consId} and year=#{year}
+	</select>
+	
+</mapper>

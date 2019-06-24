@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scMpInfo.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getScMpInfoListByParams" resultType="com.hhwy.selling.domain.ScMpInfo">
+		select
+			ID id,
+			cons_id consId,
+			mp_no mpNo,
+			mp_name mpName,
+			meter_rate meterRate,
+			meter_digits meterDigits,
+			meter_no meterNo,
+			org_no orgNo,
+			market_cons_no marketConsNo		
+		from s_c_mp_info where 1=1
+		<if test="scMpInfo != null and scMpInfo.consId != null and scMpInfo.consId != ''">
+			and cons_id = #{scMpInfo.consId}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.mpNo != null and scMpInfo.mpNo != ''">
+			and mp_no = #{scMpInfo.mpNo}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.mpName != null and scMpInfo.mpName != ''">
+			and mp_name = #{scMpInfo.mpName}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.meterRate != null and scMpInfo.meterRate != ''">
+			and meter_rate = #{scMpInfo.meterRate}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.meterNo != null and scMpInfo.meterNo != ''">
+			and meter_no = #{scMpInfo.meterNo}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.orgNo != null and scMpInfo.orgNo != ''">
+			and org_no = #{scMpInfo.orgNo}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getScMpInfoCountByParams" resultType="int">
+		select count(1)	from s_c_mp_info where 1=1
+		<if test="scMpInfo != null and scMpInfo.consId != null and scMpInfo.consId != ''">
+			and cons_id = #{scMpInfo.consId}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.mpNo != null and scMpInfo.mpNo != ''">
+			and mp_no = #{scMpInfo.mpNo}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.mpName != null and scMpInfo.mpName != ''">
+			and mp_name = #{scMpInfo.mpName}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.meterRate != null and scMpInfo.meterRate != ''">
+			and meter_rate = #{scMpInfo.meterRate}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.meterNo != null and scMpInfo.meterNo != ''">
+			and meter_no = #{scMpInfo.meterNo}
+		</if>
+		<if test="scMpInfo != null and scMpInfo.orgNo != null and scMpInfo.orgNo != ''">
+			and org_no = #{scMpInfo.orgNo}
+		</if>
+	</select>
+		
+	<delete id="deleteScMpInfoByConsId">
+		delete from s_c_mp_info where cons_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+ 			#{item}  
+ 		</foreach> 
+	</delete>
+	
+	<!-- 获取电能表编号一样但是所属用户与给的参数不同的计量点信息 -->
+	<select id="getMpInfoListByMeterNoAndConsId" resultType="com.hhwy.selling.domain.ScMpInfo">
+		select
+			mp.ID id,
+			mp.cons_id consId,
+			mp.meter_no meterNo,
+			cons.cons_name mpName
+		from s_c_mp_info mp 
+		left join s_c_consumer_info cons on mp.cons_id=cons.id
+		where
+			<foreach collection="list" item="item" index="index" open="" close="" separator=" or "> 
+				( mp.meter_no = #{item.meterNo} and mp.cons_id != #{item.consId} )
+	    	</foreach> 
+	</select>
+	
+	<!-- 根据电能表编号列表获取计量点列表 -->
+	<select id="getMpInfoListByMeterNos" resultType="com.hhwy.selling.domain.ScMpInfo">
+		select
+			ID id,
+			cons_id consId,
+			meter_no meterNo
+		from s_c_mp_info
+		where
+			<foreach collection="list" item="item" index="index" open="" close="" separator=" or "> 
+				 meter_no = #{item} 
+	    	</foreach> 
+	</select>
+	
+	<!-- 根据用户idList获取用户电表信息 -->
+	<select id="getScMpInfoByConsIds" resultType="com.hhwy.selling.domain.ScMpInfo">
+		select  cons_id consId,
+				mp_no mpNo,
+				mp_name mpName,
+				meter_rate meterRate,
+				meter_digits meterDigits,
+				meter_no meterNo
+		from s_c_mp_info where cons_id in 
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+	   		#{item}
+		</foreach>
+	</select>
+</mapper>

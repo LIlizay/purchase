@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smDistMode.sql">
+	<!-- 根据条件查询列表 -->
+	<select id="getSmDistModeListByParams" resultType="com.hhwy.selling.domain.SmDistMode">
+		select
+			ID id,
+			agre_id agreId,
+			divi_code diviCode,
+			settlement_mode settlementMode,
+			discount_upper_flag discountUpperFlag,
+			discount_upper_amt discountUpperAmt,
+			discount_lower_flag discountLowerFlag,
+			discount_lower_amt discountLowerAmt,
+			agre_prc agrePrc,
+			party_b_lc_prop partyBLcProp,
+			party_a_lc_prop partyALcProp,
+			party_b_bid_prop partyBBidProp,
+			party_a_bid_prop partyABidProp,
+			profit_mode profitMode,
+			pq_sharing_ratio pqSharingRatio,
+			divi_type diviType,
+			divi_value diviValue,
+			agent agent,
+			bid_divi_code bidDiviCode,
+			bid_settlement_mode bidSettlementMode,
+			bid_agre_prc bidAgrePrc,
+			bid_divi_type bidDiviType,
+			bid_divi_value bidDiviValue,
+			bid_agent bidAgent,
+			bid_profit_mode bidProfitMode,
+			org_no orgNo
+		from s_m_dist_mode where 1=1
+		<if test="smDistMode != null and smDistMode.agreId != null and smDistMode.agreId != ''">
+			and agre_id = #{smDistMode.agreId}
+		</if>
+		<if test="smDistMode != null and smDistMode.diviCode != null and smDistMode.diviCode != ''">
+			and divi_code = #{smDistMode.diviCode}
+		</if>
+		<if test="smDistMode != null and smDistMode.discountUpperFlag != null and smDistMode.discountUpperFlag != ''">
+			and discount_upper_flag = #{smDistMode.discountUpperFlag}
+		</if>
+		<if test="smDistMode != null and smDistMode.discountUpperAmt != null and smDistMode.discountUpperAmt != ''">
+			and discount_upper_amt = #{smDistMode.discountUpperAmt}
+		</if>
+		<if test="smDistMode != null and smDistMode.discountLowerFlag != null and smDistMode.discountLowerFlag != ''">
+			and discount_lower_flag = #{smDistMode.discountLowerFlag}
+		</if>
+		<if test="smDistMode != null and smDistMode.discountLowerAmt != null and smDistMode.discountLowerAmt != ''">
+			and discount_lower_amt = #{smDistMode.discountLowerAmt}
+		</if>
+		<if test="smDistMode != null and smDistMode.agrePrc != null and smDistMode.agrePrc != ''">
+			and agre_prc = #{smDistMode.agrePrc}
+		</if>
+		<if test="smDistMode != null and smDistMode.partyBLcProp != null and smDistMode.partyBLcProp != ''">
+			and party_b_lc_prop = #{smDistMode.partyBLcProp}
+		</if>
+		<if test="smDistMode != null and smDistMode.partyALcProp != null and smDistMode.partyALcProp != ''">
+			and party_a_lc_prop = #{smDistMode.partyALcProp}
+		</if>
+		<if test="smDistMode != null and smDistMode.partyBBidProp != null and smDistMode.partyBBidProp != ''">
+			and party_b_bid_prop = #{smDistMode.partyBBidProp}
+		</if>
+		<if test="smDistMode != null and smDistMode.partyABidProp != null and smDistMode.partyABidProp != ''">
+			and party_a_bid_prop = #{smDistMode.partyABidProp}
+		</if>
+		<if test="smDistMode != null and smDistMode.profitMode != null and smDistMode.profitMode != ''">
+			and profit_mode = #{smDistMode.profitMode}
+		</if>
+		<if test="smDistMode != null and smDistMode.pqSharingRatio != null and smDistMode.pqSharingRatio != ''">
+			and pq_sharing_ratio = #{smDistMode.pqSharingRatio}
+		</if>
+		order by create_time desc
+		<if test="pagingFlag==true">
+			limit #{startIndex},#{rowCount}
+		</if>
+	</select>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="getSmDistModeCountByParams" resultType="int">
+		select count(1)	from s_m_dist_mode where 1=1
+		<if test="smDistMode != null and smDistMode.agreId != null and smDistMode.agreId != ''">
+			and agre_id = #{smDistMode.agreId}
+		</if>
+		<if test="smDistMode != null and smDistMode.diviCode != null and smDistMode.diviCode != ''">
+			and divi_code = #{smDistMode.diviCode}
+		</if>
+		<if test="smDistMode != null and smDistMode.discountUpperFlag != null and smDistMode.discountUpperFlag != ''">
+			and discount_upper_flag = #{smDistMode.discountUpperFlag}
+		</if>
+		<if test="smDistMode != null and smDistMode.discountUpperAmt != null and smDistMode.discountUpperAmt != ''">
+			and discount_upper_amt = #{smDistMode.discountUpperAmt}
+		</if>
+		<if test="smDistMode != null and smDistMode.discountLowerFlag != null and smDistMode.discountLowerFlag != ''">
+			and discount_lower_flag = #{smDistMode.discountLowerFlag}
+		</if>
+		<if test="smDistMode != null and smDistMode.discountLowerAmt != null and smDistMode.discountLowerAmt != ''">
+			and discount_lower_amt = #{smDistMode.discountLowerAmt}
+		</if>
+		<if test="smDistMode != null and smDistMode.agrePrc != null and smDistMode.agrePrc != ''">
+			and agre_prc = #{smDistMode.agrePrc}
+		</if>
+		<if test="smDistMode != null and smDistMode.partyBLcProp != null and smDistMode.partyBLcProp != ''">
+			and party_b_lc_prop = #{smDistMode.partyBLcProp}
+		</if>
+		<if test="smDistMode != null and smDistMode.partyALcProp != null and smDistMode.partyALcProp != ''">
+			and party_a_lc_prop = #{smDistMode.partyALcProp}
+		</if>
+		<if test="smDistMode != null and smDistMode.partyBBidProp != null and smDistMode.partyBBidProp != ''">
+			and party_b_bid_prop = #{smDistMode.partyBBidProp}
+		</if>
+		<if test="smDistMode != null and smDistMode.partyABidProp != null and smDistMode.partyABidProp != ''">
+			and party_a_bid_prop = #{smDistMode.partyABidProp}
+		</if>
+		<if test="smDistMode != null and smDistMode.profitMode != null and smDistMode.profitMode != ''">
+			and profit_mode = #{smDistMode.profitMode}
+		</if>
+		<if test="smDistMode != null and smDistMode.pqSharingRatio != null and smDistMode.pqSharingRatio != ''">
+			and pq_sharing_ratio = #{smDistMode.pqSharingRatio}
+		</if>
+	</select>
+	
+	<!-- 根据合同编号删除数据 -->
+	<delete id="deleteSmDistModeByAgreIds">
+		delete from s_m_dist_mode where agre_id in  
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+		  	#{item}  
+		</foreach>
+	</delete>
+	<!-- 根据条件查询列表 -->
+	<select id="getSmDistModeOneByConsIdAndYm" resultType="com.hhwy.selling.domain.SmDistMode">
+		select
+			mode.ID id,
+			mode.agre_id agreId,
+			mode.divi_code diviCode,
+			mode.settlement_mode settlementMode,
+			mode.discount_upper_flag discountUpperFlag,
+			mode.discount_upper_amt discountUpperAmt,
+			mode.discount_lower_flag discountLowerFlag,
+			mode.discount_lower_amt discountLowerAmt,
+			mode.agre_prc agrePrc,
+			mode.party_b_lc_prop partyBLcProp,
+			mode.party_a_lc_prop partyALcProp,
+			mode.party_b_bid_prop partyBBidProp,
+			mode.party_a_bid_prop partyABidProp,
+			mode.profit_mode profitMode,
+			mode.pq_sharing_ratio pqSharingRatio,
+			mode.divi_type diviType,
+			mode.divi_value diviValue,
+			mode.agent agent,
+			mode.bid_divi_code bidDiviCode,
+			mode.bid_settlement_mode bidSettlementMode,
+			mode.bid_agre_prc bidAgrePrc,
+			mode.bid_divi_type bidDiviType,
+			mode.bid_divi_value bidDiviValue,
+			mode.bid_agent bidAgent,
+			mode.bid_profit_mode bidProfitMode,
+			mode.org_no orgNo
+		from s_m_dist_mode mode 
+			inner join s_m_ppa ppa on mode.agre_id = ppa.id and ppa.cons_id=#{consId}
+				and ppa.agre_status!="00" 
+				<if test="ym.length() == 4">
+					and ( LEFT(ppa.effective_date ,4) = #{ym}
+					  or LEFT(ppa.expiry_date,4) = #{ym} )
+				</if>
+				<if test="ym.length() == 6">
+					and concat(left(#{ym},4),"-",right(#{ym},2)) &gt;= LEFT(ppa.effective_date ,7)
+					AND concat(left(#{ym},4),"-",right(#{ym},2)) &lt;= LEFT(ppa.expiry_date,7)
+				</if>
+		order by ppa.effective_date desc, mode.create_time desc
+		limit 0,1
+	</select>
+</mapper>
